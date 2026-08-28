@@ -37,8 +37,8 @@ rpl_tagged_free(rpl_value_t tagged)
     assert(tagged != NULL);
     assert(tagged->_type == rpl_type_tagged);
 
-    rpl_value_free(tagged->_reps._tagged._tag);
-    rpl_value_free(tagged->_reps._tagged._value);
+    rpl_value_release(tagged->_reps._tagged._tag);
+    rpl_value_release(tagged->_reps._tagged._value);
 }
 
 rpl_value_t

@@ -36,7 +36,7 @@ rpl_unit_free(rpl_value_t unit)
     assert(unit != NULL);
     assert(unit->_type == rpl_type_unit);
 
-    rpl_value_free(unit->_reps._unit._units);
+    rpl_value_release(unit->_reps._unit._units);
 }
 
 rpl_real_t

@@ -34,7 +34,7 @@ rpl_string_new(const char *rep, rpl_integer_t rep_len)
     return string;
 
 error:
-    rpl_value_free(string);
+    rpl_value_release(string);
     return NULL;
 }
 

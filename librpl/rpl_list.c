@@ -59,7 +59,7 @@ rpl_list_new_with_array(rpl_value_t RPL_NONNULL * RPL_NONNULL elements,
     return list;
 
 error:
-    rpl_value_free(list);
+    rpl_value_release(list);
     return list;
 }
 

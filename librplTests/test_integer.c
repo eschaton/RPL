@@ -41,7 +41,7 @@ START_TEST(test_creation)
     ck_assert_int_eq(rpl_integer_get_rep(v0), 0);
     ck_assert_int_eq(rpl_value_get_type(v0), rpl_type_integer);
 
-    rpl_value_free(v0);
+    rpl_value_release(v0);
 }
 END_TEST
 

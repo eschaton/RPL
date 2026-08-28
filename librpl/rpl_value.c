@@ -23,6 +23,7 @@ rpl_value_new(rpl_type_t type)
     rpl_value_t val = calloc(1, sizeof(struct rpl_value));
     if (val) {
 	val->_type = type;
+	val->_refs = 1;
     }
     return val;
 }
@@ -31,6 +32,7 @@ void
 rpl_value_free(rpl_value_t val)
 {
     assert(val != NULL);
+    assert(val->_refs == 0);
 
     switch (val->_type) {
 	case rpl_type_integer: rpl_integer_free(val); break;
@@ -49,15 +51,15 @@ rpl_value_free(rpl_value_t val)
 }
 
 void
-rpl_value_free_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
-		     rpl_integer_t vals_count)
+rpl_value_release_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
+			rpl_integer_t vals_count)
 {
     assert(vals != NULL);
     assert(vals_count > 0);
 
     for (rpl_integer_t i = 0; i < vals_count; i++) {
 	rpl_value_t val = vals[i];
-	rpl_value_free(val);
+	rpl_value_release(val);
     }
 }
 
@@ -65,6 +67,35 @@ rpl_type_t
 rpl_value_get_type(rpl_value_t val)
 {
     return val->_type;
+}
+
+void
+rpl_value_retain(rpl_value_t val)
+{
+    assert(val != NULL);
+    assert(val->_refs >= 0);
+
+    if (val->_refs != INT64_MAX) {
+	val->_refs += 1;
+
+	/* Assert if this object became permanent. */
+	assert(val->_refs != INT64_MAX);
+    }
+}
+
+void
+rpl_value_release(rpl_value_t val)
+{
+    assert(val != NULL);
+    assert(val->_refs > 0);
+
+    if (val->_refs != INT64_MAX) {
+	val->_refs -= 1;
+
+	if (val->_refs == 0) {
+	    rpl_value_free(val);
+	}
+    }
 }
 
 

@@ -38,14 +38,20 @@ typedef enum rpl_type rpl_type_t;
 typedef struct rpl_value *rpl_value_t;
 
 
-/*! Free an allocated value. */
-RPL_EXPORT
-void
-rpl_value_free(rpl_value_t val);
-
 /*! Get the type of a value. */
+RPL_EXPORT
 rpl_type_t
 rpl_value_get_type(rpl_value_t val);
+
+/*! Retain a value. */
+RPL_EXPORT
+void
+rpl_value_retain(rpl_value_t val);
+
+/*! Release a value. */
+RPL_EXPORT
+void
+rpl_value_release(rpl_value_t val);
 
 
 RPL_HEADER_END

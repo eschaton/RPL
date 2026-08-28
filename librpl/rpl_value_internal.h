@@ -27,7 +27,21 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_value {
+    /*! Type of the value. */
     rpl_type_t _type;
+
+    /*!
+     Number of references to the value.
+
+     This starts at `1` and when it goes to `0`, the value is freed. As
+     a special case, `INT_MAX` is used to represent a "permanent" value.
+     */
+    rpl_integer_t _refs;
+
+    /*!
+     The various underlying representations of a value, selected
+     according to the value of `_type`.
+     */
     union {
 	rpl_integer_t _integer;
 	rpl_real_t _real;
@@ -48,10 +62,21 @@ rpl_value_t RPL_NULLABLE
 rpl_value_new(rpl_type_t type);
 
 
+/*! Free an allocated value. */
 RPL_EXPORT
 void
-rpl_value_free_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
-		     rpl_integer_t vals_count);
+rpl_value_free(rpl_value_t val);
+
+
+/*!
+ Release every value in a C array of values.
+
+ - NOTE: Does not ``free(3)`` the C array itself.
+ */
+RPL_EXPORT
+void
+rpl_value_release_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
+			rpl_integer_t vals_count);
 
 
 

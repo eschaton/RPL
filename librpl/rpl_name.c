@@ -41,7 +41,7 @@ rpl_name_new(const char *rep, rpl_integer_t rep_len)
     return name;
 
 error:
-    rpl_value_free(name);
+    rpl_value_release(name);
     return NULL;
 }
 

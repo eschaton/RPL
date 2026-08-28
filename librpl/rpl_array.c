@@ -49,7 +49,7 @@ rpl_array_new(rpl_integer_t *dims, rpl_integer_t dims_count,
     return array;
 
 error:
-    rpl_value_free(array);
+    rpl_value_release(array);
     return NULL;
 }
 
@@ -62,8 +62,9 @@ rpl_array_free(rpl_value_t array)
     free(array->_reps._array._dims);
 
     if (array->_reps._array._vals) {
-	rpl_value_free_array(array->_reps._array._vals,
-			     array->_reps._array._vals_count);
+	rpl_value_release_array(array->_reps._array._vals,
+				array->_reps._array._vals_count);
+	free(array->_reps._array._vals);
     }
 }
 
