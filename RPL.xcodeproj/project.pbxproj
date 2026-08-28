@@ -3,23 +3,47 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 100;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		9FDD787030414F7200A62C18 /* librpl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FDD786B30414F5900A62C18 /* librpl.dylib */; };
+		9FDD787130414F7200A62C18 /* librpl.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9FDD786B30414F5900A62C18 /* librpl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9FDD787230414F7200A62C18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FDD768630411A3600A62C18 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FDD786A30414F5900A62C18;
+			remoteInfo = librpl;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9FDD768C30411A3600A62C18 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			dstSubfolder = None;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+		};
+		9FDD787430414F7200A62C18 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = Frameworks;
+			files = (
+				9FDD787130414F7200A62C18 /* librpl.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		9FDD768E30411A3600A62C18 /* RPL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RPL; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FDD786B30414F5900A62C18 /* librpl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librpl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -28,15 +52,24 @@
 			path = RPL;
 			sourceTree = "<group>";
 		};
+		9FDD787530414FC500A62C18 /* librpl */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = librpl;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		9FDD768B30411A3600A62C18 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
+			files = (
+				9FDD787030414F7200A62C18 /* librpl.dylib in Frameworks */,
+			);
+		};
+		9FDD786930414F5900A62C18 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -45,19 +78,31 @@
 			isa = PBXGroup;
 			children = (
 				9FDD769030411A3600A62C18 /* RPL */,
+				9FDD787530414FC500A62C18 /* librpl */,
 				9FDD768F30411A3600A62C18 /* Products */,
 			);
 			sourceTree = "<group>";
+			tabWidth = 8;
+			usesTabs = 1;
 		};
 		9FDD768F30411A3600A62C18 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				9FDD768E30411A3600A62C18 /* RPL */,
+				9FDD786B30414F5900A62C18 /* librpl.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9FDD786730414F5900A62C18 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			files = (
+			);
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		9FDD768D30411A3600A62C18 /* RPL */ = {
@@ -67,20 +112,38 @@
 				9FDD768A30411A3600A62C18 /* Sources */,
 				9FDD768B30411A3600A62C18 /* Frameworks */,
 				9FDD768C30411A3600A62C18 /* CopyFiles */,
+				9FDD787430414F7200A62C18 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9FDD787330414F7200A62C18 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				9FDD769030411A3600A62C18 /* RPL */,
 			);
 			name = RPL;
-			packageProductDependencies = (
-			);
 			productName = RPL;
 			productReference = 9FDD768E30411A3600A62C18 /* RPL */;
 			productType = "com.apple.product-type.tool";
+		};
+		9FDD786A30414F5900A62C18 /* librpl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9FDD786C30414F5900A62C18 /* Build configuration list for PBXNativeTarget "librpl" */;
+			buildPhases = (
+				9FDD786730414F5900A62C18 /* Headers */,
+				9FDD786830414F5900A62C18 /* Sources */,
+				9FDD786930414F5900A62C18 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				9FDD787530414FC500A62C18 /* librpl */,
+			);
+			name = librpl;
+			productName = librpl;
+			productReference = 9FDD786B30414F5900A62C18 /* librpl.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
 
@@ -90,8 +153,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastUpgradeCheck = 2660;
+				ORGANIZATIONNAME = "Base Hit Ventures LLC";
 				TargetAttributes = {
 					9FDD768D30411A3600A62C18 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					9FDD786A30414F5900A62C18 = {
 						CreatedOnToolsVersion = 26.6;
 					};
 				};
@@ -105,12 +172,13 @@
 			);
 			mainGroup = 9FDD768530411A3600A62C18;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 100;
 			productRefGroup = 9FDD768F30411A3600A62C18 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				9FDD768D30411A3600A62C18 /* RPL */,
+				9FDD786A30414F5900A62C18 /* librpl */,
 			);
 		};
 /* End PBXProject section */
@@ -118,15 +186,26 @@
 /* Begin PBXSourcesBuildPhase section */
 		9FDD768A30411A3600A62C18 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FDD786830414F5900A62C18 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		9FDD787330414F7200A62C18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FDD786A30414F5900A62C18 /* librpl */;
+			targetProxy = 9FDD787230414F7200A62C18 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		9FDD769330411A3600A62C18 /* Debug */ = {
+		9FDD769330411A3600A62C18 /* Debug configuration for PBXProject "RPL" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -160,6 +239,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = V4FN2V327V;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -185,10 +265,11 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
-		9FDD769430411A3600A62C18 /* Release */ = {
+		9FDD769430411A3600A62C18 /* Release configuration for PBXProject "RPL" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -222,6 +303,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = V4FN2V327V;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -240,10 +322,11 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
-		9FDD769630411A3600A62C18 /* Debug */ = {
+		9FDD769630411A3600A62C18 /* Debug configuration for PBXNativeTarget "RPL" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -253,7 +336,7 @@
 			};
 			name = Debug;
 		};
-		9FDD769730411A3600A62C18 /* Release */ = {
+		9FDD769730411A3600A62C18 /* Release configuration for PBXNativeTarget "RPL" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -263,25 +346,57 @@
 			};
 			name = Release;
 		};
+		9FDD786D30414F5900A62C18 /* Debug configuration for PBXNativeTarget "librpl" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V4FN2V327V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		9FDD786E30414F5900A62C18 /* Release configuration for PBXNativeTarget "librpl" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = V4FN2V327V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		9FDD768930411A3600A62C18 /* Build configuration list for PBXProject "RPL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9FDD769330411A3600A62C18 /* Debug */,
-				9FDD769430411A3600A62C18 /* Release */,
+				9FDD769330411A3600A62C18 /* Debug configuration for PBXProject "RPL" */,
+				9FDD769430411A3600A62C18 /* Release configuration for PBXProject "RPL" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		9FDD769530411A3600A62C18 /* Build configuration list for PBXNativeTarget "RPL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9FDD769630411A3600A62C18 /* Debug */,
-				9FDD769730411A3600A62C18 /* Release */,
+				9FDD769630411A3600A62C18 /* Debug configuration for PBXNativeTarget "RPL" */,
+				9FDD769730411A3600A62C18 /* Release configuration for PBXNativeTarget "RPL" */,
 			);
-			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9FDD786C30414F5900A62C18 /* Build configuration list for PBXNativeTarget "librpl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FDD786D30414F5900A62C18 /* Debug configuration for PBXNativeTarget "librpl" */,
+				9FDD786E30414F5900A62C18 /* Release configuration for PBXNativeTarget "librpl" */,
+			);
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

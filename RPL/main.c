@@ -3,6 +3,7 @@
 //  RPL
 //
 //  Created by Chris Hanson on 8/27/26.
+//  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
 #include <stdlib.h>
