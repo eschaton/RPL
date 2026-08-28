@@ -1,0 +1,42 @@
+//
+//  rpl_array_internal.c
+//  librpl
+//
+//  Created by Chris Hanson on 8/27/26.
+//  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
+//
+
+#include "rpl_array.h"
+
+#include "rpl_integer.h"
+#include "rpl_value.h"
+
+
+#ifndef __RPL__rpl_array_internal__h__
+#define __RPL__rpl_array_internal__h__
+
+
+RPL_HEADER_BEGIN
+
+
+struct rpl_array {
+    rpl_integer_t _dims_count;
+    rpl_integer_t *_dims;
+    rpl_integer_t _vals_count;
+    rpl_value_t RPL_NONNULL * RPL_NONNULL _vals;
+};
+typedef struct rpl_array rpl_array_t;
+
+RPL_EXPORT
+void
+rpl_array_free(rpl_value_t array);
+
+RPL_EXPORT
+rpl_integer_t
+rpl_array_offset_for_indices(rpl_value_t array, rpl_integer_t *indices);
+
+
+RPL_HEADER_END
+
+
+#endif /* __RPL__rpl_array_internal__h__ */
