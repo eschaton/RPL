@@ -23,7 +23,7 @@
 #include "rpl_string.h"
 #include "rpl_tagged.h"
 #include "rpl_unit.h"
-#inlcude "rpl_value.h"
+#include "rpl_value.h"
 
 /* Execution */
 #include "rpl_stack.h"
