@@ -7,11 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F4215393042459E00DDEB08 /* librpl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FDD786B30414F5900A62C18 /* librpl.dylib */; };
 		9FDD787030414F7200A62C18 /* librpl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FDD786B30414F5900A62C18 /* librpl.dylib */; };
 		9FDD787130414F7200A62C18 /* librpl.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 9FDD786B30414F5900A62C18 /* librpl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		9F42153A3042459E00DDEB08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FDD768630411A3600A62C18 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FDD786A30414F5900A62C18;
+			remoteInfo = librpl;
+		};
 		9FDD787230414F7200A62C18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9FDD768630411A3600A62C18 /* Project object */;
@@ -42,11 +50,52 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9F4215353042459E00DDEB08 /* librplTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = librplTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDD768E30411A3600A62C18 /* RPL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RPL; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDD786B30414F5900A62C18 /* librpl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librpl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9F4215463042473800DDEB08 /* Exceptions for "librplTests" folder in "librplTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				librplTestCase.h,
+				librplTestSupport.h,
+			);
+			target = 9F4215343042459E00DDEB08 /* librplTests */;
+		};
+		9F4215473042475B00DDEB08 /* Exceptions for "librpl" folder in "librpl" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			publicHeaders = (
+				rpl_array.h,
+				rpl_complex.h,
+				rpl_defines.h,
+				rpl_integer.h,
+				rpl_list.h,
+				rpl_name.h,
+				rpl_program.h,
+				rpl_real.h,
+				rpl_stack.h,
+				rpl_string.h,
+				rpl_tagged.h,
+				rpl_unit.h,
+				rpl_util.h,
+				rpl_value.h,
+				rpl.h,
+			);
+			target = 9FDD786A30414F5900A62C18 /* librpl */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9F4215363042459E00DDEB08 /* librplTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9F4215463042473800DDEB08 /* Exceptions for "librplTests" folder in "librplTests" target */,
+			);
+			path = librplTests;
+			sourceTree = "<group>";
+		};
 		9FDD769030411A3600A62C18 /* RPL */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = RPL;
@@ -54,12 +103,21 @@
 		};
 		9FDD787530414FC500A62C18 /* librpl */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9F4215473042475B00DDEB08 /* Exceptions for "librpl" folder in "librpl" target */,
+			);
 			path = librpl;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9F4215323042459E00DDEB08 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				9F4215393042459E00DDEB08 /* librpl.dylib in Frameworks */,
+			);
+		};
 		9FDD768B30411A3600A62C18 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
@@ -79,6 +137,7 @@
 			children = (
 				9FDD769030411A3600A62C18 /* RPL */,
 				9FDD787530414FC500A62C18 /* librpl */,
+				9F4215363042459E00DDEB08 /* librplTests */,
 				9FDD768F30411A3600A62C18 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +149,7 @@
 			children = (
 				9FDD768E30411A3600A62C18 /* RPL */,
 				9FDD786B30414F5900A62C18 /* librpl.dylib */,
+				9F4215353042459E00DDEB08 /* librplTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,6 +157,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		9F4215453042473700DDEB08 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			files = (
+			);
+		};
 		9FDD786730414F5900A62C18 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			files = (
@@ -105,6 +170,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		9F4215343042459E00DDEB08 /* librplTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F42153E3042459E00DDEB08 /* Build configuration list for PBXNativeTarget "librplTests" */;
+			buildPhases = (
+				9F4215453042473700DDEB08 /* Headers */,
+				9F4215313042459E00DDEB08 /* Sources */,
+				9F4215323042459E00DDEB08 /* Frameworks */,
+				9F4215333042459E00DDEB08 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9F42153B3042459E00DDEB08 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9F4215363042459E00DDEB08 /* librplTests */,
+			);
+			name = librplTests;
+			productName = librplTests;
+			productReference = 9F4215353042459E00DDEB08 /* librplTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		9FDD768D30411A3600A62C18 /* RPL */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9FDD769530411A3600A62C18 /* Build configuration list for PBXNativeTarget "RPL" */;
@@ -155,6 +242,9 @@
 				LastUpgradeCheck = 2660;
 				ORGANIZATIONNAME = "Base Hit Ventures LLC";
 				TargetAttributes = {
+					9F4215343042459E00DDEB08 = {
+						CreatedOnToolsVersion = 26.6;
+					};
 					9FDD768D30411A3600A62C18 = {
 						CreatedOnToolsVersion = 26.6;
 					};
@@ -179,11 +269,25 @@
 			targets = (
 				9FDD768D30411A3600A62C18 /* RPL */,
 				9FDD786A30414F5900A62C18 /* librpl */,
+				9F4215343042459E00DDEB08 /* librplTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		9F4215333042459E00DDEB08 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		9F4215313042459E00DDEB08 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 		9FDD768A30411A3600A62C18 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
@@ -197,6 +301,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		9F42153B3042459E00DDEB08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FDD786A30414F5900A62C18 /* librpl */;
+			targetProxy = 9F42153A3042459E00DDEB08 /* PBXContainerItemProxy */;
+		};
 		9FDD787330414F7200A62C18 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 9FDD786A30414F5900A62C18 /* librpl */;
@@ -205,6 +314,76 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		9F42153C3042459E00DDEB08 /* Debug configuration for PBXNativeTarget "librplTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V4FN2V327V;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"$(LIBCHECK_PREPROCESSOR_MACROS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				LIBCHECK_HEADER_DIR = /opt/local/include;
+				LIBCHECK_LDFLAGS = "-lcheck";
+				LIBCHECK_LIBRARY_DIR = /opt/local/lib;
+				LIBCHECK_PREPROCESSOR_MACROS = "_THREAD_SAFE=1";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBCHECK_LIBRARY_DIR)",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(LIBCHECK_LDFLAGS)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ventures.basehit.librplTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBCHECK_HEADER_DIR)",
+				);
+			};
+			name = Debug;
+		};
+		9F42153D3042459E00DDEB08 /* Release configuration for PBXNativeTarget "librplTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V4FN2V327V;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"$(LIBCHECK_PREPROCESSOR_MACROS)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				LIBCHECK_HEADER_DIR = /opt/local/include;
+				LIBCHECK_LDFLAGS = "-lcheck";
+				LIBCHECK_LIBRARY_DIR = /opt/local/lib;
+				LIBCHECK_PREPROCESSOR_MACROS = "_THREAD_SAFE=1";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBCHECK_LIBRARY_DIR)",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(LIBCHECK_LDFLAGS)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ventures.basehit.librplTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBCHECK_HEADER_DIR)",
+				);
+			};
+			name = Release;
+		};
 		9FDD769330411A3600A62C18 /* Debug configuration for PBXProject "RPL" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -375,6 +554,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9F42153E3042459E00DDEB08 /* Build configuration list for PBXNativeTarget "librplTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F42153C3042459E00DDEB08 /* Debug configuration for PBXNativeTarget "librplTests" */,
+				9F42153D3042459E00DDEB08 /* Release configuration for PBXNativeTarget "librplTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
 		9FDD768930411A3600A62C18 /* Build configuration list for PBXProject "RPL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
