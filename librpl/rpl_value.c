@@ -75,11 +75,11 @@ rpl_value_retain(rpl_value_t val)
     assert(val != NULL);
     assert(val->_refs >= 0);
 
-    if (val->_refs != INT64_MAX) {
+    if (val->_refs != RPL_INTEGER_MAX) {
 	val->_refs += 1;
 
 	/* Assert if this object became permanent. */
-	assert(val->_refs != INT64_MAX);
+	assert(val->_refs != RPL_INTEGER_MAX);
     }
 }
 
@@ -89,13 +89,23 @@ rpl_value_release(rpl_value_t val)
     assert(val != NULL);
     assert(val->_refs > 0);
 
-    if (val->_refs != INT64_MAX) {
+    if (val->_refs != RPL_INTEGER_MAX) {
 	val->_refs -= 1;
 
 	if (val->_refs == 0) {
 	    rpl_value_free(val);
 	}
     }
+}
+
+void
+rpl_value_immortalize(rpl_value_t val)
+{
+    assert(val != NULL);
+    assert(val->_refs > 0);
+    assert(val->_refs != RPL_INTEGER_MAX);
+    
+    val->_refs = RPL_INTEGER_MAX;
 }
 
 

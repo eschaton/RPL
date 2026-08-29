@@ -20,8 +20,13 @@
 RPL_HEADER_BEGIN
 
 
-/*! Representation of an integer in RPL. */
-typedef int64_t rpl_integer_t;
+/*! Representation of a binary integer in RPL. */
+typedef uint64_t rpl_integer_t;
+
+
+/*! The maximum possible binary integer value. */
+#define RPL_INTEGER_MAX UINT64_MAX
+
 
 /*! Create a new integer value. */
 RPL_EXPORT

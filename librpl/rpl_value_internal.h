@@ -34,7 +34,8 @@ struct rpl_value {
      Number of references to the value.
 
      This starts at `1` and when it goes to `0`, the value is freed. As
-     a special case, `INT_MAX` is used to represent a "permanent" value.
+     a special case, `RPL_INTEGER_MAX` is a sentinel used to represent a
+     "permanent" value.
      */
     rpl_integer_t _refs;
 
@@ -57,6 +58,7 @@ struct rpl_value {
 };
 
 
+/*! Allocate a new value of the given type. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_value_new(rpl_type_t type);
@@ -66,6 +68,12 @@ rpl_value_new(rpl_type_t type);
 RPL_EXPORT
 void
 rpl_value_free(rpl_value_t val);
+
+
+/*! Make a value immortal (immune from retain/release). */
+RPL_EXPORT
+void
+rpl_value_immortalize(rpl_value_t val);
 
 
 /*!

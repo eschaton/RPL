@@ -88,7 +88,8 @@ rpl_array_get_dimensions(rpl_value_t array)
 
 /*!
  Compute the offset of an element a one-dimensional array being used
- to represent a multidimensional array.
+ to represent a multidimensional array, or `RPL_INTEGER_MAX` if the
+ offset would be out of range.
 
  Take a 2-dimensional array with `[x,y]` dimensions `[3,4]` arranged
  in the underlying 1-dimensional representation with `3*4=12` memory
@@ -132,7 +133,7 @@ rpl_array_offset_for_indices(rpl_value_t array, rpl_integer_t *indices)
     offset += indices[0]; // i=0 case
 
     if (offset >= array->_reps._array._vals_count) {
-	offset = -1;
+	offset = RPL_INTEGER_MAX;
     }
 
     return offset;
@@ -148,7 +149,7 @@ rpl_array_get(rpl_value_t array, rpl_integer_t *indices)
     assert(indices != NULL);
 
     rpl_integer_t offset = rpl_array_offset_for_indices(array, indices);
-    assert(offset >= 0);
+    assert(offset != RPL_INTEGER_MAX);
 
     result = array->_reps._array._vals[offset];
 
@@ -164,7 +165,7 @@ rpl_array_set(rpl_value_t array, rpl_integer_t *indices,
     assert(indices != NULL);
 
     rpl_integer_t offset = rpl_array_offset_for_indices(array, indices);
-    assert(offset >= 0);
+    assert(offset != RPL_INTEGER_MAX);
 
     array->_reps._array._vals[offset] = value;
 }
