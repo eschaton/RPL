@@ -8,6 +8,8 @@
 
 #include "rpl_defines.h"
 
+#include <stdbool.h>
+
 #include "rpl_integer.h"
 #include "rpl_value.h"
 
@@ -19,51 +21,72 @@
 RPL_HEADER_BEGIN
 
 
-/*!
- Create a new n-dimensional array.
+/*! Indicate whether a type is supported in arrays. */
+RPL_EXPORT
+bool
+rpl_array_is_supported_type(rpl_type_t type);
 
- - NOTE: The `vals_count` **must** be equal to the product of the values
-	 of `dims`, and `vals` must in memory-indexing order.
+/*! Create a new RPL array. */
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_array_new(rpl_type_t type, rpl_integer_t capacity);
+
+/*!
+ Create a new RPL array with an existing set of values.
+ 
+ - NOTE: If the values are arrays, this array will take ownership of
+         them rather than copy them.
  */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_new(rpl_integer_t *dims, rpl_integer_t dims_count,
-	      rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
-	      rpl_integer_t vals_count);
+rpl_array_new_with_values(rpl_type_t type,
+			  rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
+			  rpl_integer_t vals_count);
 
-/*! Get the number of dimensions of an n-dimensional array. */
+/*! Get the type of the elements in the array. */
+RPL_EXPORT
+rpl_type_t
+rpl_array_get_type(rpl_value_t array);
+
+/*! Get the number of elements in the array. */
 RPL_EXPORT
 rpl_integer_t
-rpl_array_get_dimensions_count(rpl_value_t array);
+rpl_array_get_count(rpl_value_t array);
 
-/*! Get the dimensions of an n-dimensional array.
-
- - WARNING: The array of dimensions remains owned by the array.
+/*! Get a value from an array.
+ 
+ - WARNING: For an array of real or complex numbers, the caller must
+            release the returned value.
  */
 RPL_EXPORT
-rpl_integer_t *
-rpl_array_get_dimensions(rpl_value_t array);
+rpl_value_t RPL_NULLABLE
+rpl_array_get_value(rpl_value_t array, rpl_integer_t index);
 
-/*!
- Get a value within an n-dimensional array.
-
- - WARNING: The number of indidecs **must** match the number of
-	    dimensions in the array.
- */
-RPL_EXPORT
-rpl_value_t
-rpl_array_get(rpl_value_t array, rpl_integer_t *indices);
-
-/*!
- Set a value within an n-dimensional array.
-
- - WARNING: The number of indidecs **must** match the number of
-	    dimensions in the array.
- */
+/*! Set a value within an array. */
 RPL_EXPORT
 void
-rpl_array_set(rpl_value_t array, rpl_integer_t *indices,
-	      rpl_value_t value);
+rpl_array_set_value(rpl_value_t array, rpl_integer_t index,
+		    rpl_value_t value);
+
+/*!
+ Insert a value into an array.
+ 
+ @returns `false` on allocation failure
+ */
+RPL_EXPORT
+bool
+rpl_array_insert_value(rpl_value_t array, rpl_integer_t index,
+		       rpl_value_t value);
+
+/*! Remove a value from an array. */
+RPL_EXPORT
+void
+rpl_array_remove_value(rpl_value_t array, rpl_integer_t index);
+
+/*! Append a value to an array. */
+RPL_EXPORT
+bool
+rpl_array_append_value(rpl_value_t array, rpl_value_t value);
 
 
 RPL_HEADER_END

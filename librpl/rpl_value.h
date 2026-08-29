@@ -20,10 +20,34 @@ RPL_HEADER_BEGIN
 
 /*! The types of values RPL supports. */
 enum rpl_type {
+    /*! A binary integer is an unsigned 64-bit value. */
     rpl_type_integer,
+    
+    /*!
+     A real number is represented as a 64-bit IEEE-754 double-precision
+     floataing point value.
+     */
     rpl_type_real,
+    
+    /*!
+     A complex number represents `a+b*i` as a pair of real numbers.
+     
+     - NOTE: The type imposes no constraints on the meaning of `a` and
+             `b`; that is, it does not distinguish rectangular and polar
+	     complex numbers.
+     */
     rpl_type_complex,
+    
+    /*!
+     An array in RPL is a one-dimensional 0-indexed mutable collection
+     whose contents can be real, complex, or array values and are
+     represented efficiently.
+     
+     - NOTE: When one array contains another, the containing array just
+             holds a reference to it, it is not copied.
+     */
     rpl_type_array,
+    
     rpl_type_name,
     rpl_type_program,
     rpl_type_string,
@@ -45,7 +69,7 @@ rpl_value_get_type(rpl_value_t val);
 
 /*! Retain a value. */
 RPL_EXPORT
-void
+rpl_value_t
 rpl_value_retain(rpl_value_t val);
 
 /*! Release a value. */

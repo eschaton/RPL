@@ -8,7 +8,7 @@
 
 #include "test_integer.h"
 
-#include "rpl_integer.h"
+#include "rpl_integer_internal.h"
 
 
 RPL_SOURCE_BEGIN
@@ -45,6 +45,15 @@ START_TEST(test_creation)
 }
 END_TEST
 
+START_TEST(test_round_to_next)
+{
+    rpl_integer_t quantum = 16;
+    rpl_integer_t base = 5;
+    rpl_integer_t next = rpl_integer_round_to_next(base, quantum);
+    ck_assert_int_eq(next, quantum);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -58,6 +67,7 @@ test_integer_suite(void)
 			      test_integer_setup,
 			      test_integer_teardown);
     tcase_add_test(tc_integer, test_creation);
+    tcase_add_test(tc_integer, test_round_to_next);
 
     suite_add_tcase(s, tc_integer);
 

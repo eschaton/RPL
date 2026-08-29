@@ -44,5 +44,11 @@ rpl_integer_get_rep(rpl_value_t integer)
     return integer->_reps._integer;
 }
 
+rpl_integer_t
+rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum)
+{
+    return value + (quantum - (value % quantum));
+}
+
 
 RPL_SOURCE_END

@@ -20,10 +20,10 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_array {
-    rpl_integer_t _dims_count;
-    rpl_integer_t *_dims;
-    rpl_integer_t _vals_count;
-    rpl_value_t RPL_NONNULL * RPL_NONNULL _vals;
+    void *_values;
+    rpl_integer_t _count;
+    rpl_integer_t _capacity;
+    rpl_type_t _type;
 };
 typedef struct rpl_array rpl_array_t;
 

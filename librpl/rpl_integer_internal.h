@@ -20,6 +20,11 @@ RPL_EXPORT
 void
 rpl_integer_free(rpl_value_t integer);
 
+/*! Round a value up to the next quantum. */
+RPL_EXPORT
+rpl_integer_t
+rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum);
+
 
 RPL_HEADER_END
 

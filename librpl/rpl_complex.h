@@ -19,15 +19,10 @@
 RPL_HEADER_BEGIN
 
 
-/*! Create a new rectangular complex value. */
+/*! Create a new complex value. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_complex_rectangular_new(rpl_real_t x_rep, rpl_real_t y_rep);
-
-/*! Create a new polar complex value. */
-RPL_EXPORT
-rpl_value_t RPL_NULLABLE
-rpl_complex_polar_new(rpl_real_t r_rep, rpl_real_t theta_rep);
+rpl_complex_new(rpl_real_t a_rep, rpl_real_t b_rep);
 
 // TODO: Complex Number Operations
 

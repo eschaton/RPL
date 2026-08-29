@@ -21,17 +21,8 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_complex {
-    bool _is_polar;
-    union {
-	struct {
-	    rpl_real_t _x;
-	    rpl_real_t _y;
-	} _rectangular;
-	struct {
-	    rpl_real_t _r;
-	    rpl_real_t _theta;
-	} _polar;
-    } _value;
+    rpl_real_t _a;
+    rpl_real_t _b;
 };
 typedef struct rpl_complex rpl_complex_t;
 

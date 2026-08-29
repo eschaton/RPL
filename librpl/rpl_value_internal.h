@@ -77,13 +77,13 @@ rpl_value_immortalize(rpl_value_t val);
 
 
 /*!
- Release every value in a C array of values.
+ Release every non-`NULL` value in a C array of values.
 
  - NOTE: Does not ``free(3)`` the C array itself.
  */
 RPL_EXPORT
 void
-rpl_value_release_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
+rpl_value_release_array(rpl_value_t RPL_NULLABLE * RPL_NONNULL vals,
 			rpl_integer_t vals_count);
 
 

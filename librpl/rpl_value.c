@@ -51,7 +51,7 @@ rpl_value_free(rpl_value_t val)
 }
 
 void
-rpl_value_release_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
+rpl_value_release_array(rpl_value_t RPL_NULLABLE * RPL_NONNULL vals,
 			rpl_integer_t vals_count)
 {
     assert(vals != NULL);
@@ -59,7 +59,8 @@ rpl_value_release_array(rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
 
     for (rpl_integer_t i = 0; i < vals_count; i++) {
 	rpl_value_t val = vals[i];
-	rpl_value_release(val);
+	/* Note that we allow NULL values here for array. */
+	if (val != NULL) rpl_value_release(val);
     }
 }
 
@@ -69,7 +70,7 @@ rpl_value_get_type(rpl_value_t val)
     return val->_type;
 }
 
-void
+rpl_value_t
 rpl_value_retain(rpl_value_t val)
 {
     assert(val != NULL);
@@ -81,6 +82,8 @@ rpl_value_retain(rpl_value_t val)
 	/* Assert if this object became permanent. */
 	assert(val->_refs != RPL_INTEGER_MAX);
     }
+    
+    return val;
 }
 
 void
