@@ -56,14 +56,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9F4215463042473800DDEB08 /* Exceptions for "librplTests" folder in "librplTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				librplTestCase.h,
-				librplTestSupport.h,
-			);
-			target = 9F4215343042459E00DDEB08 /* librplTests */;
-		};
 		9F4215473042475B00DDEB08 /* Exceptions for "librpl" folder in "librpl" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
@@ -90,9 +82,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9F4215363042459E00DDEB08 /* librplTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				9F4215463042473800DDEB08 /* Exceptions for "librplTests" folder in "librplTests" target */,
-			);
 			path = librplTests;
 			sourceTree = "<group>";
 		};
