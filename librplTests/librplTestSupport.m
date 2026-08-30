@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "test_adjbuffer.h"
 #include "test_integer.h"
 
 
@@ -23,6 +24,7 @@ configured_tests_runner(void)
 {
     SRunner *sr = srunner_create(NULL);
 
+    srunner_add_suite(sr, test_adjbuffer_suite());
     srunner_add_suite(sr, test_integer_suite());
 
     return sr;
