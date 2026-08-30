@@ -32,9 +32,18 @@ struct rpl_adjbuffer {
 typedef struct rpl_adjbuffer rpl_adjbuffer_t;
 
 
-/*! Allocate a new bfufer whose elements are @a element_size bytes. */
+/*! Allocate a new buffer whose elements are @a element_size bytes. */
 rpl_adjbuffer_t * RPL_NULLABLE
 rpl_adjbuffer_new(size_t capacity, size_t element_size);
+
+/*! Initialize a new buffer whose elements are @a element_size bytes. */
+bool
+rpl_adjbuffer_init(rpl_adjbuffer_t *buffer, size_t capacity,
+		   size_t element_size);
+
+/*! Dispose of a buffer's internal data structures. */
+void
+rpl_adjbuffer_deinit(rpl_adjbuffer_t *buffer);
 
 /*! Dispose of a buffer. */
 void
@@ -64,6 +73,24 @@ rpl_adjbuffer_remove(rpl_adjbuffer_t *buffer, size_t idx);
 /*! Append @a element to the end of @a buffer. */
 bool
 rpl_adjbuffer_append(rpl_adjbuffer_t *buffer, void *element);
+
+/*! A function that can be applied to a buffer's elements. */
+typedef bool (*rpl_adjbuffer_apply_f)(rpl_adjbuffer_t *buffer,
+				      void *element,
+				      void * RPL_NULLABLE refcon);
+
+/*!
+ Apply a function to a buffer's elements.
+
+ The function may modify the elements but not the array itself.
+
+ @returns `true` on complete iteration, `false` otherwise
+ */
+bool
+rpl_adjbuffer_apply(rpl_adjbuffer_t *buffer,
+		    rpl_adjbuffer_apply_f function,
+		    void * RPL_NULLABLE refcon);
+
 
 
 RPL_HEADER_END

@@ -57,14 +57,9 @@ rpl_adjbuffer_new(size_t capacity, size_t element_size)
 
     rpl_adjbuffer_t *buffer = calloc(1, sizeof(rpl_adjbuffer_t));
     if (buffer) {
-	const size_t real_capacity
-	    = capacity + (rpl_adjbuffer_quantum
-			  - (capacity % rpl_adjbuffer_quantum));
-	buffer->_storage = calloc(real_capacity, element_size);
-	if (buffer->_storage == NULL) goto error;
-	buffer->_count = 0;
-	buffer->_capacity = real_capacity;
-	buffer->_element_size = element_size;
+	bool initialized
+	    = rpl_adjbuffer_init(buffer, capacity, element_size);
+	if (!initialized) goto error;
     }
     return buffer;
 
@@ -73,12 +68,44 @@ error:
     return NULL;
 }
 
+
+bool
+rpl_adjbuffer_init(rpl_adjbuffer_t *buffer, size_t capacity,
+		   size_t element_size)
+{
+    assert(buffer != NULL);
+    assert(element_size > 0);
+
+    const size_t real_capacity
+	= capacity + (rpl_adjbuffer_quantum
+		      - (capacity % rpl_adjbuffer_quantum));
+    buffer->_storage = calloc(real_capacity, element_size);
+    if (buffer->_storage == NULL) goto error;
+    buffer->_count = 0;
+    buffer->_capacity = real_capacity;
+    buffer->_element_size = element_size;
+
+    return true;
+
+error:
+    return false;
+}
+
+void
+rpl_adjbuffer_deinit(rpl_adjbuffer_t *buffer)
+{
+    assert(buffer != NULL);
+
+    free(buffer->_storage);
+}
+
 void
 rpl_adjbuffer_free(rpl_adjbuffer_t *buffer)
 {
     assert(buffer != NULL);
 
-    free(buffer->_storage);
+    rpl_adjbuffer_deinit(buffer);
+
     free(buffer);
 }
 
@@ -181,6 +208,24 @@ rpl_adjbuffer_append(rpl_adjbuffer_t *buffer, void *element)
     assert(element != NULL);
 
     return rpl_adjbuffer_insert(buffer, buffer->_count, element);
+}
+
+bool
+rpl_adjbuffer_apply(rpl_adjbuffer_t *buffer,
+		    rpl_adjbuffer_apply_f function,
+		    void * RPL_NULLABLE refcon)
+{
+    assert(buffer != NULL);
+    assert(function != NULL);
+
+    const size_t count = buffer->_count;
+    bool stop = false;
+    for (size_t i = 0; (i < count) && (stop == false); i++) {
+	void *element = rpl_adjbuffer_get(buffer, i);
+	stop = (*function)(buffer, element, refcon);
+    }
+
+    return (stop == false);
 }
 
 
