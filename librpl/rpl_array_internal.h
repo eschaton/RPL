@@ -8,6 +8,7 @@
 
 #include "rpl_array.h"
 
+#include "rpl_adjbuffer.h"
 #include "rpl_integer.h"
 #include "rpl_value.h"
 
@@ -20,9 +21,7 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_array {
-    void *_values;
-    rpl_integer_t _count;
-    rpl_integer_t _capacity;
+    rpl_adjbuffer_t _buffer;
     rpl_type_t _type;
 };
 typedef struct rpl_array rpl_array_t;

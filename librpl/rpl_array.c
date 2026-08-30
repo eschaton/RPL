@@ -61,35 +61,6 @@ rpl_array_type_size(rpl_type_t type)
     }
 }
 
-/*!
- Adjust the storage of an array if adding one more entry would fill it.
- 
- @returns `false` if allocation failed, `true` otherwise
- */
-bool
-rpl_array_adjust_storage(rpl_value_t array)
-{
-    assert(array != NULL);
-    assert(array->_type == rpl_type_array);
-    
-    rpl_array_t *rep = &array->_reps._array;
-    if (rep->_count == (rep->_capacity - 1)) {
-	rpl_integer_t ocap = rep->_capacity;
-	rpl_integer_t ncap = ocap + rpl_array_quantum;
-	size_t osize = ocap * rpl_array_type_size(rep->_type);
-	size_t nsize = ncap * rpl_array_type_size(rep->_type);
-	void *ovalues = rep->_values;
-	void *nvalues = realloc(ovalues, nsize);
-	if (nvalues == NULL) goto error;
-	uint8_t *obytes = ovalues;
-	memset(&obytes[osize], 0, nsize - osize);
-    }
-    return true;
-    
-error:
-    return false;
-}
-
 rpl_value_t RPL_NULLABLE
 rpl_array_new(rpl_type_t type, rpl_integer_t capacity)
 {
@@ -98,17 +69,11 @@ rpl_array_new(rpl_type_t type, rpl_integer_t capacity)
     
     rpl_value_t array = rpl_value_new(rpl_type_array);
     if (array) {
-	const rpl_integer_t real_capacity
-	    = rpl_integer_round_to_next(capacity, rpl_array_quantum);
-	
-	const size_t value_size = rpl_array_type_size(type);
-	assert(value_size > 0);
-	
 	rpl_array_t *rep = &array->_reps._array;
-	rep->_values = calloc(real_capacity, value_size);
-	if (rep->_values == NULL) goto error;
-	rep->_count = 0;
-	rep->_capacity = capacity;
+	bool initialized
+	    = rpl_adjbuffer_init(&rep->_buffer, capacity,
+				 rpl_array_type_size(type));
+	if (!initialized) goto error;
 	rep->_type = type;
     }
     return array;
@@ -130,6 +95,19 @@ rpl_array_new_with_values(rpl_type_t type,
     return array;
 }
 
+bool
+rpl_subarray_free_f(rpl_adjbuffer_t *buffer, void *element,
+		    void * RPL_NULLABLE refcon)
+{
+    assert(element != NULL);
+
+    rpl_value_t array = element;
+
+    rpl_value_free(array);
+
+    return true;
+}
+
 void
 rpl_array_free(rpl_value_t array)
 {
@@ -137,12 +115,12 @@ rpl_array_free(rpl_value_t array)
     assert(array->_type == rpl_type_array);
     
     if (array->_reps._array._type == rpl_type_array) {
-	rpl_value_t *values = array->_reps._array._values;
-	rpl_integer_t count = array->_reps._array._count;
-	rpl_value_release_array(values, count);
+	(void) rpl_adjbuffer_apply(&array->_reps._array._buffer,
+				   &rpl_subarray_free_f,
+				   NULL);
     }
-    
-    free(array->_reps._array._values);
+
+    rpl_adjbuffer_deinit(&array->_reps._array._buffer);
 }
 
 rpl_type_t
@@ -160,37 +138,36 @@ rpl_array_get_count(rpl_value_t array)
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
 
-    return array->_reps._array._count;
+    return rpl_adjbuffer_get_count(&array->_reps._array._buffer);
 }
 
 rpl_value_t RPL_NULLABLE
-rpl_array_copy_value(rpl_value_t array, rpl_integer_t index)
+rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx)
 {
     rpl_value_t result;
 
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
-    assert(index < array->_reps._array._count);
+
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+    void *element = rpl_adjbuffer_get(buffer, idx);
 
     switch (array->_reps._array._type) {
 	case rpl_type_real: {
-	    rpl_real_t *elements = array->_reps._array._values;
-	    rpl_real_t element = elements[index];
-	    result = rpl_real_new(element);
+	    rpl_real_t *real = element;
+	    result = rpl_real_new(*real);
 	} break;
-	    
+
 	case rpl_type_complex: {
-	    rpl_complex_t *elements = array->_reps._array._values;
-	    rpl_complex_t element = elements[index];
-	    result = rpl_complex_new(element._a, element._b);
+	    rpl_complex_t *complex = element;
+	    result = rpl_complex_new(complex->_a, complex->_b);
 	} break;
-	    
+
 	case rpl_type_array: {
-	    rpl_value_t *elements = array->_reps._array._values;
-	    rpl_value_t element = elements[index];
-	    result = element;
+	    rpl_value_t subarray = element;
+	    result = rpl_value_retain(subarray);
 	} break;
-	    
+
 	default: {
 	    result = NULL;
 	} break;
@@ -200,33 +177,43 @@ rpl_array_copy_value(rpl_value_t array, rpl_integer_t index)
 }
 
 void
-rpl_array_set_value(rpl_value_t array, rpl_integer_t index,
+rpl_array_set_value(rpl_value_t array, rpl_integer_t idx,
 		    rpl_value_t value)
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
-    assert(index < array->_reps._array._count);
-    
+
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+
     switch (array->_reps._array._type) {
 	case rpl_type_real: {
 	    assert(value->_type == rpl_type_real);
-	    rpl_real_t *elements = array->_reps._array._values;
-	    elements[index] = value->_reps._real;
+	    rpl_real_t *rep = &value->_reps._real;
+	    rpl_adjbuffer_set(buffer, idx, rep);
 	} break;
-	    
+
 	case rpl_type_complex: {
 	    assert(value->_type == rpl_type_complex);
-	    rpl_complex_t *elements = array->_reps._array._values;
-	    elements[index] = array->_reps._complex;
+	    rpl_complex_t *rep = &value->_reps._complex;
+	    rpl_adjbuffer_set(buffer, idx, rep);
 	} break;
 	    
 	case rpl_type_array: {
 	    assert(value->_type == rpl_type_array);
-	    rpl_value_t *elements = array->_reps._array._values;
-	    rpl_value_t element = elements[index];
+	    /*
+	     For an array, we need to:
+	     - ensure the new value is retained
+	     - get the existing value
+	     - replace the existing value with the new value
+	     - release the existing value
+	     */
 	    rpl_value_retain(value);
-	    elements[index] = value;
-	    rpl_value_release(element);
+	    void *element = rpl_adjbuffer_get(buffer, idx);
+	    rpl_value_t *evalue_ptr = element;
+	    assert(evalue_ptr != NULL);
+	    rpl_value_t evalue = *evalue_ptr;
+	    rpl_adjbuffer_set(buffer, idx, &value);
+	    rpl_value_release(evalue);
 	} break;
 	    
 	default: {
@@ -236,34 +223,68 @@ rpl_array_set_value(rpl_value_t array, rpl_integer_t index,
 }
 
 bool
-rpl_array_insert_value(rpl_value_t array, rpl_integer_t index,
+rpl_array_insert_value(rpl_value_t array, rpl_integer_t idx,
 		       rpl_value_t value)
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
-    assert(value != NULL);
-    assert(value->_type == array->_reps._array._type);
-    assert(index <= array->_reps._array._count);
 
-    bool adjusted = rpl_array_adjust_storage(array);
-    if (adjusted == false) goto error;
-    
-    // TODO: rpl_array_insert_value
-    
-    return false;
-    
-error:
-    return false;
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+    void *rep = NULL;
+
+    switch (array->_reps._array._type) {
+	case rpl_type_real: {
+	    assert(value->_type == rpl_type_real);
+	    rep = &value->_reps._real;
+	} break;
+
+	case rpl_type_complex: {
+	    assert(value->_type == rpl_type_complex);
+	    rep = &value->_reps._complex;
+	} break;
+
+	case rpl_type_array: {
+	    assert(value->_type == rpl_type_array);
+	    rpl_value_retain(value);
+	    rep = &value;
+	} break;
+
+	default: {
+	    assert(0);
+	} break;
+    }
+
+    return rpl_adjbuffer_insert(buffer, idx, rep);
 }
 
 void
-rpl_array_remove_value(rpl_value_t array, rpl_integer_t index)
+rpl_array_remove_value(rpl_value_t array, rpl_integer_t idx)
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
-    assert(index < array->_reps._array._count);
 
-    // TODO: rpl_array_remove_value
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+
+    switch (array->_reps._array._type) {
+	case rpl_type_real:
+	case rpl_type_complex:
+	    /* Do nothing. */
+	    break;
+
+	case rpl_type_array: {
+	    void *element = rpl_adjbuffer_get(buffer, idx);
+	    rpl_value_t *evalue_ptr = element;
+	    assert(evalue_ptr != NULL);
+	    rpl_value_t evalue = *evalue_ptr;
+	    rpl_value_release(evalue);
+	} break;
+
+	default: {
+	    assert(0);
+	} break;
+    }
+
+    rpl_adjbuffer_remove(buffer, idx);
 }
 
 bool
@@ -274,8 +295,28 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
     assert(value != NULL);
     assert(value->_type == array->_reps._array._type);
 
-    return rpl_array_insert_value(array, array->_reps._array._count,
-				  value);
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+    void *rep = NULL;
+
+    switch (array->_reps._array._type) {
+	case rpl_type_real: {
+	    rep = &value->_reps._real;
+	} break;
+
+	case rpl_type_complex: {
+	    rep = &value->_reps._complex;
+	} break;
+
+	case rpl_type_array: {
+	    rep = &value;
+	} break;
+
+	default: {
+	    assert(0);
+	} break;
+    }
+
+    return rpl_adjbuffer_append(buffer, rep);
 }
 
 

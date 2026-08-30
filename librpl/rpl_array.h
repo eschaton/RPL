@@ -60,12 +60,12 @@ rpl_array_get_count(rpl_value_t array);
  */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_get_value(rpl_value_t array, rpl_integer_t index);
+rpl_array_get_value(rpl_value_t array, rpl_integer_t idx);
 
 /*! Set a value within an array. */
 RPL_EXPORT
 void
-rpl_array_set_value(rpl_value_t array, rpl_integer_t index,
+rpl_array_set_value(rpl_value_t array, rpl_integer_t idx,
 		    rpl_value_t value);
 
 /*!
@@ -75,13 +75,13 @@ rpl_array_set_value(rpl_value_t array, rpl_integer_t index,
  */
 RPL_EXPORT
 bool
-rpl_array_insert_value(rpl_value_t array, rpl_integer_t index,
+rpl_array_insert_value(rpl_value_t array, rpl_integer_t idx,
 		       rpl_value_t value);
 
 /*! Remove a value from an array. */
 RPL_EXPORT
 void
-rpl_array_remove_value(rpl_value_t array, rpl_integer_t index);
+rpl_array_remove_value(rpl_value_t array, rpl_integer_t idx);
 
 /*! Append a value to an array. */
 RPL_EXPORT
