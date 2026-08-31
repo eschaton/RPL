@@ -71,7 +71,6 @@
 				rpl_string.h,
 				rpl_tagged.h,
 				rpl_unit.h,
-				rpl_util.h,
 				rpl_value.h,
 				rpl.h,
 			);

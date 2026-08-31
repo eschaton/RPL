@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rpl_util.h"
 #include "rpl_value_internal.h"
 
 
