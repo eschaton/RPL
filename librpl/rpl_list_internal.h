@@ -32,6 +32,10 @@ RPL_EXPORT
 void
 rpl_list_free(rpl_value_t val);
 
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_list_copy(rpl_value_t list);
+
 
 RPL_HEADER_END
 

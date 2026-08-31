@@ -54,6 +54,19 @@ START_TEST(test_round_to_next)
 }
 END_TEST
 
+START_TEST(test_copying)
+{
+    rpl_value_t one = rpl_integer_new(1);
+    ck_assert_ptr_nonnull(one);
+
+    rpl_value_t one_copy = rpl_value_copy(one);
+    ck_assert_ptr_eq(one, one_copy);
+
+    rpl_value_release(one);
+    rpl_value_release(one_copy);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -68,6 +81,7 @@ test_integer_suite(void)
 			      test_integer_teardown);
     tcase_add_test(tc_integer, test_creation);
     tcase_add_test(tc_integer, test_round_to_next);
+    tcase_add_test(tc_integer, test_copying);
 
     suite_add_tcase(s, tc_integer);
 

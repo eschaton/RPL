@@ -34,6 +34,10 @@ RPL_EXPORT
 rpl_integer_t
 rpl_array_offset_for_indices(rpl_value_t array, rpl_integer_t *indices);
 
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_array_copy(rpl_value_t array);
+
 
 RPL_HEADER_END
 

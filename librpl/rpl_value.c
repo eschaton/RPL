@@ -111,5 +111,41 @@ rpl_value_immortalize(rpl_value_t val)
     val->_refs = RPL_INTEGER_MAX;
 }
 
+rpl_value_t RPL_NULLABLE
+rpl_value_copy(rpl_value_t val)
+{
+    assert(val != NULL);
+
+    rpl_value_t result = NULL;
+
+    switch (val->_type) {
+	    /* Immutable types are just retained. */
+	case rpl_type_integer:
+	case rpl_type_real:
+	case rpl_type_complex:
+	case rpl_type_name:
+	case rpl_type_program:
+	case rpl_type_tagged:
+	case rpl_type_unit:
+	    result = rpl_value_retain(val);
+	    break;
+
+	    /* Mutable types have copy functions. */
+	case rpl_type_array:
+	    result = rpl_array_copy(val);
+	    break;
+
+	case rpl_type_string:
+	    result = rpl_string_copy(val);
+	    break;
+
+	case rpl_type_list:
+	    result = rpl_list_copy(val);
+	    break;
+    }
+
+    return result;
+}
+
 
 RPL_SOURCE_END

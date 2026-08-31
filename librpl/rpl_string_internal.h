@@ -26,6 +26,10 @@ RPL_EXPORT
 void
 rpl_string_free(rpl_value_t string);
 
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_string_copy(rpl_value_t string);
+
 
 RPL_HEADER_END
 

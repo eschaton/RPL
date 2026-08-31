@@ -77,6 +77,17 @@ RPL_EXPORT
 void
 rpl_value_release(rpl_value_t val);
 
+/*!
+ Copy a value.
+
+ - NOTE: Immutable values will just be retained, rather than have a new
+	 instance created, because nothing should rely on them being
+	 distinct. Mutable values are copied deeply.
+ */
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_value_copy(rpl_value_t val);
+
 
 RPL_HEADER_END
 

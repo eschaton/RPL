@@ -47,6 +47,14 @@ rpl_string_free(rpl_value_t string)
     free(string->_reps._string._chars);
 }
 
+rpl_value_t RPL_NULLABLE
+rpl_string_copy(rpl_value_t string)
+{
+    // TODO: rpl_string_copy
+
+    return NULL;
+}
+
 const char *
 rpl_string_get_rep(rpl_value_t string)
 {

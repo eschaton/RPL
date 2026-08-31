@@ -72,6 +72,14 @@ rpl_list_free(rpl_value_t list)
     // TODO: Free list
 }
 
+rpl_value_t RPL_NULLABLE
+rpl_list_copy(rpl_value_t list)
+{
+    // TODO: rpl_list_copy
+
+    return NULL;
+}
+
 rpl_value_t
 rpl_list_car(rpl_value_t list)
 {

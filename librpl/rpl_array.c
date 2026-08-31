@@ -122,6 +122,14 @@ rpl_array_free(rpl_value_t array)
     rpl_adjbuffer_deinit(&array->_reps._array._buffer);
 }
 
+rpl_value_t RPL_NULLABLE
+rpl_array_copy(rpl_value_t array)
+{
+    // TODO: rpl_array_copy
+
+    return NULL;
+}
+
 rpl_type_t
 rpl_array_get_type(rpl_value_t array)
 {
