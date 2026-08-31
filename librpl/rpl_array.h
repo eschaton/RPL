@@ -55,12 +55,12 @@ rpl_array_get_count(rpl_value_t array);
 
 /*! Get a value from an array.
  
- - WARNING: For an array of real or complex numbers, the caller must
-            release the returned value.
+ - WARNING: For all values, the caller must release; this is why the
+            function uses `copy` rather than `get` in its name.
  */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_get_value(rpl_value_t array, rpl_integer_t idx);
+rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx);
 
 /*! Set a value within an array. */
 RPL_EXPORT
