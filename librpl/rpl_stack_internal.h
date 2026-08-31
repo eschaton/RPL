@@ -17,14 +17,14 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_stack {
-    /*! Stack depth, total number of elements that can be pushed. */
-    rpl_integer_t _depth;
-
     /*! Stack values, the actual stack contents. */
     rpl_value_t RPL_NULLABLE * RPL_NONNULL _values;
 
     /*! Stack pointer, index of the current top of stack. */
     rpl_integer_t _sp;
+
+    /*! Stack depth, total number of elements that can be pushed. */
+    rpl_integer_t _depth;
 };
 
 

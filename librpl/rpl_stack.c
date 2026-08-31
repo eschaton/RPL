@@ -11,8 +11,17 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_value_internal.h"
+
 
 RPL_SOURCE_BEGIN
+
+
+/*
+ RPL implements a stack as growing up, not down, because the direction
+ of the growth is immaterial to the behavior and growing upwards makes
+ the code slightly more straightforward.
+ */
 
 
 rpl_stack_t RPL_NULLABLE
@@ -22,10 +31,10 @@ rpl_stack_new(rpl_integer_t depth)
 
     rpl_stack_t stack = calloc(1, sizeof(struct rpl_stack));
     if (stack) {
-	stack->_depth = depth;
 	stack->_values = calloc(depth, sizeof(rpl_value_t));
 	if (stack->_values == NULL) goto error;
-	stack->_sp = depth;
+	stack->_sp = 0;
+	stack->_depth = depth;
     }
     return stack;
 
@@ -34,16 +43,18 @@ error:
     return NULL;
 }
 
-
 void
 rpl_stack_free(rpl_stack_t stack)
 {
     assert(stack != NULL);
 
+    if (stack->_values) {
+	rpl_value_release_array(stack->_values, stack->_depth);
+    }
+
     free(stack->_values);
     free(stack);
 }
-
 
 rpl_integer_t
 rpl_stack_get_depth(rpl_stack_t stack)
@@ -53,15 +64,13 @@ rpl_stack_get_depth(rpl_stack_t stack)
     return stack->_depth;
 }
 
-
 rpl_integer_t
-rpl_stack_get_sp(rpl_stack_t stack)
+rpl_stack_get_level(rpl_stack_t stack)
 {
     assert(stack != NULL);
 
     return stack->_sp;
 }
-
 
 void
 rpl_stack_push(rpl_stack_t stack, rpl_value_t value)
@@ -69,28 +78,35 @@ rpl_stack_push(rpl_stack_t stack, rpl_value_t value)
     assert(stack != NULL);
     assert(value != NULL);
 
-    assert(stack->_sp > 0);
-    assert(stack->_sp <= stack->_depth);
+    assert(stack->_sp < (stack->_depth - 1));
 
-    stack->_sp -= 1;
-    stack->_values[stack->_sp] = value;
+    stack->_values[stack->_sp] = rpl_value_retain(value);
+    stack->_sp += 1;
 }
-
 
 rpl_value_t RPL_NULLABLE
 rpl_stack_pop(rpl_stack_t stack)
 {
+    assert(stack != NULL);
+    assert(stack->_sp > 0);
+
     rpl_value_t result = NULL;
 
-    assert(stack != NULL);
-    assert(stack->_sp >= 0);
-
-    if (stack->_sp < stack->_depth) {
-	result = stack->_values[stack->_sp];
-	stack->_sp += 1;
-    }
+    result = stack->_values[stack->_sp];
+    stack->_sp -= 1;
 
     return result;
+}
+
+void
+rpl_stack_drop(rpl_stack_t stack)
+{
+    assert(stack != NULL);
+    assert(stack->_sp > 0);
+
+    rpl_value_t popped = rpl_stack_pop(stack);
+
+    rpl_value_release(popped);
 }
 
 

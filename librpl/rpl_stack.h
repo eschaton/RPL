@@ -28,35 +28,35 @@ RPL_EXPORT
 rpl_stack_t RPL_NULLABLE
 rpl_stack_new(rpl_integer_t depth);
 
-
 /*! Dispose of a stack. */
 RPL_EXPORT
 void
 rpl_stack_free(rpl_stack_t stack);
-
 
 /*! Get the total depth of a stack. */
 RPL_EXPORT
 rpl_integer_t
 rpl_stack_get_depth(rpl_stack_t stack);
 
-
-/*! Get the current stack pointer index. */
+/*! Get the current stack level (where a push will go). */
 RPL_EXPORT
 rpl_integer_t
 rpl_stack_get_sp(rpl_stack_t stack);
-
 
 /*! Push a value onto the stack. */
 RPL_EXPORT
 void
 rpl_stack_push(rpl_stack_t stack, rpl_value_t value);
 
-
 /*! Pop and return the value at the top of the stack. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_stack_pop(rpl_stack_t stack);
+
+/*! Drop the item that's at the top of the stack. */
+RPL_EXPORT
+void
+rpl_stack_drop(rpl_stack_t stack);
 
 
 RPL_HEADER_END
