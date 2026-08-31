@@ -25,7 +25,7 @@ rpl_unit_new(rpl_real_t scalar, rpl_value_t units)
     rpl_value_t unit = rpl_value_new(rpl_type_unit);
     if (unit) {
 	unit->_reps._unit._scalar = scalar;
-	unit->_reps._unit._units = units;
+	unit->_reps._unit._units = rpl_value_retain(units);
     }
     return unit;
 }
