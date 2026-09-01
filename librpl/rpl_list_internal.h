@@ -6,13 +6,12 @@
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
+#ifndef __RPL__rpl_list_internal__h__
+#define __RPL__rpl_list_internal__h__
+
 #include "rpl_list.h"
 
 #include "rpl_value.h"
-
-
-#ifndef __RPL__rpl_list_internal__h__
-#define __RPL__rpl_list_internal__h__
 
 
 RPL_HEADER_BEGIN

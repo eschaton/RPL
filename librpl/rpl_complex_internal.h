@@ -6,15 +6,14 @@
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
+#ifndef __RPL__rpl_complex_internal__h__
+#define __RPL__rpl_complex_internal__h__
+
 #include "rpl_complex.h"
 
 #include <stdbool.h>
 
 #include "rpl_real.h"
-
-
-#ifndef __RPL__rpl_complex_internal__h__
-#define __RPL__rpl_complex_internal__h__
 
 
 RPL_HEADER_BEGIN

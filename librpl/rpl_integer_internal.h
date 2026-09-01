@@ -6,11 +6,10 @@
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
-#include "rpl_integer.h"
-
-
 #ifndef __RPL__rpl_integer_internal__h__
 #define __RPL__rpl_integer_internal__h__
+
+#include "rpl_integer.h"
 
 
 RPL_HEADER_BEGIN
