@@ -25,8 +25,8 @@ rpl_tagged_new(rpl_value_t tag, rpl_value_t value)
 
     rpl_value_t tagged = rpl_value_new(rpl_type_tagged);
     if (tagged) {
-	tagged->_reps._tagged._tag = tag;
-	tagged->_reps._tagged._value = value;
+	tagged->_reps._tagged._tag = rpl_value_retain(tag);
+	tagged->_reps._tagged._value = rpl_value_retain(value);
     }
     return tagged;
 }
