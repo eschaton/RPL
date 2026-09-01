@@ -113,5 +113,17 @@ rpl_stack_drop(rpl_stack_t stack)
     rpl_value_release(popped);
 }
 
+rpl_value_t
+rpl_stack_get_value_at_level(rpl_stack_t stack, rpl_integer_t level)
+{
+    assert(stack != NULL);
+    assert(level < stack->_level);
+
+    rpl_value_t value = stack->_values[level];
+    assert(value != NULL);
+
+    return value;
+}
+
 
 RPL_SOURCE_END

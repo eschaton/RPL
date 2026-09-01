@@ -57,6 +57,15 @@ RPL_EXPORT
 void
 rpl_stack_drop(rpl_stack_t stack);
 
+/*!
+ Get the value at the given level.
+
+ - WARNING: This should only really be used for display and debugging.
+ */
+RPL_EXPORT
+rpl_value_t
+rpl_stack_get_value_at_level(rpl_stack_t stack, rpl_integer_t level);
+
 
 RPL_HEADER_END
 

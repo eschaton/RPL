@@ -80,6 +80,33 @@ START_TEST(test_push_and_pop)
 }
 END_TEST
 
+START_TEST(test_get_value_at_level)
+{
+    rpl_stack_t stack = rpl_stack_new(128);
+
+    rpl_value_t three_push = rpl_real_new(3);
+    rpl_value_t four_push = rpl_real_new(4);
+
+    rpl_stack_push(stack, three_push);
+    rpl_value_release(three_push);
+
+    rpl_stack_push(stack, four_push);
+    rpl_value_release(four_push);
+
+    ck_assert_int_eq(rpl_stack_get_level(stack), 2);
+
+    rpl_value_t got_three = rpl_stack_get_value_at_level(stack, 0);
+    ck_assert_ptr_nonnull(got_three);
+    ck_assert_double_eq(rpl_real_get_rep(got_three), 3);
+
+    rpl_value_t got_four = rpl_stack_get_value_at_level(stack, 1);
+    ck_assert_ptr_nonnull(got_four);
+    ck_assert_double_eq(rpl_real_get_rep(got_four), 4);
+
+    rpl_stack_free(stack);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -94,6 +121,7 @@ test_stack_suite(void)
 			      test_stack_teardown);
     tcase_add_test(tc_stack, test_creation);
     tcase_add_test(tc_stack, test_push_and_pop);
+    tcase_add_test(tc_stack, test_get_value_at_level);
 
     suite_add_tcase(s, tc_stack);
 
