@@ -113,6 +113,21 @@ rpl_stack_drop(rpl_stack_t stack)
     rpl_value_release(popped);
 }
 
+rpl_value_t RPL_NULLABLE
+rpl_stack_dup(rpl_stack_t stack)
+{
+    assert(stack != NULL);
+    assert(stack->_level > 0);
+
+    rpl_value_t top = stack->_values[stack->_level - 1];
+    rpl_value_t dup = rpl_value_copy(top);
+    if (dup) {
+	rpl_stack_push(stack, dup);
+    }
+
+    return dup;
+}
+
 rpl_value_t
 rpl_stack_get_value_at_level(rpl_stack_t stack, rpl_integer_t level)
 {

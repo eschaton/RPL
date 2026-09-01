@@ -57,6 +57,11 @@ RPL_EXPORT
 void
 rpl_stack_drop(rpl_stack_t stack);
 
+/*! Duplicate the item that's at thetop of the stack. */
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_stack_dup(rpl_stack_t stack);
+
 /*!
  Get the value at the given level.
 
