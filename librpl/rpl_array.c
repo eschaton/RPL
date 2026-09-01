@@ -95,7 +95,7 @@ rpl_array_new_with_values(rpl_type_t type,
 }
 
 bool
-rpl_subarray_free_f(rpl_adjbuffer_t *buffer, void *element,
+rpl_subarray_free_f(rpl_adjbuffer_t *buffer, void *element, size_t idx,
 		    void * RPL_NULLABLE refcon)
 {
     assert(element != NULL);

@@ -76,7 +76,7 @@ rpl_adjbuffer_append(rpl_adjbuffer_t *buffer, void *element);
 
 /*! A function that can be applied to a buffer's elements. */
 typedef bool (*rpl_adjbuffer_apply_f)(rpl_adjbuffer_t *buffer,
-				      void *element,
+				      void *element, size_t idx,
 				      void * RPL_NULLABLE refcon);
 
 /*!

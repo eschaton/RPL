@@ -222,7 +222,7 @@ rpl_adjbuffer_apply(rpl_adjbuffer_t *buffer,
     bool stop = false;
     for (size_t i = 0; (i < count) && (stop == false); i++) {
 	void *element = rpl_adjbuffer_get(buffer, i);
-	stop = (*function)(buffer, element, refcon);
+	stop = (*function)(buffer, element, i, refcon);
     }
 
     return (stop == false);
