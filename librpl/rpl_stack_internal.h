@@ -20,7 +20,7 @@ struct rpl_stack {
     rpl_value_t RPL_NULLABLE * RPL_NONNULL _values;
 
     /*! Stack pointer, index of the current top of stack. */
-    rpl_integer_t _sp;
+    rpl_integer_t _level;
 
     /*! Stack depth, total number of elements that can be pushed. */
     rpl_integer_t _depth;

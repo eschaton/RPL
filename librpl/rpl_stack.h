@@ -40,7 +40,7 @@ rpl_stack_get_depth(rpl_stack_t stack);
 /*! Get the current stack level (where a push will go). */
 RPL_EXPORT
 rpl_integer_t
-rpl_stack_get_sp(rpl_stack_t stack);
+rpl_stack_get_level(rpl_stack_t stack);
 
 /*! Push a value onto the stack. */
 RPL_EXPORT

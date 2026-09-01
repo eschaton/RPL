@@ -33,7 +33,7 @@ rpl_stack_new(rpl_integer_t depth)
     if (stack) {
 	stack->_values = calloc(depth, sizeof(rpl_value_t));
 	if (stack->_values == NULL) goto error;
-	stack->_sp = 0;
+	stack->_level = 0;
 	stack->_depth = depth;
     }
     return stack;
@@ -69,7 +69,7 @@ rpl_stack_get_level(rpl_stack_t stack)
 {
     assert(stack != NULL);
 
-    return stack->_sp;
+    return stack->_level;
 }
 
 void
@@ -78,22 +78,26 @@ rpl_stack_push(rpl_stack_t stack, rpl_value_t value)
     assert(stack != NULL);
     assert(value != NULL);
 
-    assert(stack->_sp < (stack->_depth - 1));
+    assert(stack->_level < (stack->_depth - 1));
 
-    stack->_values[stack->_sp] = rpl_value_retain(value);
-    stack->_sp += 1;
+    stack->_values[stack->_level] = rpl_value_retain(value);
+    stack->_level += 1;
 }
 
 rpl_value_t RPL_NULLABLE
 rpl_stack_pop(rpl_stack_t stack)
 {
     assert(stack != NULL);
-    assert(stack->_sp > 0);
+    assert(stack->_level > 0);
 
-    rpl_value_t result = NULL;
+    stack->_level -= 1;
+    rpl_value_t result = stack->_values[stack->_level];
 
-    result = stack->_values[stack->_sp];
-    stack->_sp -= 1;
+    /*
+     Since freeing a stack releases any objects remaining on it, popping
+     a value must set that slot to NULL to avoid an over-release.
+     */
+    stack->_values[stack->_level] = NULL;
 
     return result;
 }
@@ -102,7 +106,7 @@ void
 rpl_stack_drop(rpl_stack_t stack)
 {
     assert(stack != NULL);
-    assert(stack->_sp > 0);
+    assert(stack->_level > 0);
 
     rpl_value_t popped = rpl_stack_pop(stack);
 

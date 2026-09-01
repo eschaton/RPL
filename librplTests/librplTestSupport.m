@@ -14,6 +14,7 @@
 
 #include "test_adjbuffer.h"
 #include "test_integer.h"
+#include "test_stack.h"
 
 
 RPL_SOURCE_BEGIN
@@ -26,6 +27,7 @@ configured_tests_runner(void)
 
     srunner_add_suite(sr, test_adjbuffer_suite());
     srunner_add_suite(sr, test_integer_suite());
+    srunner_add_suite(sr, test_stack_suite());
 
     return sr;
 }
