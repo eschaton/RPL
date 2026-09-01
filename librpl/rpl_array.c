@@ -125,8 +125,42 @@ rpl_array_free(rpl_value_t array)
 rpl_value_t RPL_NULLABLE
 rpl_array_copy(rpl_value_t array)
 {
-    // TODO: rpl_array_copy
+    assert(array != NULL);
+    assert(array->_type == rpl_type_array);
 
+    rpl_array_t *rep = &array->_reps._array;
+
+    rpl_value_t copy = rpl_array_new(rep->_type,
+				     rep->_buffer._capacity);
+    if (copy) {
+	rpl_array_t *copy_rep = &copy->_reps._array;
+
+	if (rep->_type == rpl_type_array) {
+	    /* An array of arrays must be deeply copied. */
+
+	    const size_t count = rep->_buffer._count;
+	    for (size_t i = 0; i < count; i++) {
+		rpl_value_t element
+		    = rpl_adjbuffer_get(&rep->_buffer, i);
+		if (element != NULL) {
+		    rpl_value_t element_copy = rpl_array_copy(element);
+		    if (element_copy == NULL) goto error;
+		    rpl_adjbuffer_set(&copy_rep->_buffer, i,
+				      element_copy);
+		}
+	    }
+	} else {
+	    /* memcpy is fine for everything else */
+
+	    memcpy(copy_rep->_buffer._storage, rep->_buffer._storage,
+		   rep->_buffer._count * rep->_buffer._element_size);
+	}
+    }
+
+    return copy;
+
+error:
+    rpl_value_release(copy);
     return NULL;
 }
 
