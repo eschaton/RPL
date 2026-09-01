@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "rpl_value_internal.h"
 
@@ -23,8 +24,19 @@ rpl_program_free(rpl_value_t program)
     assert(program != NULL);
     assert(program->_type == rpl_type_program);
 
-    // TODO: Free program
+    // TODO: rpl_program_free
 }
+
+const char * RPL_NULLABLE
+rpl_program_copy_string(rpl_value_t program)
+{
+    assert(program != NULL);
+    assert(program->_type == rpl_type_program);
+
+    // TODO: rpl_program_copy_string
+    return NULL;
+}
+
 
 // TODO: Program Operations
 

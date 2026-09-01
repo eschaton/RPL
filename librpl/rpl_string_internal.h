@@ -29,6 +29,10 @@ RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_string_copy(rpl_value_t string);
 
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_string_copy_string(rpl_value_t string);
+
 
 RPL_HEADER_END
 

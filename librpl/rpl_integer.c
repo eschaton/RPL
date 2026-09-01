@@ -50,5 +50,21 @@ rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum)
     return value + (quantum - (value % quantum));
 }
 
+const char * RPL_NULLABLE
+rpl_integer_copy_string(rpl_value_t integer)
+{
+    assert(integer != NULL);
+    assert(integer->_type == rpl_type_integer);
+
+    return rpl_integer_rep_copy_string(integer->_reps._integer);
+}
+
+const char * RPL_NULLABLE
+rpl_integer_rep_copy_string(rpl_integer_t integer_rep)
+{
+    // TODO: rpl_integer_rep_copy_string
+    return NULL;
+}
+
 
 RPL_SOURCE_END

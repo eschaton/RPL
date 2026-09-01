@@ -73,5 +73,25 @@ rpl_string_get_rep_len(rpl_value_t string)
     return string->_reps._string._chars_len;
 }
 
+const char * RPL_NULLABLE
+rpl_string_copy_string(rpl_value_t string)
+{
+    assert(string != NULL);
+    assert(string->_type == rpl_type_string);
+
+    rpl_string_t *rep = &string->_reps._string;
+
+    /* "string" */
+    const size_t buf_len = 1 + rep->_chars_len + 1 + 1;
+    char *buf = calloc(sizeof(char), buf_len);
+    if (buf) {
+	buf[0] = '"';
+	strlcpy(&buf[1], rep->_chars, buf_len - 1);
+	buf[buf_len - 2] = '"';
+    }
+
+    return buf;
+}
+
 
 RPL_SOURCE_END

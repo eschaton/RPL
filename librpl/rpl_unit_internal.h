@@ -27,8 +27,13 @@ struct rpl_unit {
 };
 typedef struct rpl_unit rpl_unit_t;
 
+RPL_EXPORT
 void
 rpl_unit_free(rpl_value_t val);
+
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_unit_copy_string(rpl_value_t unit);
 
 
 RPL_HEADER_END

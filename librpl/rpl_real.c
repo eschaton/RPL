@@ -44,5 +44,21 @@ rpl_real_get_rep(rpl_value_t real)
     return real->_reps._real;
 }
 
+const char * RPL_NULLABLE
+rpl_real_copy_string(rpl_value_t real)
+{
+    assert(real != NULL);
+    assert(real->_type == rpl_type_real);
+
+    return rpl_real_rep_copy_string(real->_reps._real);
+}
+
+const char * RPL_NULLABLE
+rpl_real_rep_copy_string(rpl_real_t real_rep)
+{
+    // TODO: rpl_real_rep_copy_string
+    return NULL;
+}
+
 
 RPL_SOURCE_END

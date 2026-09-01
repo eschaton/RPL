@@ -24,6 +24,14 @@ RPL_EXPORT
 rpl_integer_t
 rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum);
 
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_integer_copy_string(rpl_value_t integer);
+
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_integer_rep_copy_string(rpl_integer_t integer_rep);
+
 
 RPL_HEADER_END
 

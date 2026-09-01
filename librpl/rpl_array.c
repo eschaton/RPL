@@ -360,5 +360,12 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
     return rpl_adjbuffer_append(buffer, rep);
 }
 
+const char * RPL_NULLABLE
+rpl_array_copy_string(rpl_value_t array)
+{
+    // TODO: rpl_array_copy_string
+    return NULL;
+}
+
 
 RPL_SOURCE_END

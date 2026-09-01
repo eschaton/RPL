@@ -29,6 +29,10 @@ RPL_EXPORT
 void
 rpl_complex_free(rpl_value_t complex);
 
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_complex_copy_string(rpl_value_t complex);
+
 
 RPL_HEADER_END
 

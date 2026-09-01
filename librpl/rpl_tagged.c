@@ -9,6 +9,8 @@
 #include "rpl_tagged_internal.h"
 
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "rpl_value_internal.h"
 
@@ -57,6 +59,51 @@ rpl_tagged_get_value(rpl_value_t tagged)
     assert(tagged->_type == rpl_type_tagged);
 
     return tagged->_reps._tagged._value;
+}
+
+const char * RPL_NULLABLE
+rpl_tagged_copy_string(rpl_value_t tagged)
+{
+    assert(tagged != NULL);
+    assert(tagged->_type == rpl_type_tagged);
+
+    rpl_tagged_t *rep = &tagged->_reps._tagged;
+
+    const char *tag_str = NULL;
+    const char *value_str = NULL;
+    char *buf = NULL;
+
+    tag_str = rpl_name_copy_string(rep->_tag);
+    if (tag_str == NULL) goto error;
+    const size_t tag_str_len = strlen(tag_str);
+
+    value_str = rpl_value_copy_string(rep->_value);
+    if (value_str == NULL) goto error;
+    const size_t value_str_len = strlen(value_str);
+
+    const size_t buf_len = tag_str_len + value_str_len + 1;
+
+    /* :tag:value */
+
+    buf = calloc(sizeof(char), buf_len);
+    if (buf == NULL) goto error;
+
+    strlcpy(buf, tag_str, buf_len);
+    strlcat(buf, value_str, buf_len);
+
+    buf[0] = ':';
+    buf[tag_str_len - 1] = ':';
+
+    free((void *)tag_str);
+    free((void *)value_str);
+
+    return buf;
+
+error:
+    free((void *)tag_str);
+    free((void *)value_str);
+    free(buf);
+    return NULL;
 }
 
 

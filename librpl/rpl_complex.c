@@ -9,6 +9,8 @@
 #include "rpl_complex_internal.h"
 
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "rpl_value_internal.h"
 
@@ -34,6 +36,49 @@ rpl_complex_free(rpl_value_t complex)
 
     /* Nothing to do. */
 }
+
+const char * RPL_NULLABLE
+rpl_complex_copy_string(rpl_value_t complex)
+{
+    assert(complex != NULL);
+    assert(complex->_type == rpl_type_complex);
+
+    rpl_complex_t *rep = &complex->_reps._complex;
+
+    const char *a_str = NULL;
+    const char *b_str = NULL;
+    char *buf = NULL;
+
+    a_str = rpl_real_rep_copy_string(rep->_a);
+    if (a_str == NULL) goto error;
+    const size_t a_str_len = strlen(a_str);
+
+    b_str = rpl_real_rep_copy_string(rep->_b);
+    if (b_str == NULL) goto error;
+    const size_t b_str_len = strlen(b_str);
+
+    /* (a, b) */
+    const size_t buf_len = 1 + a_str_len + 2 + b_str_len + 1 + 1;
+    buf = calloc(buf_len, sizeof(char));
+    if (buf == NULL) goto error;
+
+    strlcat(buf, "(", buf_len);
+    strlcat(buf, a_str, buf_len);
+    strlcat(buf, ", ", buf_len);
+    strlcat(buf, ")", buf_len);
+
+    free((void *)a_str);
+    free((void *)b_str);
+
+    return buf;
+
+error:
+    free((void *)a_str);
+    free((void *)b_str);
+    free(buf);
+    return NULL;
+}
+
 
 // TODO: Complex Number Operations
 

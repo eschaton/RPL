@@ -88,6 +88,15 @@ RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_value_copy(rpl_value_t val);
 
+/*!
+ Copy the string representation of a value.
+
+ - NOTE: The memory for the string must be released with ``free(3``.
+ */
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_value_copy_string(rpl_value_t val);
+
 
 RPL_HEADER_END
 
