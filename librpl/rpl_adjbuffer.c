@@ -141,7 +141,8 @@ rpl_adjbuffer_set(rpl_adjbuffer_t *buffer, size_t idx, void *element)
 }
 
 bool
-rpl_adjbuffer_insert(rpl_adjbuffer_t *buffer, size_t idx, void *element)
+rpl_adjbuffer_insert_element(rpl_adjbuffer_t *buffer, size_t idx,
+			     void *element)
 {
     assert(buffer != NULL);
     assert(idx <= buffer->_count);
@@ -176,7 +177,7 @@ error:
 }
 
 void
-rpl_adjbuffer_remove(rpl_adjbuffer_t *buffer, size_t idx)
+rpl_adjbuffer_remove_element(rpl_adjbuffer_t *buffer, size_t idx)
 {
     assert(buffer != NULL);
     assert(idx < buffer->_count);
@@ -202,12 +203,13 @@ rpl_adjbuffer_remove(rpl_adjbuffer_t *buffer, size_t idx)
 }
 
 bool
-rpl_adjbuffer_append(rpl_adjbuffer_t *buffer, void *element)
+rpl_adjbuffer_append_element(rpl_adjbuffer_t *buffer, void *element)
 {
     assert(buffer != NULL);
     assert(element != NULL);
 
-    return rpl_adjbuffer_insert(buffer, buffer->_count, element);
+    return rpl_adjbuffer_insert_element(buffer, buffer->_count,
+					element);
 }
 
 bool

@@ -295,7 +295,7 @@ rpl_array_insert_value(rpl_value_t array, rpl_integer_t idx,
 	} break;
     }
 
-    return rpl_adjbuffer_insert(buffer, idx, rep);
+    return rpl_adjbuffer_insert_element(buffer, idx, rep);
 }
 
 void
@@ -325,7 +325,7 @@ rpl_array_remove_value(rpl_value_t array, rpl_integer_t idx)
 	} break;
     }
 
-    rpl_adjbuffer_remove(buffer, idx);
+    rpl_adjbuffer_remove_element(buffer, idx);
 }
 
 bool
@@ -357,7 +357,7 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
 	} break;
     }
 
-    return rpl_adjbuffer_append(buffer, rep);
+    return rpl_adjbuffer_append_element(buffer, rep);
 }
 
 const char * RPL_NULLABLE

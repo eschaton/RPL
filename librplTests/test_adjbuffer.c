@@ -69,9 +69,9 @@ START_TEST(test_insertion)
 
     /* Construct an initial adjbuffer of [te1, te3]. */
 
-    bool appended_te1 = rpl_adjbuffer_append(ab, &te1);
+    bool appended_te1 = rpl_adjbuffer_append_element(ab, &te1);
     ck_assert(appended_te1);
-    bool appended_te3 = rpl_adjbuffer_append(ab, &te3);
+    bool appended_te3 = rpl_adjbuffer_append_element(ab, &te3);
     ck_assert(appended_te3);
 
     ck_assert_int_eq(rpl_adjbuffer_get_count(ab), 2);
@@ -90,7 +90,7 @@ START_TEST(test_insertion)
 
     /* Now check whether insertion works. */
 
-    bool inserted_te2 = rpl_adjbuffer_insert(ab, 1, &te2);
+    bool inserted_te2 = rpl_adjbuffer_insert_element(ab, 1, &te2);
     ck_assert(inserted_te2);
 
     ck_assert_int_eq(rpl_adjbuffer_get_count(ab), 3);
@@ -119,9 +119,9 @@ START_TEST(test_removal)
 
     /* Construct an initial adjbuffer of [te1, te3]. */
 
-    bool appended_te1 = rpl_adjbuffer_append(ab, &te1);
+    bool appended_te1 = rpl_adjbuffer_append_element(ab, &te1);
     ck_assert(appended_te1);
-    bool appended_te2 = rpl_adjbuffer_append(ab, &te2);
+    bool appended_te2 = rpl_adjbuffer_append_element(ab, &te2);
     ck_assert(appended_te2);
 
     ck_assert_int_eq(rpl_adjbuffer_get_count(ab), 2);
@@ -140,7 +140,7 @@ START_TEST(test_removal)
 
     /* Now check whether removal works. */
 
-    rpl_adjbuffer_remove(ab, 0);
+    rpl_adjbuffer_remove_element(ab, 0);
     ck_assert_int_eq(rpl_adjbuffer_get_count(ab), 1);
 
     tep = rpl_adjbuffer_get(ab, 0);
