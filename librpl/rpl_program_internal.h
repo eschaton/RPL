@@ -29,7 +29,8 @@ rpl_program_free(rpl_value_t program);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_program_copy_string(rpl_value_t program);
+rpl_program_copy_string(rpl_value_t program,
+			rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

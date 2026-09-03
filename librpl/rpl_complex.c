@@ -38,26 +38,28 @@ rpl_complex_free(rpl_value_t complex)
 }
 
 const char * RPL_NULLABLE
-rpl_complex_copy_string(rpl_value_t complex)
+rpl_complex_copy_string(rpl_value_t complex,
+			rpl_environment_t RPL_NULLABLE env)
 {
     assert(complex != NULL);
     assert(complex->_type == rpl_type_complex);
 
-    return rpl_complex_rep_copy_string(complex->_reps._complex);
+    return rpl_complex_rep_copy_string(complex->_reps._complex, env);
 }
 
 const char * RPL_NULLABLE
-rpl_complex_rep_copy_string(rpl_complex_t complex_rep)
+rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
+			    rpl_environment_t RPL_NULLABLE env)
 {
     const char *a_str = NULL;
     const char *b_str = NULL;
     char *buf = NULL;
 
-    a_str = rpl_real_rep_copy_string(complex_rep._a);
+    a_str = rpl_real_rep_copy_string(complex_rep._a, env);
     if (a_str == NULL) goto error;
     const size_t a_str_len = strlen(a_str);
 
-    b_str = rpl_real_rep_copy_string(complex_rep._b);
+    b_str = rpl_real_rep_copy_string(complex_rep._b, env);
     if (b_str == NULL) goto error;
     const size_t b_str_len = strlen(b_str);
 

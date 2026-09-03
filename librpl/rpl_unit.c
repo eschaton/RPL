@@ -60,7 +60,8 @@ rpl_unit_get_units(rpl_value_t unit)
 }
 
 const char * RPL_NULLABLE
-rpl_unit_copy_string(rpl_value_t unit)
+rpl_unit_copy_string(rpl_value_t unit,
+		     rpl_environment_t RPL_NULLABLE env)
 {
     assert(unit != NULL);
     assert(unit->_type == rpl_type_program);
@@ -71,11 +72,11 @@ rpl_unit_copy_string(rpl_value_t unit)
     const char *units_str = NULL;
     char *buf = NULL;
 
-    scalar_str = rpl_real_rep_copy_string(rep->_scalar);
+    scalar_str = rpl_real_rep_copy_string(rep->_scalar, env);
     if (scalar_str == NULL) goto error;
     const size_t scalar_str_len = strlen(scalar_str);
 
-    units_str = rpl_name_copy_string(rep->_units);
+    units_str = rpl_name_copy_string(rep->_units, env);
     if (units_str == NULL) goto error;
     const size_t units_str_len = strlen(units_str);
 

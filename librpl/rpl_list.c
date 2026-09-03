@@ -124,7 +124,8 @@ rpl_list_append(rpl_value_t list, rpl_value_t list2)
 }
 
 const char * RPL_NULLABLE
-rpl_list_copy_string(rpl_value_t list)
+rpl_list_copy_string(rpl_value_t list,
+		     rpl_environment_t RPL_NULLABLE env)
 {
     // TODO: rpl_list_copy_string
     return NULL;

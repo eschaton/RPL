@@ -27,7 +27,8 @@ rpl_name_free(rpl_value_t name);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_name_copy_string(rpl_value_t name);
+rpl_name_copy_string(rpl_value_t name,
+		     rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

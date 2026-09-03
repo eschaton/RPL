@@ -21,11 +21,13 @@ rpl_real_free(rpl_value_t real);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_real_copy_string(rpl_value_t real);
+rpl_real_copy_string(rpl_value_t real,
+		     rpl_environment_t RPL_NULLABLE env);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_real_rep_copy_string(rpl_real_t real_rep);
+rpl_real_rep_copy_string(rpl_real_t real_rep,
+			 rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

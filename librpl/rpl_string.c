@@ -74,7 +74,8 @@ rpl_string_get_rep_len(rpl_value_t string)
 }
 
 const char * RPL_NULLABLE
-rpl_string_copy_string(rpl_value_t string)
+rpl_string_copy_string(rpl_value_t string,
+		       rpl_environment_t RPL_NULLABLE env)
 {
     assert(string != NULL);
     assert(string->_type == rpl_type_string);

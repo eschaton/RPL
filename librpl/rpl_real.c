@@ -45,16 +45,18 @@ rpl_real_get_rep(rpl_value_t real)
 }
 
 const char * RPL_NULLABLE
-rpl_real_copy_string(rpl_value_t real)
+rpl_real_copy_string(rpl_value_t real,
+		     rpl_environment_t RPL_NULLABLE env)
 {
     assert(real != NULL);
     assert(real->_type == rpl_type_real);
 
-    return rpl_real_rep_copy_string(real->_reps._real);
+    return rpl_real_rep_copy_string(real->_reps._real, env);
 }
 
 const char * RPL_NULLABLE
-rpl_real_rep_copy_string(rpl_real_t real_rep)
+rpl_real_rep_copy_string(rpl_real_t real_rep,
+			 rpl_environment_t RPL_NULLABLE env)
 {
     // TODO: rpl_real_rep_copy_string
     return NULL;

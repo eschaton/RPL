@@ -28,7 +28,8 @@ rpl_program_free(rpl_value_t program)
 }
 
 const char * RPL_NULLABLE
-rpl_program_copy_string(rpl_value_t program)
+rpl_program_copy_string(rpl_value_t program,
+			rpl_environment_t RPL_NULLABLE env)
 {
     assert(program != NULL);
     assert(program->_type == rpl_type_program);

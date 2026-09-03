@@ -33,7 +33,8 @@ rpl_unit_free(rpl_value_t val);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_unit_copy_string(rpl_value_t unit);
+rpl_unit_copy_string(rpl_value_t unit,
+		     rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

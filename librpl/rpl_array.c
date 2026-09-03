@@ -362,7 +362,8 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
 }
 
 const char * RPL_NULLABLE
-rpl_array_copy_string(rpl_value_t array)
+rpl_array_copy_string(rpl_value_t array,
+		      rpl_environment_t RPL_NULLABLE env)
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
@@ -388,7 +389,8 @@ rpl_array_copy_string(rpl_value_t array)
 	switch (array->_reps._array._type) {
 	    case rpl_type_real: {
 		rpl_real_t *rep = element;
-		const char *rep_str = rpl_real_rep_copy_string(*rep);
+		const char *rep_str = rpl_real_rep_copy_string(*rep,
+							       env);
 		if (rep_str == NULL) goto error;
 		appended = rpl_strbuffer_append_chars(sb, rep_str);
 		free((void *)rep_str);
@@ -397,7 +399,8 @@ rpl_array_copy_string(rpl_value_t array)
 
 	    case rpl_type_complex: {
 		rpl_complex_t *rep = element;
-		const char *rep_str = rpl_complex_rep_copy_string(*rep);
+		const char *rep_str = rpl_complex_rep_copy_string(*rep,
+								  env);
 		if (rep_str == NULL) goto error;
 		appended = rpl_strbuffer_append_chars(sb, rep_str);
 		free((void *)rep_str);
@@ -406,7 +409,7 @@ rpl_array_copy_string(rpl_value_t array)
 
 	    case rpl_type_array: {
 		rpl_value_t sub = element;
-		const char *sub_str = rpl_array_copy_string(sub);
+		const char *sub_str = rpl_array_copy_string(sub, env);
 		if (sub_str == NULL) goto error;
 		appended = rpl_strbuffer_append_chars(sb, sub_str);
 		free((void *)sub_str);

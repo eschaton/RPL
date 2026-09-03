@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include "rpl_defines.h"
+#include "rpl_environment.h"
 
 
 RPL_HEADER_BEGIN
@@ -89,13 +90,17 @@ rpl_value_t RPL_NULLABLE
 rpl_value_copy(rpl_value_t val);
 
 /*!
- Copy the string representation of a value.
+ Copy the string representation of a value in the given environment.
 
- - NOTE: The memory for the string must be released with ``free(3``.
+ As a convenience, passing `NULL` for @a env will behave as if a new,
+ default environment is being passed.
+
+ - NOTE: The memory for the string must be released with ``free(3)``.
  */
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_value_copy_string(rpl_value_t val);
+rpl_value_copy_string(rpl_value_t val,
+		      rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

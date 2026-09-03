@@ -73,7 +73,8 @@ rpl_name_get_rep_len(rpl_value_t name)
 }
 
 const char * RPL_NULLABLE
-rpl_name_copy_string(rpl_value_t name)
+rpl_name_copy_string(rpl_value_t name,
+		     rpl_environment_t RPL_NULLABLE env)
 {
     assert(name != NULL);
     assert(name->_type == rpl_type_name);

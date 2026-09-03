@@ -148,23 +148,24 @@ rpl_value_copy(rpl_value_t val)
 }
 
 const char * RPL_NULLABLE
-rpl_value_copy_string(rpl_value_t val)
+rpl_value_copy_string(rpl_value_t val,
+		      rpl_environment_t RPL_NULLABLE env)
 {
     assert(val != NULL);
 
     const char *result = NULL;
 
     switch (val->_type) {
-	case rpl_type_integer: return rpl_integer_copy_string(val);
-	case rpl_type_real:    return rpl_real_copy_string(val);
-	case rpl_type_complex: return rpl_complex_copy_string(val);
-	case rpl_type_array:   return rpl_array_copy_string(val);
-	case rpl_type_name:    return rpl_name_copy_string(val);
-	case rpl_type_program: return rpl_program_copy_string(val);
-	case rpl_type_string:  return rpl_string_copy_string(val);
-	case rpl_type_list:    return rpl_list_copy_string(val);
-	case rpl_type_tagged:  return rpl_tagged_copy_string(val);
-	case rpl_type_unit:    return rpl_unit_copy_string(val);
+	case rpl_type_integer: return rpl_integer_copy_string(val, env);
+	case rpl_type_real:    return rpl_real_copy_string(val, env);
+	case rpl_type_complex: return rpl_complex_copy_string(val, env);
+	case rpl_type_array:   return rpl_array_copy_string(val, env);
+	case rpl_type_name:    return rpl_name_copy_string(val, env);
+	case rpl_type_program: return rpl_program_copy_string(val, env);
+	case rpl_type_string:  return rpl_string_copy_string(val, env);
+	case rpl_type_list:    return rpl_list_copy_string(val, env);
+	case rpl_type_tagged:  return rpl_tagged_copy_string(val, env);
+	case rpl_type_unit:    return rpl_unit_copy_string(val, env);
     }
 
     return result;

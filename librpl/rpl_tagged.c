@@ -62,7 +62,8 @@ rpl_tagged_get_value(rpl_value_t tagged)
 }
 
 const char * RPL_NULLABLE
-rpl_tagged_copy_string(rpl_value_t tagged)
+rpl_tagged_copy_string(rpl_value_t tagged,
+		       rpl_environment_t RPL_NULLABLE env)
 {
     assert(tagged != NULL);
     assert(tagged->_type == rpl_type_tagged);
@@ -73,11 +74,11 @@ rpl_tagged_copy_string(rpl_value_t tagged)
     const char *value_str = NULL;
     char *buf = NULL;
 
-    tag_str = rpl_name_copy_string(rep->_tag);
+    tag_str = rpl_name_copy_string(rep->_tag, env);
     if (tag_str == NULL) goto error;
     const size_t tag_str_len = strlen(tag_str);
 
-    value_str = rpl_value_copy_string(rep->_value);
+    value_str = rpl_value_copy_string(rep->_value, env);
     if (value_str == NULL) goto error;
     const size_t value_str_len = strlen(value_str);
 

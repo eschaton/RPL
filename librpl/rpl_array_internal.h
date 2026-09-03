@@ -39,7 +39,8 @@ rpl_array_copy(rpl_value_t array);
 
 RPL_EXPORT
 const char * RPL_NULLABLE
-rpl_array_copy_string(rpl_value_t array);
+rpl_array_copy_string(rpl_value_t array,
+		      rpl_environment_t RPL_NULLABLE env);
 
 
 RPL_HEADER_END

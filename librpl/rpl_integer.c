@@ -9,6 +9,7 @@
 #include "rpl_integer_internal.h"
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -53,26 +54,63 @@ rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum)
 }
 
 const char * RPL_NULLABLE
-rpl_integer_copy_string(rpl_value_t integer)
+rpl_integer_copy_string(rpl_value_t integer,
+			rpl_environment_t RPL_NULLABLE env)
 {
     assert(integer != NULL);
     assert(integer->_type == rpl_type_integer);
 
-    return rpl_integer_rep_copy_string(integer->_reps._integer);
+    return rpl_integer_rep_copy_string(integer->_reps._integer, env);
 }
 
 const char * RPL_NULLABLE
-rpl_integer_rep_copy_string(rpl_integer_t integer_rep)
+rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
+			    rpl_environment_t RPL_NULLABLE env)
 {
-    // TODO: Use base from a passed environment.
-
-    /* At most 64 bits plus leading "# " and trailing base char. */
+    /* Use a local buffer of the longest possible string size. */
 
     char tmpbuf[68] = {0};
 
     /* "# valx" where "val" is value and "x" is one of hdob for base */
 
-    snprintf(tmpbuf, 68, "# %llud", integer_rep);
+    const rpl_base_t base = (env
+			     ? rpl_environment_get_base(env)
+			     : rpl_base_decimal);
+    switch (base) {
+	case rpl_base_binary: {
+	    tmpbuf[0] = '#';
+	    tmpbuf[1]= ' ';
+
+	    int digit = 2;
+	    bool saw_one = false;
+	    for (int i = 63; i >= 0; i--) {
+		rpl_integer_t bit = (integer_rep >> i) & 1;
+		if (bit == 0) {
+		    if (saw_one) {
+			tmpbuf[digit++] = '0';
+		    }
+		} else {
+		    tmpbuf[digit++] = '1';
+		    if (saw_one == false) saw_one = true;
+		}
+		if (i == 0) break;
+	    }
+
+	    tmpbuf[digit] = 'b';
+	} break;
+
+	case rpl_base_octal: {
+	    snprintf(tmpbuf, 68, "# %lloo", integer_rep);
+	} break;
+
+	case rpl_base_decimal: {
+	    snprintf(tmpbuf, 68, "# %llud", integer_rep);
+	} break;
+
+	case rpl_base_hexadecimal: {
+	    snprintf(tmpbuf, 68, "# %llXh", integer_rep);
+	} break;
+    }
 
     return strdup(tmpbuf);
 }
