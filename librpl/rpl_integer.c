@@ -9,6 +9,8 @@
 #include "rpl_integer_internal.h"
 
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "rpl_value_internal.h"
 
@@ -62,8 +64,17 @@ rpl_integer_copy_string(rpl_value_t integer)
 const char * RPL_NULLABLE
 rpl_integer_rep_copy_string(rpl_integer_t integer_rep)
 {
-    // TODO: rpl_integer_rep_copy_string
-    return NULL;
+    // TODO: Use base from a passed environment.
+
+    /* At most 64 bits plus leading "# " and trailing base char. */
+
+    char tmpbuf[68] = {0};
+
+    /* "# valx" where "val" is value and "x" is one of hdob for base */
+
+    snprintf(tmpbuf, 68, "# %llud", integer_rep);
+
+    return strdup(tmpbuf);
 }
 
 

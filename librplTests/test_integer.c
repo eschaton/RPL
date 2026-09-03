@@ -10,6 +10,8 @@
 
 #include "rpl_integer_internal.h"
 
+#include <stdlib.h>
+
 
 RPL_SOURCE_BEGIN
 
@@ -67,6 +69,29 @@ START_TEST(test_copying)
 }
 END_TEST
 
+START_TEST(test_printing)
+{
+    rpl_value_t three = rpl_integer_new(3);
+    ck_assert_ptr_nonnull(three);
+
+    rpl_value_t four = rpl_integer_new(4);
+    ck_assert_ptr_nonnull(four);
+
+    const char *three_str = rpl_value_copy_string(three);
+    ck_assert_ptr_nonnull(three_str);
+    ck_assert_str_eq(three_str, "# 3d");
+    free((void *)three_str);
+
+    const char *four_str = rpl_value_copy_string(four);
+    ck_assert_ptr_nonnull(four_str);
+    ck_assert_str_eq(four_str, "# 4d");
+    free((void *)four_str);
+
+    rpl_value_release(three);
+    rpl_value_retain(four);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -82,6 +107,7 @@ test_integer_suite(void)
     tcase_add_test(tc_integer, test_creation);
     tcase_add_test(tc_integer, test_round_to_next);
     tcase_add_test(tc_integer, test_copying);
+    tcase_add_test(tc_integer, test_printing);
 
     suite_add_tcase(s, tc_integer);
 
