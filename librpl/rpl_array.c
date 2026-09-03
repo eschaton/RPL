@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_strbuffer.h"
 #include "rpl_value_internal.h"
 
 
@@ -363,7 +364,80 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
 const char * RPL_NULLABLE
 rpl_array_copy_string(rpl_value_t array)
 {
-    // TODO: rpl_array_copy_string
+    assert(array != NULL);
+    assert(array->_type == rpl_type_array);
+
+    rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
+
+    const char *buf = NULL;
+
+    const size_t count = rpl_adjbuffer_get_count(buffer);
+    rpl_strbuffer_t sb = rpl_strbuffer_new_empty(count * 8 + 2);
+    if (sb == NULL) goto error;
+
+    bool appended;
+
+    /* [a b c] */
+
+    appended = rpl_strbuffer_append_chars(sb, "[");
+    if (appended == false) goto error;
+
+    for (size_t idx = 0; idx < count; idx++) {
+	void *element = rpl_adjbuffer_get(buffer, idx);
+
+	switch (array->_reps._array._type) {
+	    case rpl_type_real: {
+		rpl_real_t *rep = element;
+		const char *rep_str = rpl_real_rep_copy_string(*rep);
+		if (rep_str == NULL) goto error;
+		appended = rpl_strbuffer_append_chars(sb, rep_str);
+		free((void *)rep_str);
+		if (appended == false) goto error;
+	    } break;
+
+	    case rpl_type_complex: {
+		rpl_complex_t *rep = element;
+		const char *rep_str = rpl_complex_rep_copy_string(*rep);
+		if (rep_str == NULL) goto error;
+		appended = rpl_strbuffer_append_chars(sb, rep_str);
+		free((void *)rep_str);
+		if (appended == false) goto error;
+	    } break;
+
+	    case rpl_type_array: {
+		rpl_value_t sub = element;
+		const char *sub_str = rpl_array_copy_string(sub);
+		if (sub_str == NULL) goto error;
+		appended = rpl_strbuffer_append_chars(sb, sub_str);
+		free((void *)sub_str);
+		if (appended == false) goto error;
+	    } break;
+
+	    default: {
+		assert(0);
+	    } break;
+	}
+
+	if (idx < (count - 1)) {
+	    /* Add space between elements. */
+	    appended = rpl_strbuffer_append_chars(sb, " ");
+	    if (appended == false) goto error;
+	}
+    }
+
+    appended = rpl_strbuffer_append_chars(sb, "]");
+    if (appended == false) goto error;
+
+    buf = rpl_strbuffer_copy_chars(sb);
+    if (buf == NULL) goto error;
+
+    rpl_strbuffer_free(sb);
+
+    return buf;
+
+error:
+    if (sb) rpl_strbuffer_free(sb);
+    free((void *)buf);
     return NULL;
 }
 
