@@ -43,17 +43,21 @@ rpl_complex_copy_string(rpl_value_t complex)
     assert(complex != NULL);
     assert(complex->_type == rpl_type_complex);
 
-    rpl_complex_t *rep = &complex->_reps._complex;
+    return rpl_complex_rep_copy_string(complex->_reps._complex);
+}
 
+const char * RPL_NULLABLE
+rpl_complex_rep_copy_string(rpl_complex_t complex_rep)
+{
     const char *a_str = NULL;
     const char *b_str = NULL;
     char *buf = NULL;
 
-    a_str = rpl_real_rep_copy_string(rep->_a);
+    a_str = rpl_real_rep_copy_string(complex_rep._a);
     if (a_str == NULL) goto error;
     const size_t a_str_len = strlen(a_str);
 
-    b_str = rpl_real_rep_copy_string(rep->_b);
+    b_str = rpl_real_rep_copy_string(complex_rep._b);
     if (b_str == NULL) goto error;
     const size_t b_str_len = strlen(b_str);
 
@@ -78,6 +82,8 @@ error:
     free(buf);
     return NULL;
 }
+
+
 
 
 // TODO: Complex Number Operations
