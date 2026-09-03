@@ -66,13 +66,33 @@ bool
 rpl_adjbuffer_insert_element(rpl_adjbuffer_t *buffer, size_t idx,
 			     void *element);
 
+/*! Insert @a elements into @a buffer starting at index @a idx. */
+bool
+rpl_adjbuffer_insert_elements(rpl_adjbuffer_t *buffer, size_t idx,
+			      const void *elements,
+			      size_t elements_count);
+
 /*! Remove the element at index @a idx from @a buffer. */
 void
 rpl_adjbuffer_remove_element(rpl_adjbuffer_t *buffer, size_t idx);
 
+/*!
+ Remove @a elements_count elements startingat @a idx from @a buffer.
+ */
+void
+rpl_adjbuffer_remove_elements(rpl_adjbuffer_t *buffer, size_t idx,
+			      size_t elements_count);
+
 /*! Append @a element to the end of @a buffer. */
 bool
-rpl_adjbuffer_append_element(rpl_adjbuffer_t *buffer, void *element);
+rpl_adjbuffer_append_element(rpl_adjbuffer_t *buffer,
+			     const void *element);
+
+/*! Append @a elements to the end of @a buffer. */
+bool
+rpl_adjbuffer_append_elements(rpl_adjbuffer_t *buffer,
+			      const void *elements,
+			      size_t elements_count);
 
 /*! A function that can be applied to a buffer's elements. */
 typedef bool (*rpl_adjbuffer_apply_f)(rpl_adjbuffer_t *buffer,
