@@ -62,6 +62,7 @@
 				rpl_array.h,
 				rpl_complex.h,
 				rpl_defines.h,
+				rpl_environment.h,
 				rpl_integer.h,
 				rpl_list.h,
 				rpl_name.h,

@@ -26,6 +26,7 @@
 #include "rpl_value.h"
 
 /* Execution */
+#include "rpl_environment.h"
 #include "rpl_stack.h"
 
 
