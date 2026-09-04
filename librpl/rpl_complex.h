@@ -18,10 +18,18 @@
 RPL_HEADER_BEGIN
 
 
-/*! Create a new complex value. */
+/*!
+ Complex numbers in RPL may be entered and printed in either rectangular
+ or polar coordinates, though their internal representation is always in
+ rectangular coordinates.
+ */
+
+
+/*! Create a new complex value in rectangular coordinates. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_complex_new(rpl_real_t a_rep, rpl_real_t b_rep);
+rpl_complex_new(rpl_real_t x_rep, rpl_real_t y_rep);
+
 
 // TODO: Complex Number Operations
 

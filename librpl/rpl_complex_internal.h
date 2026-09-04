@@ -20,8 +20,8 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_complex {
-    rpl_real_t _a;
-    rpl_real_t _b;
+    rpl_real_t _x;
+    rpl_real_t _y;
 };
 typedef struct rpl_complex rpl_complex_t;
 
@@ -38,6 +38,16 @@ RPL_EXPORT
 const char * RPL_NULLABLE
 rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 			    rpl_environment_t RPL_NULLABLE env);
+
+/*! Get the modulus (r) of a rectangular complex number. */
+RPL_EXPORT
+rpl_real_t
+rpl_complex_rep_get_modulus(rpl_complex_t rectangular);
+
+/*! Get the argument (θ) to a rectangular complex number. */
+RPL_EXPORT
+rpl_real_t
+rpl_complex_rep_get_argument(rpl_complex_t rectangular);
 
 
 RPL_HEADER_END

@@ -29,6 +29,15 @@ const char * RPL_NULLABLE
 rpl_real_rep_copy_string(rpl_real_t real_rep,
 			 rpl_environment_t RPL_NULLABLE env);
 
+/*!
+ Create a string from a real that represents an angle in radians, taking
+ the passed environment's angle mode into account.
+ */
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
+			       rpl_environment_t RPL_NULLABLE env);
+
 
 RPL_HEADER_END
 

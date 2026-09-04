@@ -202,7 +202,7 @@ rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx)
 
 	case rpl_type_complex: {
 	    rpl_complex_t *complex = element;
-	    result = rpl_complex_new(complex->_a, complex->_b);
+	    result = rpl_complex_new(complex->_x, complex->_y);
 	} break;
 
 	case rpl_type_array: {

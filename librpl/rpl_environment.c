@@ -22,6 +22,7 @@ rpl_environment_new(void)
     if (env) {
 	env->_base = rpl_base_decimal;
 	env->_angle_mode = rpl_angle_mode_degrees;
+	env->_complex_mode = rpl_complex_mode_rectangular;
     }
     return env;
 }
@@ -65,6 +66,23 @@ rpl_environment_set_angle_mode(rpl_environment_t env,
     assert(env != NULL);
 
     env->_angle_mode = angle_mode;
+}
+
+rpl_complex_mode_t
+rpl_environment_get_complex_mode(rpl_environment_t env)
+{
+    assert(env != NULL);
+
+    return env->_complex_mode;
+}
+
+void
+rpl_environment_set_complex_mode(rpl_environment_t env,
+				 rpl_complex_mode_t complex_mode)
+{
+    assert(env != NULL);
+
+    env->_complex_mode = complex_mode;
 }
 
 

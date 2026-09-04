@@ -31,7 +31,7 @@ rpl_environment_free(rpl_environment_t env);
 /*!
  The base used for printing and (unadorned) reading of binary integers.
 
- The default base for a new environment is decimal.
+ The default base is decimal.
  */
 typedef enum rpl_base {
     rpl_base_binary      = 2,
@@ -50,14 +50,15 @@ rpl_environment_set_base(rpl_environment_t env, rpl_base_t base);
 
 
 /*!
- The representation of angles to use.
+ The representation of angles to use in reading and printing.
 
- The default angle mode is degrees.
+ The default angle mode is degrees, though all calculations are always
+ performed in radians.
  */
 typedef enum rpl_angle_mode {
     rpl_angle_mode_degrees = 0,
     rpl_angle_mode_radians,
-    rpl_angle_mode_grads,
+    rpl_angle_mode_gradians,
 } rpl_angle_mode_t;
 
 RPL_EXPORT
@@ -68,6 +69,30 @@ RPL_EXPORT
 void
 rpl_environment_set_angle_mode(rpl_environment_t env,
 			       rpl_angle_mode_t angle_mode);
+
+
+/*!
+ The representation to use for complex numbers and 2/3-dimensional real
+ arrays (vectors).
+
+ The default complex mode is rectangular, and all calculations are
+ always performed in rectangular coordinates regardless of entry or
+ rendering.
+ */
+typedef enum rpl_complex_mode {
+    rpl_complex_mode_rectangular = 0,
+    rpl_complex_mode_cylindrical,
+    rpl_complex_mode_spherical,
+} rpl_complex_mode_t;
+
+RPL_EXPORT
+rpl_complex_mode_t
+rpl_environment_get_complex_mode(rpl_environment_t env);
+
+RPL_EXPORT
+void
+rpl_environment_set_complex_mode(rpl_environment_t env,
+				 rpl_complex_mode_t angle_mode);
 
 
 RPL_HEADER_END
