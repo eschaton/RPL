@@ -21,6 +21,7 @@ rpl_environment_new(void)
     rpl_environment_t env = calloc(1, sizeof(struct rpl_environment));
     if (env) {
 	env->_base = rpl_base_decimal;
+	env->_angle_mode = rpl_angle_mode_degrees;
     }
     return env;
 }
@@ -47,6 +48,23 @@ rpl_environment_set_base(rpl_environment_t env, rpl_base_t base)
     assert(env != NULL);
 
     env->_base = base;
+}
+
+rpl_angle_mode_t
+rpl_environment_get_angle_mode(rpl_environment_t env)
+{
+    assert(env != NULL);
+
+    return env->_angle_mode;
+}
+
+void
+rpl_environment_set_angle_mode(rpl_environment_t env,
+			       rpl_angle_mode_t angle_mode)
+{
+    assert(env != NULL);
+
+    env->_angle_mode = angle_mode;
 }
 
 

@@ -17,6 +17,7 @@ RPL_HEADER_BEGIN
 
 struct rpl_environment {
     rpl_base_t _base;
+    rpl_angle_mode_t _angle_mode;
 };
 
 
