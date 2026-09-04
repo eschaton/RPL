@@ -116,8 +116,7 @@ error:
 rpl_real_t
 rpl_complex_rep_get_modulus(rpl_complex_t rectangular)
 {
-    return sqrt((rectangular._x * rectangular._x)
-		+ (rectangular._y * rectangular._y));
+    return hypot(rectangular._x, rectangular._y);
 }
 
 rpl_real_t
