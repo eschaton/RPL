@@ -50,9 +50,12 @@ rpl_string_free(rpl_value_t string)
 rpl_value_t RPL_NULLABLE
 rpl_string_copy(rpl_value_t string)
 {
-    // TODO: rpl_string_copy
+    assert(string != NULL);
+    assert(string->_type == rpl_type_string);
 
-    return NULL;
+    rpl_string_t *string_rep = &string->_reps._string;
+
+    return rpl_string_new(string_rep->_chars, string_rep->_chars_len);
 }
 
 const char *
