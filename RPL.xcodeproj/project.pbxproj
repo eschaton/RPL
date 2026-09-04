@@ -67,6 +67,7 @@
 				rpl_integer.h,
 				rpl_list.h,
 				rpl_name.h,
+				rpl_operation.h,
 				rpl_program.h,
 				rpl_real.h,
 				rpl_stack.h,
