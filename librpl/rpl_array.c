@@ -65,15 +65,14 @@ rpl_value_t RPL_NULLABLE
 rpl_array_new(rpl_type_t type, rpl_integer_t capacity)
 {
     assert(rpl_array_is_supported_type(type));
-    assert(capacity > 0);
-    
+
     rpl_value_t array = rpl_value_new(rpl_type_array);
     if (array) {
 	rpl_array_t *rep = &array->_reps._array;
 	bool initialized
 	    = rpl_adjbuffer_init(&rep->_buffer, capacity,
 				 rpl_array_type_size(type));
-	if (!initialized) goto error;
+	if (initialized == false) goto error;
 	rep->_type = type;
     }
     return array;
@@ -88,11 +87,27 @@ rpl_array_new_with_values(rpl_type_t type,
 			  rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
 			  rpl_integer_t vals_count)
 {
-    rpl_value_t array = rpl_array_new(type, vals_count);
+    assert(rpl_array_is_supported_type(type));
+    assert(vals != NULL);
+
+    rpl_value_t array = rpl_value_new(rpl_type_array);
     if (array) {
-	// TODO: rpl_array_new_with_values
+	rpl_array_t *rep = &array->_reps._array;
+	bool initialized
+	    = rpl_adjbuffer_init(&rep->_buffer, vals_count,
+				 rpl_array_type_size(type));
+	if (initialized == false) goto error;
+	rep->_type = type;
+
+	bool appended = rpl_adjbuffer_append_elements(&rep->_buffer,
+						      vals, vals_count);
+	if (appended == false) goto error;
     }
     return array;
+
+error:
+    rpl_value_release(array);
+    return NULL;
 }
 
 bool
