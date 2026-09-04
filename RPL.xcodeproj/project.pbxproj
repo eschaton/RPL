@@ -72,6 +72,7 @@
 				rpl_stack.h,
 				rpl_string.h,
 				rpl_tagged.h,
+				rpl_tokenizer.h,
 				rpl_unit.h,
 				rpl_value.h,
 				rpl.h,

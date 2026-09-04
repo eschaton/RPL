@@ -29,6 +29,7 @@
 #include "rpl_context.h"
 #include "rpl_environment.h"
 #include "rpl_stack.h"
+#include "rpl_tokenizer.h"
 
 
 #endif /* __RPL__rpl__h__ */
