@@ -9,8 +9,9 @@
 #include "rpl_real_internal.h"
 
 #include <assert.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "rpl_value_internal.h"
@@ -61,8 +62,11 @@ const char * RPL_NULLABLE
 rpl_real_rep_copy_string(rpl_real_t real_rep,
 			 rpl_environment_t RPL_NULLABLE env)
 {
-    // TODO: rpl_real_rep_copy_string
-    return NULL;
+    char buf[80] = { 0 };
+
+    snprintf(buf, 80, "%g", real_rep);
+
+    return strdup(buf);
 }
 
 const char * RPL_NULLABLE
