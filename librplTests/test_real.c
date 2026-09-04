@@ -70,6 +70,38 @@ START_TEST(test_printing)
 }
 END_TEST
 
+START_TEST(test_printing_angle)
+{
+    rpl_environment_t env = rpl_environment_new();
+    ck_assert_ptr_nonnull(env);
+
+    /* The default angle mode should be degrees. */
+    ck_assert_int_eq(rpl_environment_get_angle_mode(env),
+		     rpl_angle_mode_degrees);
+
+    rpl_value_t qr = rpl_real_pi_div_2();
+    ck_assert_ptr_nonnull(qr);
+
+    const char *qr_str = rpl_real_copy_angle_string(qr, env);
+    ck_assert_ptr_nonnull(qr_str);
+    ck_assert_str_eq(qr_str, "∡90"); /* π/2 radians = 90° */
+    free((void *)qr_str);
+
+    rpl_environment_set_angle_mode(env, rpl_angle_mode_radians);
+    rpl_environment_set_coordinate_system(env,
+	rpl_coordinate_system_spherical);
+
+    const char *qr_str2 = rpl_real_copy_angle_string(qr, env);
+    ck_assert_ptr_nonnull(qr_str);
+    ck_assert_str_eq(qr_str2, "∢1.5708"); /* π/2 radians = 1.570796 */
+    free((void *)qr_str);
+
+    rpl_value_release(qr);
+
+    rpl_environment_free(env);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -84,6 +116,7 @@ test_real_suite(void)
 			      test_real_teardown);
     tcase_add_test(tc_real, test_creation);
     tcase_add_test(tc_real, test_printing);
+    tcase_add_test(tc_real, test_printing_angle);
 
     suite_add_tcase(s, tc_real);
 

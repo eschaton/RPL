@@ -64,17 +64,31 @@ rpl_real_rep_copy_string(rpl_real_t real_rep,
 {
     char buf[80] = { 0 };
 
+    // TODO: Provide printing control in env
+
     snprintf(buf, 80, "%g", real_rep);
 
     return strdup(buf);
 }
 
 const char * RPL_NULLABLE
+rpl_real_copy_angle_string(rpl_value_t real,
+			   rpl_environment_t RPL_NULLABLE env)
+{
+    assert(real != NULL);
+    assert(real->_type == rpl_type_real);
+
+    return rpl_real_rep_copy_angle_string(real->_reps._real, env);
+}
+
+const char * RPL_NULLABLE
 rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 			       rpl_environment_t RPL_NULLABLE env)
 {
-    const char * const angle_str = "∡";
-    const size_t angle_str_len = strlen(angle_str);
+    const char * const cyl_angle_str = "∡";
+    const size_t cyl_angle_str_len = strlen(cyl_angle_str);
+    const char * const sph_angle_str = "∢";
+    const size_t sph_angle_str_len = strlen(sph_angle_str);
 
     const rpl_angle_mode_t angle_mode
 	= ((env == NULL)
@@ -94,6 +108,34 @@ rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 	    break;
     }
 
+    const char *angle_str = NULL;
+    size_t angle_str_len = 0;
+
+    /*
+     The default coordinate system when none is supplied is the
+     rectangular coordinaate system, and the user can also choose to
+     use a rectangular coordinate system, but here we're explicitly
+     describing an angle. Therefore default to cylindrical rather
+     than rectangular coordinates.
+     */
+    rpl_coordinate_system_t coordinate_system
+	= ((env == NULL)
+	   ? rpl_coordinate_system_rectangular
+	   : rpl_environment_get_coordinate_system(env));
+
+    switch (coordinate_system) {
+	case rpl_coordinate_system_rectangular:
+	case rpl_coordinate_system_cylindrical: {
+	    angle_str = cyl_angle_str;
+	    angle_str_len = cyl_angle_str_len;
+	} break;
+
+	case rpl_coordinate_system_spherical: {
+	    angle_str = sph_angle_str;
+	    angle_str_len = sph_angle_str_len;
+	} break;
+    }
+
     const char *theta_str = NULL;
     char *buf = NULL;
 
@@ -106,7 +148,7 @@ rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
     if (buf == NULL) goto error;
 
     strlcpy(buf, angle_str, buf_size);
-    strlcpy(buf, theta_str, buf_size);
+    strlcat(buf, theta_str, buf_size);
 
     free((void *)theta_str);
 
@@ -117,6 +159,32 @@ error:
     free(buf);
 
     return NULL;
+}
+
+rpl_value_t
+rpl_real_pi(void)
+{
+    static rpl_value_t pi = NULL;
+    if (pi == NULL) {
+	pi = rpl_real_new(M_PI);
+	assert(pi != NULL); /* very bad shape otherwise */
+	rpl_value_immortalize(pi);
+    }
+
+    return pi;
+}
+
+rpl_value_t
+rpl_real_pi_div_2(void)
+{
+    static rpl_value_t pi_div_2 = NULL;
+    if (pi_div_2 == NULL) {
+	pi_div_2 = rpl_real_new(M_PI_2);
+	assert(pi_div_2 != NULL); /* very bad shape otherwise */
+	rpl_value_immortalize(pi_div_2);
+    }
+
+    return pi_div_2;
 }
 
 rpl_real_t

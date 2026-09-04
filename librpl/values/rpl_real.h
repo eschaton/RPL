@@ -27,11 +27,30 @@ RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_real_new(rpl_real_t rep);
 
-
 /*! Get the underlying representation of a real value. */
 RPL_EXPORT
 rpl_real_t
 rpl_real_get_rep(rpl_value_t val);
+
+/*!
+ Copy a printable string for the real value as an angle, taking the
+ environment into account. (A `NULL` environment, as with
+ ``rpl_value_copy_string``, results in default behavior.)
+ */
+RPL_EXPORT
+const char * RPL_NULLABLE
+rpl_real_copy_angle_string(rpl_value_t val,
+			   rpl_environment_t RPL_NULLABLE env);
+
+/*! π */
+RPL_EXPORT
+rpl_value_t
+rpl_real_pi(void);
+
+/*! π/2 */
+RPL_EXPORT
+rpl_value_t
+rpl_real_pi_div_2(void);
 
 /*! Convert a real representing an angle in radians to degrees. */
 RPL_EXPORT
