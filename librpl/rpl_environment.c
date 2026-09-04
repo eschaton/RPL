@@ -22,7 +22,7 @@ rpl_environment_new(void)
     if (env) {
 	env->_base = rpl_base_decimal;
 	env->_angle_mode = rpl_angle_mode_degrees;
-	env->_complex_mode = rpl_complex_mode_rectangular;
+	env->_coordinate_system = rpl_coordinate_system_rectangular;
     }
     return env;
 }
@@ -68,21 +68,21 @@ rpl_environment_set_angle_mode(rpl_environment_t env,
     env->_angle_mode = angle_mode;
 }
 
-rpl_complex_mode_t
-rpl_environment_get_complex_mode(rpl_environment_t env)
+rpl_coordinate_system_t
+rpl_environment_get_coordinate_system(rpl_environment_t env)
 {
     assert(env != NULL);
 
-    return env->_complex_mode;
+    return env->_coordinate_system;
 }
 
 void
-rpl_environment_set_complex_mode(rpl_environment_t env,
-				 rpl_complex_mode_t complex_mode)
+rpl_environment_set_coordinate_system(rpl_environment_t env,
+				      rpl_coordinate_system_t cs)
 {
     assert(env != NULL);
 
-    env->_complex_mode = complex_mode;
+    env->_coordinate_system = cs;
 }
 
 

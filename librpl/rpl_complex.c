@@ -56,13 +56,13 @@ rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
     const char *b_str = NULL;
     char *buf = NULL;
 
-    const rpl_complex_mode_t complex_mode
+    const rpl_coordinate_system_t coordinate_system
 	= ((env == NULL)
-	   ? rpl_complex_mode_rectangular
-	   : rpl_environment_get_complex_mode(env));
+	   ? rpl_coordinate_system_rectangular
+	   : rpl_environment_get_coordinate_system(env));
 
-    switch (complex_mode) {
-	case rpl_complex_mode_rectangular: {
+    switch (coordinate_system) {
+	case rpl_coordinate_system_rectangular: {
 	    /* x and y are printable as-is */
 
 	    a_str = rpl_real_rep_copy_string(complex_rep._x, env);
@@ -72,8 +72,8 @@ rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 	    if (b_str == NULL) goto error;
 	} break;
 
-	case rpl_complex_mode_cylindrical:
-	case rpl_complex_mode_spherical:{
+	case rpl_coordinate_system_cylindrical:
+	case rpl_coordinate_system_spherical:{
 	    /* x and y must be converted to r and theta */
 
 	    rpl_real_t r = rpl_complex_rep_get_modulus(complex_rep);

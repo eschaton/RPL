@@ -34,10 +34,10 @@ rpl_environment_free(rpl_environment_t env);
  The default base is decimal.
  */
 typedef enum rpl_base {
-    rpl_base_binary      = 2,
-    rpl_base_octal       = 8,
-    rpl_base_decimal     = 10,
-    rpl_base_hexadecimal = 16,
+    rpl_base_decimal     = 0,
+    rpl_base_binary      = 1,
+    rpl_base_octal       = 2,
+    rpl_base_hexadecimal = 3,
 } rpl_base_t;
 
 RPL_EXPORT
@@ -56,9 +56,9 @@ rpl_environment_set_base(rpl_environment_t env, rpl_base_t base);
  performed in radians.
  */
 typedef enum rpl_angle_mode {
-    rpl_angle_mode_degrees = 0,
-    rpl_angle_mode_radians,
-    rpl_angle_mode_gradians,
+    rpl_angle_mode_degrees =  0,
+    rpl_angle_mode_radians =  2,
+    rpl_angle_mode_gradians = 1,
 } rpl_angle_mode_t;
 
 RPL_EXPORT
@@ -72,27 +72,27 @@ rpl_environment_set_angle_mode(rpl_environment_t env,
 
 
 /*!
- The representation to use for complex numbers and 2/3-dimensional real
- arrays (vectors).
+ The coordinate system to use for complex numbers and 2/3-dimensional
+ real arrays (vectors).
 
  The default complex mode is rectangular, and all calculations are
  always performed in rectangular coordinates regardless of entry or
  rendering.
  */
-typedef enum rpl_complex_mode {
-    rpl_complex_mode_rectangular = 0,
-    rpl_complex_mode_cylindrical,
-    rpl_complex_mode_spherical,
-} rpl_complex_mode_t;
+typedef enum rpl_coordinate_system {
+    rpl_coordinate_system_rectangular = 0,
+    rpl_coordinate_system_cylindrical = 1,
+    rpl_coordinate_system_spherical   = 3,
+} rpl_coordinate_system_t;
 
 RPL_EXPORT
-rpl_complex_mode_t
-rpl_environment_get_complex_mode(rpl_environment_t env);
+rpl_coordinate_system_t
+rpl_environment_get_coordinate_system(rpl_environment_t env);
 
 RPL_EXPORT
 void
-rpl_environment_set_complex_mode(rpl_environment_t env,
-				 rpl_complex_mode_t angle_mode);
+rpl_environment_set_coordinate_system(rpl_environment_t env,
+				      rpl_coordinate_system_t cs);
 
 
 RPL_HEADER_END
