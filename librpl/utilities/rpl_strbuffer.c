@@ -6,7 +6,7 @@
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
-#include "rpl_strbuffer.h"
+#include "rpl_strbuffer_internal.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -16,10 +16,6 @@
 
 
 RPL_SOURCE_BEGIN
-
-struct rpl_strbuffer {
-    rpl_adjbuffer_t _ab;
-};
 
 
 rpl_strbuffer_t RPL_NULLABLE
