@@ -61,6 +61,7 @@
 			publicHeaders = (
 				rpl_array.h,
 				rpl_complex.h,
+				rpl_context.h,
 				rpl_defines.h,
 				rpl_environment.h,
 				rpl_integer.h,
