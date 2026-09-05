@@ -11,15 +11,76 @@
 
 #include "rpl_tokenizer.h"
 
+#include "rpl_strbuffer.h"
 
-struct rpl_token {
 
-};
+RPL_HEADER_BEGIN
 
 
 struct rpl_tokenizer {
-
+    rpl_context_t _context;
+    rpl_strbuffer_t _strbuffer;
+    ssize_t _cur;
 };
+
+RPL_EXPORT
+char
+rpl_tokenizer_get_char(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+void
+rpl_tokenizer_unget_char(rpl_tokenizer_t tokenizer, char ch);
+
+RPL_EXPORT
+char
+rpl_tokenizer_peek_char(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+bool
+rpl_tokenizer_has_char(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer);
+
+
+RPL_HEADER_END
 
 
 #endif /* __RPL__rpl_tokenizer_internal__h__ */

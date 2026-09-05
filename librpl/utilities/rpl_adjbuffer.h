@@ -77,11 +77,17 @@ void
 rpl_adjbuffer_remove_element(rpl_adjbuffer_t *buffer, size_t idx);
 
 /*!
- Remove @a elements_count elements startingat @a idx from @a buffer.
+ Remove @a elements_count elements starting at @a idx from @a buffer.
  */
 void
 rpl_adjbuffer_remove_elements(rpl_adjbuffer_t *buffer, size_t idx,
 			      size_t elements_count);
+
+/*!
+ Remove all elements from @a buffer.
+ */
+void
+rpl_adjbuffer_remove_all_elements(rpl_adjbuffer_t *buffer);
 
 /*! Append @a element to the end of @a buffer. */
 bool

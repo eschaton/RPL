@@ -61,6 +61,16 @@ rpl_strbuffer_free(rpl_strbuffer_t sb)
     free(sb);
 }
 
+char
+rpl_strbuffer_get_char(rpl_strbuffer_t sb, size_t idx)
+{
+    assert(sb != NULL);
+    assert(idx < sb->_ab._count);
+
+    const char *chars = sb->_ab._storage;
+    return chars[idx];
+}
+
 const char *
 rpl_strbuffer_get_chars(rpl_strbuffer_t sb)
 {
@@ -133,6 +143,14 @@ rpl_strbuffer_append_strbuffer(rpl_strbuffer_t sb,
     rpl_adjbuffer_remove_element(&sb->_ab, sb_len);
     return rpl_adjbuffer_append_elements(&sb->_ab, sb_appended_chars,
 					 sb_appended_len + 1);
+}
+
+void
+rpl_strbuffer_remove_all(rpl_strbuffer_t sb)
+{
+    assert(sb != NULL);
+
+    rpl_adjbuffer_remove_all_elements(&sb->_ab);
 }
 
 

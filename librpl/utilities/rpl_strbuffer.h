@@ -31,6 +31,9 @@ rpl_strbuffer_new(const char *str);
 void
 rpl_strbuffer_free(rpl_strbuffer_t sb);
 
+char
+rpl_strbuffer_get_char(rpl_strbuffer_t sb, size_t idx);
+
 const char *
 rpl_strbuffer_get_chars(rpl_strbuffer_t sb);
 
@@ -46,6 +49,9 @@ rpl_strbuffer_append_chars(rpl_strbuffer_t sb, const char *str);
 bool
 rpl_strbuffer_append_strbuffer(rpl_strbuffer_t sb,
 			       const rpl_strbuffer_t sb_appended);
+
+void
+rpl_strbuffer_remove_all(rpl_strbuffer_t sb);
 
 
 RPL_HEADER_END

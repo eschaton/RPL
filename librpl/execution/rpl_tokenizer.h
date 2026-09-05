@@ -11,12 +11,11 @@
 
 #include "rpl_defines.h"
 
+#include "rpl_context.h"
+#include "rpl_token.h"
+
 
 RPL_HEADER_BEGIN
-
-
-/*! A unit of RPL syntax. */
-typedef struct rpl_token *rpl_token_t;
 
 
 /*! The RPL tokenizer itself. */
@@ -25,11 +24,27 @@ typedef struct rpl_tokenizer *rpl_tokenizer_t;
 
 RPL_EXPORT
 rpl_tokenizer_t RPL_NULLABLE
-rpl_tokenizer_new(void);
+rpl_tokenizer_new(rpl_context_t context);
 
 RPL_EXPORT
 void
 rpl_tokenizer_free(rpl_tokenizer_t tokenizer);
+
+/*!
+ Append UTF-8 text to the tokenizer's buffer.
+
+ - NOTE: Some form of whitespace is required after every token; this is
+         most easily handled by appending a newline after other text if
+	 one is not already present.
+ */
+RPL_EXPORT
+bool
+rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str);
+
+/*! Get the next token, if any, from the tokenizer. */
+RPL_EXPORT
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_get_next(rpl_tokenizer_t tokenizer);
 
 
 RPL_HEADER_END

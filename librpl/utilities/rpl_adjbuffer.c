@@ -241,6 +241,17 @@ rpl_adjbuffer_remove_elements(rpl_adjbuffer_t *buffer, size_t idx,
     buffer->_count -= 1;
 }
 
+void
+rpl_adjbuffer_remove_all_elements(rpl_adjbuffer_t *buffer)
+{
+    assert(buffer != NULL);
+
+    memset(buffer->_storage, 0,
+	   buffer->_capacity * buffer->_element_size);
+    
+    buffer->_count = 0;
+}
+
 bool
 rpl_adjbuffer_append_element(rpl_adjbuffer_t *buffer,
 			     const void *element)
