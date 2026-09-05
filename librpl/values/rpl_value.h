@@ -23,37 +23,39 @@ RPL_HEADER_BEGIN
 enum rpl_type {
     /*! A binary integer is an unsigned 64-bit value. */
     rpl_type_integer,
-    
+
     /*!
      A real number is represented as a 64-bit IEEE-754 double-precision
      floataing point value.
      */
     rpl_type_real,
-    
+
     /*!
-     A complex number represents `a+b*i` as a pair of real numbers.
-     
-     - NOTE: The type imposes no constraints on the meaning of `a` and
-             `b`; that is, it does not distinguish rectangular and polar
-	     complex numbers.
+     A complex number represents `x + y*i` as a pair of real numbers in
+     rectangular coordinates. Entry and display in polar coordinates is
+     handled via the environment.
      */
     rpl_type_complex,
-    
+
     /*!
      An array in RPL is a one-dimensional 0-indexed mutable collection
-     whose contents can be real, complex, or array values and are
-     represented efficiently.
-     
-     - NOTE: When one array contains another, the containing array just
-             holds a reference to it, it is not copied.
+     whose contents can be real, complex, or array values.
      */
     rpl_type_array,
-    
+
     rpl_type_name,
     rpl_type_program,
     rpl_type_string,
     rpl_type_list,
     rpl_type_tagged,
+
+    /*!
+     A unit value in RPL is a combination of a scalar real value with a
+     name representing the units applied to that scalar. For exmple, the
+     _unit_ representing acceleration due to Earth's gravity would be be
+     represented textually as `9.8_m/s^2` with `9.8` as the scalar part
+     and `m/s^2` as the name part.
+     */
     rpl_type_unit,
 };
 typedef enum rpl_type rpl_type_t;
