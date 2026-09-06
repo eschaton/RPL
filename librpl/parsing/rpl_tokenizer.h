@@ -42,7 +42,7 @@ bool
 rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str);
 
 /*!
- Get the next token from the tokenizer.
+ Copy the next token from the tokenizer.
 
  RPL syntax is straightforward:
 
@@ -78,10 +78,13 @@ rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str);
 
  Identifiers are used to represent operations and are immediately
  evaluated.
+
+ - NOTE: This is termed a "copy" because the tokenizer passes ownership
+         of any token it returns to the caller.
  */
 RPL_EXPORT
 rpl_token_t RPL_NULLABLE
-rpl_tokenizer_get_next(rpl_tokenizer_t tokenizer);
+rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer);
 
 
 RPL_HEADER_END

@@ -328,7 +328,7 @@ rpl_tokenizer_skip_comment(rpl_tokenizer_t tokenizer)
 }
 
 rpl_token_t RPL_NULLABLE
-rpl_tokenizer_get_next(rpl_tokenizer_t tokenizer)
+rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer)
 {
     rpl_token_t token = NULL;
 
