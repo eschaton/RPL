@@ -56,6 +56,7 @@ rpl_tokenizer_free(rpl_tokenizer_t tokenizer)
 bool
 rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str)
 {
+    assert(tokenizer != NULL);
     assert(str != NULL);
     assert(strlen(str) > 0);
 
@@ -71,7 +72,17 @@ rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str)
 	tokenizer->_cur = 0;
     }
 
-    return rpl_strbuffer_append_chars(tokenizer->_strbuffer, str);
+    if (rpl_strbuffer_append_chars(tokenizer->_strbuffer, str)) {
+	/*
+	 If the append succeeds and there's no current index yet, start
+	 the current index at 0.
+	 */
+
+	if (tokenizer->_cur == -1) tokenizer->_cur = 0;
+	return true;
+    } else {
+	return false;
+    }
 }
 
 char
@@ -535,6 +546,8 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
     if (token == NULL) goto back_out;
 
     rpl_strbuffer_free(buf);
+
+    return token;
 
 back_out:
     if (buf) rpl_strbuffer_free(buf);
