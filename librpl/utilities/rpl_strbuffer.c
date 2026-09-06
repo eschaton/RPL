@@ -99,10 +99,12 @@ rpl_strbuffer_get_length(rpl_strbuffer_t sb)
 
     /*
      The buffer count includes the trailing NUL character, which
-     shouldn't be included in a C string length.
+     shouldn't be included in a C string length. However, a completely
+     empty buffer will contain 0 characters, so special-case that.
      */
 
-    return rpl_adjbuffer_get_count(&sb->_ab) - 1;
+    size_t count = rpl_adjbuffer_get_count(&sb->_ab);
+    return (count > 0) ? count - 1 : 0;
 }
 
 bool
@@ -122,12 +124,13 @@ rpl_strbuffer_append_chars(rpl_strbuffer_t sb, const char *str)
 
     /*
      Remove the trailing NUL character and then append, which will add
-     the trailing NUL character from str.
+     the trailing NUL character from str. However, a completely
+     empty buffer will contain 0 characters, so special-case that.
      */
 
     const size_t str_len = strlen(str);
     const size_t sb_len = rpl_strbuffer_get_length(sb);
-    rpl_adjbuffer_remove_element(&sb->_ab, sb_len);
+    if (sb_len > 0) rpl_adjbuffer_remove_element(&sb->_ab, sb_len);
     return rpl_adjbuffer_append_elements(&sb->_ab, (void *)str,
 					 str_len + 1);
 }
