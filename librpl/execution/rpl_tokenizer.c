@@ -222,6 +222,34 @@ rpl_char_is_digit(char ch)
 }
 
 bool
+rpl_char_is_hexdigit(char ch)
+{
+    return rpl_char_is_digit(ch)
+	|| ((ch >= 'A') && (ch <= 'F'))
+	|| ((ch >= 'a') && (ch <= 'f'));
+}
+
+int
+rpl_char_digit_value(char ch)
+{
+    if ((ch >= '0') && (ch <= '9')) {
+	return ch - '0';
+    } else if ((ch >= 'A') && (ch <= 'F')) {
+	return ch - 'A';
+    } else if ((ch >= 'a') && (ch <= 'f')) {
+	return ch - 'a';
+    } else {
+	return -1;
+    }
+}
+
+bool
+rpl_char_is_base_indicator(char ch)
+{
+    return (ch == 'b') || (ch == 'd') || (ch == 'h') || (ch == 'o');
+}
+
+bool
 rpl_char_is_real_start(char ch)
 {
     // TODO: rpl_char_is_real_start
@@ -400,11 +428,151 @@ rpl_tokenizer_get_next(rpl_tokenizer_t tokenizer)
     return token;
 }
 
+/*!
+ Tokenize a binary integer.
+
+ Binary integers use the syntax
+
+     integer := '#' ' '? /[0-9A-Fa-f]+[bdoh]?/.
+
+ where _one space_ is allowed (but not required) between the `'#'` and
+ the digits, and the allowed digits depend on either the current
+ environment's integer base or the optional suffix.
+ */
 RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_integer
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_strbuffer_t buf = NULL;
+    bool appended = false;
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_saw_octothorpe,
+	parser_state_accumulating_digits,
+	parser_state_end,
+    } state = parser_state_start;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    buf = rpl_strbuffer_new_empty(8);
+    if (buf == NULL) goto back_out;
+
+    int max_digit = -1;
+    char base_indicator = '\0';
+
+    do {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    char ch = rpl_tokenizer_get_char(tokenizer);
+	    switch (state) {
+		case parser_state_start: {
+		    assert(ch == '#');
+		    state = parser_state_saw_octothorpe;
+		} break;
+
+		case parser_state_saw_octothorpe: {
+		    if (ch != ' ') {
+			/* Skip exactly one space. */
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    }
+		    state = parser_state_accumulating_digits;
+		} break;
+
+		case parser_state_accumulating_digits: {
+		    if (rpl_char_is_hexdigit(ch)) {
+			char chs[2] = { ch, '\0' };
+			appended = rpl_strbuffer_append_chars(buf, chs);
+			if (appended == false) goto back_out;
+
+			int val = rpl_char_digit_value(ch);
+			assert(val != -1);
+
+			if (val > max_digit) max_digit = val;
+		    } else {
+			/*
+			 A non-digit value ends the parse; unget it
+			 unless it's one of the base indicators.
+			 */
+			if (rpl_char_is_base_indicator(ch)) {
+			    base_indicator = ch;
+			} else {
+			    rpl_tokenizer_unget_char(tokenizer, ch);
+			}
+			state = parser_state_end;
+		    }
+		} break;
+
+		case parser_state_end: {
+		    /*
+		     Shouldn't actually get here, the loop should exit.
+		     */
+		} break;
+	    }
+	}
+    } while (state != parser_state_end);
+
+    /* Some digits must have been read. */
+    if (max_digit == -1) goto back_out;
+
+    /*
+     Ensure the digits agree with any base indicator.
+     */
+    if (base_indicator == 0) {
+	/*
+	 If no base indicator was part of the token, get the base from
+	 the tokenizer's context's current environment.
+	 */
+	rpl_environment_t env
+	    = rpl_context_get_environment(tokenizer->_context);
+	const rpl_base_t base = rpl_environment_get_base(env);
+	switch (base) {
+	    case rpl_base_decimal:     base_indicator = 'd'; break;
+	    case rpl_base_binary:      base_indicator = 'b'; break;
+	    case rpl_base_octal:       base_indicator = 'o'; break;
+	    case rpl_base_hexadecimal: base_indicator = 'h'; break;
+	}
+    }
+
+    int base = 0;
+    switch (base_indicator) {
+	case 'b':
+	    if (max_digit > 1) goto back_out;
+	    base = 2;
+	    break;
+	case 'd':
+	    if (max_digit > 9) goto back_out;
+	    base = 10;
+	    break;
+	case 'o':
+	    if (max_digit > 7) goto back_out;
+	    base = 8;
+	    break;
+	case 'h':
+	    if (max_digit > 15) goto back_out;
+	    base = 16;
+	    break;
+    }
+
+    /* Now that there are digits and a base, convert them to a value. */
+
+    rpl_integer_t rep
+	= strtoull(rpl_strbuffer_get_chars(buf), NULL, base);
+
+    rpl_value_t val = rpl_integer_new(rep);
+    if (val == NULL) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_value, NULL, val);
+    if (token == NULL) goto back_out;
+
+    rpl_strbuffer_free(buf);
+
+back_out:
+    if (buf) rpl_strbuffer_free(buf);
+    if (token) rpl_token_free(token);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
