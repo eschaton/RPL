@@ -657,12 +657,13 @@ rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 	    complete = true;
 	} else if ((idx == 0) && (chs[0] == (char)0xC2)) {
 	    /* Potential unicode delimiter. */
-	    idx += 1;
+	    idx = 1;
 	} else if ((idx == 1) && rpl_chars_are_unicode_delimiter(chs)) {
 	    rpl_tokenizer_unget_char(tokenizer, chs[2]);
 
 	    complete = true;
 	    idx = 0;
+	    chs[1] = '\0';
 	} else if (idx == 0) {
 	    appended = rpl_strbuffer_append_chars(buf, chs);
 	    if (appended == false) goto back_out;
