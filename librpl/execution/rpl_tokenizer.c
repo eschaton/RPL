@@ -19,42 +19,6 @@
 RPL_SOURCE_BEGIN
 
 
-/*
- RPL syntax is straightforward:
-
- integer := '#' /[0-9A-Fa-f]+[bdoh]?/.
- real := /[+-]?[0-9]*(.[0-9]*)?([eE][+-][0-9]+)?/.
- complex := '(' real ',' /[∡∢]?/ real ')'.
- array_element := real | complex | array.
- array := '[' array_element* ']'.
- name_text := character+.
- name := '\'' name_text '\''.
- program := '«' token+ '»'.
- string := '"' character* '"'.
- list := '{' value* '}'.
- tagged := ':' name_text ':' value.
- unit := real '_' name_text.
- value := integer | real | complex | array | name | program
-	| string | list | tagged | unit.
- identifier := name_text.
- comment := '@' character* end_of_line.
-
- Almost all syntactic units in the grammar above are separable by
- whitespace other than the following:
-
- - @ by itself starts a comment that spans to the next end of line
- - name_text does not allow whitespace, ', or "
- - string requires backslash-quoting before " and \ and supports the
-   usual quoted C characters (\\, \t, \r, \n)
- - tagged does not allow whitespace between syntactic subunits
- - unit does not allow whitespace between syntactic subunits
- - array, program, and list support nesting
-
- Identifiers are used to represent operations and are immediately
- evaluated.
- */
-
-
 rpl_tokenizer_t RPL_NULLABLE
 rpl_tokenizer_new(rpl_context_t context)
 {
