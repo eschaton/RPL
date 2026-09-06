@@ -21,9 +21,8 @@ rpl_token_new(rpl_token_type_t type,
 	      const char * RPL_NULLABLE str,
 	      rpl_value_t RPL_NULLABLE value)
 {
-    assert((type == rpl_token_type_identifier) && (str != NULL));
-    assert((type != rpl_token_type_value)
-	   || ((type == rpl_token_type_value) && (value != NULL)));
+    if (type == rpl_token_type_identifier) assert(str != NULL);
+    if (type == rpl_token_type_value)      assert(value != NULL);
 
     rpl_token_t token = calloc(1, sizeof(struct rpl_token));
     if (token) {
