@@ -94,7 +94,7 @@ START_TEST(test_printing_angle)
     const char *qr_str2 = rpl_real_copy_angle_string(qr, env);
     ck_assert_ptr_nonnull(qr_str);
     ck_assert_str_eq(qr_str2, "∢1.5708"); /* π/2 radians = 1.570796 */
-    free((void *)qr_str);
+    free((void *)qr_str2);
 
     rpl_value_release(qr);
 
