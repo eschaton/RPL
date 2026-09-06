@@ -474,6 +474,9 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 		     */
 		} break;
 	    }
+	} else {
+	    /* Break out of loop, no matter what's been parsed. */
+	    state = parser_state_end;
 	}
     } while (state != parser_state_end);
 
