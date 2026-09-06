@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_token_internal.h"
+
 
 RPL_SOURCE_BEGIN
 
@@ -184,6 +186,24 @@ rpl_char_is_whitespace(char ch)
 }
 
 bool
+rpl_char_is_delimiter(char ch)
+{
+    return (ch == '(') || (ch == ')')
+	|| (ch == '[') || (ch == ']')
+	|| (ch == '{') || (ch == '}')
+	|| (ch == '"') || (ch == '\'');
+}
+
+bool
+rpl_chars_are_unicode_delimiter(char chs[3])
+{
+    /* Only check for «» since those are the only syntactic ones. */
+
+    return (chs[0] == (char)0xC2)
+	&& ((chs[1] == (char)0xAB) || (chs[1] == (char)0xBB));
+}
+
+bool
 rpl_char_is_comment_start(char ch)
 {
     return (ch == '@');
@@ -229,8 +249,7 @@ rpl_char_is_name_start(char ch)
 bool
 rpl_char_is_program_start(char ch)
 {
-    // TODO: rpl_char_is_program_start
-    return false;
+    return ch == (char)0xC2; /* C2 AB is start, C2 AB is end */
 }
 
 bool
@@ -257,6 +276,10 @@ rpl_char_is_identifier_start(char ch)
     /*
      Anything that isn't whitespace and doesn't start another token
      (except a real, since there's overlap) can start an identifier.
+
+     Program start is special since it's just the first code point of a
+     UTF-8 representation, that has to be checked separately when the
+     identifier is tokenized.
      */
 
     return (!rpl_char_is_whitespace(ch)
@@ -266,7 +289,6 @@ rpl_char_is_identifier_start(char ch)
 	    && !rpl_char_is_complex_start(ch)
 	    && !rpl_char_is_array_start(ch)
 	    && !rpl_char_is_name_start(ch)
-	    && !rpl_char_is_program_start(ch)
 	    && !rpl_char_is_string_start(ch)
 	    && !rpl_char_is_list_start(ch)
 	    && !rpl_char_is_tagged_start(ch));
@@ -454,7 +476,79 @@ RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_identifier
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_strbuffer_t buf = NULL;
+    bool appended = false;
+
+    size_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    /* Reject program start glyph ('«', 0xC2 0xAB). */
+    char first_bytes[3] = { 0 };
+    first_bytes[0] = rpl_tokenizer_get_char(tokenizer);
+    if (first_bytes[0] == (char)0xC2) {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    first_bytes[1] = rpl_tokenizer_get_char(tokenizer);
+	}
+
+	if (first_bytes[0] == (char)0xAB) goto back_out;
+    }
+
+    /* Accumulate what's already been read. */
+
+    buf = rpl_strbuffer_new_empty(8);
+    if (buf == NULL) goto back_out;
+
+    appended = rpl_strbuffer_append_chars(buf, first_bytes);
+    if (appended == false) goto back_out;
+
+    /*
+     Read every subsequent byte until a whitespace character or a
+     delimiter (both of which end the token), or until there are no more
+     characters (which must be backed out from).
+
+     Note that one pair of Unicode delimiters ('«' and '»') require a
+     little more lookahead than usual.
+     */
+    bool complete = false;
+    int idx = 0;
+    while ((complete == false) && rpl_tokenizer_has_char(tokenizer)) {
+	char chs[3] = { 0 };
+	chs[idx] = rpl_tokenizer_get_char(tokenizer);
+
+	if ((idx == 0) && (rpl_char_is_whitespace(chs[idx])
+			   || rpl_char_is_delimiter(chs[idx])))
+	{
+	    complete = true;
+	} else if ((idx == 0) && (chs[0] == (char)0xC2)) {
+	    /* Potential unicode delimiter. */
+	    idx += 1;
+	} else if ((idx == 1) && rpl_chars_are_unicode_delimiter(chs)) {
+	    rpl_tokenizer_unget_char(tokenizer, chs[2]);
+
+	    complete = true;
+	    idx = 0;
+	} else if (idx == 0) {
+	    appended = rpl_strbuffer_append_chars(buf, chs);
+	    if (appended == false) goto back_out;
+	}
+    }
+
+    if (complete == false) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_identifier,
+			  rpl_strbuffer_get_chars(buf),
+			  NULL);
+
+    rpl_strbuffer_free(buf);
+
+    return token;
+
+back_out:
+    if (buf) rpl_strbuffer_free(buf);
+    if (token) rpl_token_free(token);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
