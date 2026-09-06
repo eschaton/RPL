@@ -106,6 +106,15 @@ rpl_strbuffer_get_length(rpl_strbuffer_t sb)
 }
 
 bool
+rpl_strbuffer_append_char(rpl_strbuffer_t sb, char ch)
+{
+    assert(sb != NULL);
+    assert(ch != '\0');
+
+    return rpl_adjbuffer_append_elements(&sb->_ab, &ch, 1);
+}
+
+bool
 rpl_strbuffer_append_chars(rpl_strbuffer_t sb, const char *str)
 {
     assert(sb != NULL);

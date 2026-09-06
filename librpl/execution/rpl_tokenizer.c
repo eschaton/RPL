@@ -447,8 +447,7 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 
 		case parser_state_accumulating_digits: {
 		    if (rpl_char_is_hexdigit(ch)) {
-			char chs[2] = { ch, '\0' };
-			appended = rpl_strbuffer_append_chars(buf, chs);
+			appended = rpl_strbuffer_append_char(buf, ch);
 			if (appended == false) goto back_out;
 
 			int val = rpl_char_digit_value(ch);

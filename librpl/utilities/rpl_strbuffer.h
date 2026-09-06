@@ -44,6 +44,9 @@ size_t
 rpl_strbuffer_get_length(rpl_strbuffer_t sb);
 
 bool
+rpl_strbuffer_append_char(rpl_strbuffer_t sb, char ch);
+
+bool
 rpl_strbuffer_append_chars(rpl_strbuffer_t sb, const char *str);
 
 bool
