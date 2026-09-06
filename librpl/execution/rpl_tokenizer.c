@@ -334,25 +334,43 @@ rpl_tokenizer_get_next(rpl_tokenizer_t tokenizer)
     if (rpl_tokenizer_has_char(tokenizer)) {
 	char ch = rpl_tokenizer_peek_char(tokenizer);
 
-	if (rpl_char_is_integer_start(ch)) {
+	if ((token == NULL) && rpl_char_is_integer_start(ch)) {
 	    token = rpl_tokenizer_tokenize_integer(tokenizer);
-	} else if (rpl_char_is_real_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_real_start(ch)) {
 	    token = rpl_tokenizer_tokenize_real_or_unit(tokenizer);
-	} else if (rpl_char_is_complex_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_complex_start(ch)) {
 	    token = rpl_tokenizer_tokenize_complex(tokenizer);
-	} else if (rpl_char_is_array_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_array_start(ch)) {
 	    token = rpl_tokenizer_tokenize_array(tokenizer);
-	} else if (rpl_char_is_name_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_name_start(ch)) {
 	    token = rpl_tokenizer_tokenize_name(tokenizer);
-	} else if (rpl_char_is_program_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_program_start(ch)) {
 	    token = rpl_tokenizer_tokenize_program(tokenizer);
-	} else if (rpl_char_is_string_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_string_start(ch)) {
 	    token = rpl_tokenizer_tokenize_string(tokenizer);
-	} else if (rpl_char_is_list_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_list_start(ch)) {
 	    token = rpl_tokenizer_tokenize_list(tokenizer);
-	} else if (rpl_char_is_tagged_start(ch)) {
+	}
+
+	if ((token == NULL) && rpl_char_is_tagged_start(ch)) {
 	    token = rpl_tokenizer_tokenize_tagged(tokenizer);
-	} else {
+	}
+
+	if (token == NULL) {
 	    token = rpl_tokenizer_tokenize_identifier(tokenizer);
 	}
     }
