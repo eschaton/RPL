@@ -40,6 +40,14 @@ bool
 rpl_tokenizer_has_char(rpl_tokenizer_t tokenizer);
 
 RPL_EXPORT
+ssize_t
+rpl_tokenizer_get_mark(rpl_tokenizer_t tokenizer);
+
+RPL_EXPORT
+void
+rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark);
+
+RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer);
 

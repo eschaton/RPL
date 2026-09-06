@@ -160,6 +160,22 @@ rpl_tokenizer_has_char(rpl_tokenizer_t tokenizer)
     return (tokenizer->_cur != -1);
 }
 
+ssize_t
+rpl_tokenizer_get_mark(rpl_tokenizer_t tokenizer)
+{
+    assert(tokenizer != NULL);
+
+    return tokenizer->_cur;
+}
+
+void
+rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark)
+{
+    assert(tokenizer != NULL);
+
+    tokenizer->_cur = mark;
+}
+
 bool
 rpl_char_is_whitespace(char ch)
 {
@@ -275,7 +291,7 @@ rpl_tokenizer_skip_comment(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    ssize_t saved = tokenizer->_cur;
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
 
     char ch = rpl_tokenizer_get_char(tokenizer);
     assert(rpl_char_is_comment_start(ch));
@@ -292,7 +308,7 @@ rpl_tokenizer_skip_comment(rpl_tokenizer_t tokenizer)
     /* We don't have a complete line, rewind. */
 
     if (saw_eol == false) {
-	tokenizer->_cur = saved;
+	rpl_tokenizer_set_mark(tokenizer, mark);
     }
 }
 
