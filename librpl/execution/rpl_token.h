@@ -39,7 +39,7 @@ rpl_token_type_t
 rpl_token_get_type(rpl_token_t token);
 
 RPL_EXPORT
-const char *
+const char * RPL_NULLABLE
 rpl_token_get_str(rpl_token_t token);
 
 RPL_EXPORT
