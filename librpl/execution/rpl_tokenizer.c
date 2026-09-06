@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_string.h"
 #include "rpl_token_internal.h"
 
 
@@ -586,7 +587,85 @@ RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_string
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_strbuffer_t buf = NULL;
+    bool appended = false;
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_accumulating_content,
+	parser_state_saw_escape,
+	parser_state_end,
+    } state = parser_state_start;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    buf = rpl_strbuffer_new_empty(8);
+    if (buf == NULL) goto back_out;
+
+    do {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    char ch = rpl_tokenizer_get_char(tokenizer);
+	    switch (state) {
+		case parser_state_start: {
+		    if (ch == '"') {
+			state = parser_state_accumulating_content;
+		    } else {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+			goto back_out;
+		    }
+		} break;
+		case parser_state_accumulating_content: {
+		    if (ch == '\\') {
+			state = parser_state_saw_escape;
+		    } else if (ch == '"') {
+			state = parser_state_end;
+		    } else {
+			appended = rpl_strbuffer_append_char(buf, ch);
+			if (appended == false) goto back_out;
+		    }
+		} break;
+		case parser_state_saw_escape: {
+		    char to_append;
+		    switch (ch) {
+			case 'n': to_append = '\n'; break;
+			case 'r': to_append = '\r'; break;
+			case 't': to_append = '\t'; break;
+			default: to_append = ch; break;
+		    }
+		    appended = rpl_strbuffer_append_char(buf, ch);
+		    if (appended == false) goto back_out;
+		    state = parser_state_accumulating_content;
+		} break;
+		case parser_state_end: {
+		    /*
+		     Shouldn't actually get here, the loop should exit.
+		     */
+		} break;
+	    }
+	} else {
+	    /* Break out of loop, no matter what's been parsed. */
+	    state = parser_state_end;
+	}
+    } while (state != parser_state_end);
+
+    rpl_value_t val = rpl_string_new(rpl_strbuffer_get_chars(buf),
+				     rpl_strbuffer_get_length(buf));
+    if (val == NULL) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_value, NULL, val);
+    if (token == NULL) goto back_out;
+
+    rpl_strbuffer_free(buf);
+
+    return token;
+
+back_out:
+    if (token) rpl_token_free(token);
+    if (buf) rpl_strbuffer_free(buf);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
