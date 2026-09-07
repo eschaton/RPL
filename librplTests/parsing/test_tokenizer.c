@@ -59,6 +59,50 @@ START_TEST(test_binary_integer)
 }
 END_TEST
 
+START_TEST(test_name)
+{
+    bool appended;
+
+    /* Validate basic name tokenization. */
+    {
+	appended = rpl_tokenizer_append(tokenizer, "'NAME'");
+	ck_assert(appended);
+
+	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(token);
+	ck_assert_int_eq(rpl_token_type_value,
+			 rpl_token_get_type(token));
+
+	rpl_value_t value = rpl_token_get_value(token);
+	ck_assert_ptr_nonnull(value);
+	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
+	ck_assert_int_eq(4, rpl_name_get_rep_len(value));
+	ck_assert_str_eq("NAME", rpl_name_get_rep(value));
+
+	rpl_token_free(token);
+    }
+
+    /* Validate tokenization of a name used to represent units. */
+    {
+	appended = rpl_tokenizer_append(tokenizer, "'m/s^2'");
+	ck_assert(appended);
+
+	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(token);
+	ck_assert_int_eq(rpl_token_type_value,
+			 rpl_token_get_type(token));
+
+	rpl_value_t value = rpl_token_get_value(token);
+	ck_assert_ptr_nonnull(value);
+	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
+	ck_assert_int_eq(5, rpl_name_get_rep_len(value));
+	ck_assert_str_eq("m/s^2", rpl_name_get_rep(value));
+
+	rpl_token_free(token);
+    }
+}
+END_TEST
+
 START_TEST(test_string)
 {
     bool appended = rpl_tokenizer_append(tokenizer,
@@ -73,6 +117,7 @@ START_TEST(test_string)
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_string, rpl_value_get_type(value));
     ck_assert_int_eq(15, rpl_string_get_rep_len(value)); /* no quotes */
+    ck_assert_str_eq("Hello, world!\r\n", rpl_string_get_rep(value));
 
     rpl_token_free(token);
 }
@@ -91,6 +136,7 @@ test_tokenizer_suite(void)
 			      test_tokenizer_setup,
 			      test_tokenizer_teardown);
     tcase_add_test(tc_tokenizer, test_binary_integer);
+    tcase_add_test(tc_tokenizer, test_name);
     tcase_add_test(tc_tokenizer, test_string);
 
     suite_add_tcase(s, tc_tokenizer);

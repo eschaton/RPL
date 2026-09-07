@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_integer.h"
+#include "rpl_name.h"
 #include "rpl_string.h"
 #include "rpl_token_internal.h"
 
@@ -471,11 +473,13 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
     rpl_integer_t rep
 	= strtoull(rpl_strbuffer_get_chars(buf), NULL, base);
 
-    rpl_value_t val = rpl_integer_new(rep);
-    if (val == NULL) goto back_out;
+    rpl_value_t value = rpl_integer_new(rep);
+    if (value == NULL) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, val);
+    token = rpl_token_new(rpl_token_type_value, NULL, value);
     if (token == NULL) goto back_out;
+
+    rpl_value_release(value); /* owned by token now */
 
     rpl_strbuffer_free(buf);
 
@@ -509,10 +513,166 @@ rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
+/*!
+ Return a buffer of name text, if possible.
+
+ Name text is any sequence of characters that aren't whitspace or
+ delimiters, that also doesn't start with a digit.
+ */
+rpl_strbuffer_t RPL_NULLABLE
+rpl_tokenizer_copy_name_text(rpl_tokenizer_t tokenizer)
+{
+    assert(tokenizer != NULL);
+
+    rpl_strbuffer_t buf = NULL;
+    bool appended = false;
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_accumulating,
+	parser_state_saw_C2,
+	parser_state_end,
+    } state = parser_state_start;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    buf = rpl_strbuffer_new_empty(8);
+    if (buf == NULL) goto back_out;
+
+    do {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    char ch = rpl_tokenizer_get_char(tokenizer);
+	    switch (state) {
+		case parser_state_start: {
+		    if (!rpl_char_is_whitespace(ch)
+			&& !rpl_char_is_delimiter(ch)
+			&& !rpl_char_is_digit(ch))
+		    {
+			appended = rpl_strbuffer_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			state = parser_state_accumulating;
+		    } else if (ch == (char)0xC2) {
+			state = parser_state_saw_C2;
+		    } else {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+			state = parser_state_end;
+		    }
+		} break;
+
+		case parser_state_accumulating: {
+		    if (!rpl_char_is_whitespace(ch)
+			&& !rpl_char_is_delimiter(ch))
+		    {
+			appended = rpl_strbuffer_append_char(buf, ch);
+			if (appended == false) goto back_out;
+		    } else if (ch == (char)0xC2) {
+			state = parser_state_saw_C2;
+		    } else {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+			state = parser_state_end;
+		    }
+		} break;
+
+		case parser_state_saw_C2: {
+		    /* Handle «» delimiters since they're UTF-8. */
+		    if ((ch == (char)0xAB) || (ch == (char)0xBB)) {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+			rpl_tokenizer_unget_char(tokenizer, (char)0xC2);
+			state = parser_state_end;
+		    } else {
+			appended
+			    = rpl_strbuffer_append_char(buf,
+							(char)0xC2);
+			if (appended == false) goto back_out;
+
+			appended = rpl_strbuffer_append_char(buf, ch);
+			if (appended == false) goto back_out;
+
+			state = parser_state_accumulating;
+		    }
+		} break;
+
+		case parser_state_end: {
+		    /*
+		     Shouldn't actually get here, the loop should exit.
+		     */
+		} break;
+	    }
+	} else {
+	    /* Break out of loop, no matter what's been parsed. */
+	    state = parser_state_end;
+	}
+    } while (state != parser_state_end);
+
+    /* Do not allow name_text. */
+
+    if (rpl_strbuffer_get_length(buf) == 0) goto back_out;
+
+    return buf;
+
+back_out:
+    if (buf) rpl_strbuffer_free(buf);
+    rpl_tokenizer_set_mark(tokenizer, mark);
+    return NULL;
+}
+
+/*!
+ Tokenize a name.
+
+ Names use the syntax
+
+     name_text = character+.
+     name = '\'' name_text '\''.
+
+ with the constraint that `name_text` does not allow whitespace or
+ delimiters.
+ */
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_name
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_strbuffer_t buf = NULL;
+    rpl_value_t value = NULL;
+
+    ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    if (rpl_tokenizer_has_char(tokenizer)) {
+	char open_quote = rpl_tokenizer_get_char(tokenizer);
+	if (open_quote != '\'') goto back_out;
+    } else {
+	goto back_out;
+    }
+
+    buf = rpl_tokenizer_copy_name_text(tokenizer);
+    if (buf == NULL) goto back_out;
+
+    if (rpl_tokenizer_has_char(tokenizer)) {
+	char close_quote = rpl_tokenizer_get_char(tokenizer);
+	if (close_quote != '\'') goto back_out;
+    } else {
+	goto back_out;
+    }
+
+    value = rpl_name_new(rpl_strbuffer_get_chars(buf),
+			 rpl_strbuffer_get_length(buf));
+    if (value == NULL) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_value, NULL, value);
+    if (token == NULL) goto back_out;
+
+    rpl_value_release(value); /* owned by token now */
+
+    rpl_strbuffer_free(buf);
+
+    return token;
+
+back_out:
+    if (value) rpl_value_release(value);
+    if (token) rpl_token_free(token);
+    if (buf) rpl_strbuffer_free(buf);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
@@ -591,12 +751,14 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 	}
     } while (state != parser_state_end);
 
-    rpl_value_t val = rpl_string_new(rpl_strbuffer_get_chars(buf),
-				     rpl_strbuffer_get_length(buf));
-    if (val == NULL) goto back_out;
+    rpl_value_t value = rpl_string_new(rpl_strbuffer_get_chars(buf),
+				       rpl_strbuffer_get_length(buf));
+    if (value == NULL) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, val);
+    token = rpl_token_new(rpl_token_type_value, NULL, value);
     if (token == NULL) goto back_out;
+
+    rpl_value_release(value); /* owned by token now */
 
     rpl_strbuffer_free(buf);
 
