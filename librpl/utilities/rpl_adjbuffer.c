@@ -47,11 +47,10 @@ rpl_adjbuffer_adjust_storage(rpl_adjbuffer_t *buffer, size_t count)
 	void *ostorage = buffer->_storage;
 	void *nstorage = realloc(ostorage, nsize);
 	if (nstorage == NULL) goto error;
-	void *nextra = ostorage + osize;
+	void *nextra = nstorage + osize;
 	memset(nextra, 0, nsize - osize);
 	buffer->_storage = nstorage;
 	buffer->_capacity = ncap;
-	free(buffer->_storage);
     }
 
     return true;

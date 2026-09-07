@@ -18,7 +18,9 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_strbuffer {
-    rpl_adjbuffer_t _ab;
+    char *_storage;
+    size_t _count;
+    size_t _capacity;
 };
 
 
