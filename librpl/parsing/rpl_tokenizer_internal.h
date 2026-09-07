@@ -23,67 +23,51 @@ struct rpl_tokenizer {
     ssize_t _cur;
 };
 
-RPL_EXPORT
 char
 rpl_tokenizer_get_char(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 void
 rpl_tokenizer_unget_char(rpl_tokenizer_t tokenizer, char ch);
 
-RPL_EXPORT
 char
 rpl_tokenizer_peek_char(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 bool
 rpl_tokenizer_has_char(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 ssize_t
 rpl_tokenizer_get_mark(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 void
 rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer);
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer);
 

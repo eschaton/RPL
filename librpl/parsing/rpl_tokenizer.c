@@ -40,7 +40,6 @@ error:
     return NULL;
 }
 
-RPL_EXPORT
 void
 rpl_tokenizer_free(rpl_tokenizer_t tokenizer)
 {
@@ -415,7 +414,6 @@ rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer)
  the digits, and the allowed digits depend on either the current
  environment's integer base or the optional suffix.
  */
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 {
@@ -556,7 +554,6 @@ back_out:
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
 {
@@ -564,7 +561,6 @@ rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer)
 {
@@ -572,7 +568,6 @@ rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer)
 {
@@ -580,7 +575,6 @@ rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
 {
@@ -588,7 +582,6 @@ rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 {
@@ -596,7 +589,6 @@ rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 {
@@ -683,7 +675,6 @@ back_out:
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer)
 {
@@ -691,7 +682,6 @@ rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer)
 {
@@ -699,7 +689,6 @@ rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 {
