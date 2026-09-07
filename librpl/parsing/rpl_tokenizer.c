@@ -648,7 +648,8 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 			case 't': to_append = '\t'; break;
 			default: to_append = ch; break;
 		    }
-		    appended = rpl_strbuffer_append_char(buf, ch);
+		    appended = rpl_strbuffer_append_char(buf,
+							 to_append);
 		    if (appended == false) goto back_out;
 		    state = parser_state_accumulating_content;
 		} break;

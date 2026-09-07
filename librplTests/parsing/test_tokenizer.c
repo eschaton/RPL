@@ -53,11 +53,30 @@ START_TEST(test_binary_integer)
     rpl_value_t value = rpl_token_get_value(token);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_integer, rpl_value_get_type(value));
+    ck_assert_int_eq(23, rpl_integer_get_rep(value));
 
     rpl_token_free(token);
 }
 END_TEST
 
+START_TEST(test_string)
+{
+    bool appended = rpl_tokenizer_append(tokenizer,
+					 "\"Hello, world!\\r\\n\"");
+    ck_assert(appended);
+
+    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+    ck_assert_ptr_nonnull(token);
+    ck_assert_int_eq(rpl_token_type_value, rpl_token_get_type(token));
+
+    rpl_value_t value = rpl_token_get_value(token);
+    ck_assert_ptr_nonnull(value);
+    ck_assert_int_eq(rpl_type_string, rpl_value_get_type(value));
+    ck_assert_int_eq(15, rpl_string_get_rep_len(value)); /* no quotes */
+
+    rpl_token_free(token);
+}
+END_TEST
 
 
 /* MARK: - Test Infrastructure */
@@ -72,6 +91,7 @@ test_tokenizer_suite(void)
 			      test_tokenizer_setup,
 			      test_tokenizer_teardown);
     tcase_add_test(tc_tokenizer, test_binary_integer);
+    tcase_add_test(tc_tokenizer, test_string);
 
     suite_add_tcase(s, tc_tokenizer);
 
