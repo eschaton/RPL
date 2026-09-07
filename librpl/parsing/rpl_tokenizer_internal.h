@@ -41,36 +41,6 @@ rpl_tokenizer_get_mark(rpl_tokenizer_t tokenizer);
 void
 rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark);
 
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer);
-
-rpl_token_t RPL_NULLABLE
-rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer);
-
 
 RPL_HEADER_END
 
