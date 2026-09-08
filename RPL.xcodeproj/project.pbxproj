@@ -67,6 +67,7 @@
 				parsing/rpl_tokenizer.h,
 				rpl_defines.h,
 				rpl.h,
+				utilities/rpl_unistring.h,
 				values/rpl_array.h,
 				values/rpl_complex.h,
 				values/rpl_integer.h,

@@ -16,8 +16,7 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_name {
-    rpl_integer_t _chars_len;
-    char *_chars;
+    rpl_unistring_t _name_text;
 };
 typedef struct rpl_name rpl_name_t;
 
@@ -26,10 +25,14 @@ void
 rpl_name_free(rpl_value_t name);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
+rpl_name_copy_name_text(rpl_value_t name,
+			rpl_environment_t RPL_NULLABLE env);
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
 rpl_name_copy_string(rpl_value_t name,
 		     rpl_environment_t RPL_NULLABLE env);
-
 
 RPL_HEADER_END
 

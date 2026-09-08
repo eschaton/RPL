@@ -147,13 +147,11 @@ rpl_value_copy(rpl_value_t val)
     return result;
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_value_copy_string(rpl_value_t val,
 		      rpl_environment_t RPL_NULLABLE env)
 {
     assert(val != NULL);
-
-    const char *result = NULL;
 
     switch (val->_type) {
 	case rpl_type_integer: return rpl_integer_copy_string(val, env);
@@ -168,7 +166,7 @@ rpl_value_copy_string(rpl_value_t val,
 	case rpl_type_unit:    return rpl_unit_copy_string(val, env);
     }
 
-    return result;
+    return NULL;
 }
 
 

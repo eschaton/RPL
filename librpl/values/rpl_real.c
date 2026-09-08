@@ -48,7 +48,7 @@ rpl_real_get_rep(rpl_value_t real)
     return real->_reps._real;
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_real_copy_string(rpl_value_t real,
 		     rpl_environment_t RPL_NULLABLE env)
 {
@@ -58,7 +58,7 @@ rpl_real_copy_string(rpl_value_t real,
     return rpl_real_rep_copy_string(real->_reps._real, env);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_real_rep_copy_string(rpl_real_t real_rep,
 			 rpl_environment_t RPL_NULLABLE env)
 {
@@ -68,10 +68,10 @@ rpl_real_rep_copy_string(rpl_real_t real_rep,
 
     snprintf(buf, 80, "%g", real_rep);
 
-    return strdup(buf);
+    return rpl_unistring_new_from_utf8(buf, strlen(buf));
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_real_copy_angle_string(rpl_value_t real,
 			   rpl_environment_t RPL_NULLABLE env)
 {
@@ -81,7 +81,7 @@ rpl_real_copy_angle_string(rpl_value_t real,
     return rpl_real_rep_copy_angle_string(real->_reps._real, env);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 			       rpl_environment_t RPL_NULLABLE env)
 {
@@ -108,7 +108,7 @@ rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 	    break;
     }
 
-    const char *angle_str = NULL;
+    rpl_unistring_t angle_str = NULL;
     size_t angle_str_len = 0;
 
     /*
@@ -126,38 +126,45 @@ rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
     switch (coordinate_system) {
 	case rpl_coordinate_system_rectangular:
 	case rpl_coordinate_system_cylindrical: {
-	    angle_str = cyl_angle_str;
+	    angle_str = rpl_unistring_new_from_utf8(cyl_angle_str,
+						    cyl_angle_str_len);
 	    angle_str_len = cyl_angle_str_len;
 	} break;
 
 	case rpl_coordinate_system_spherical: {
-	    angle_str = sph_angle_str;
+	    angle_str = rpl_unistring_new_from_utf8(sph_angle_str,
+						    sph_angle_str_len);
 	    angle_str_len = sph_angle_str_len;
 	} break;
     }
 
-    const char *theta_str = NULL;
-    char *buf = NULL;
+    rpl_unistring_t theta_str = NULL;
+    rpl_unistring_t buf = NULL;
+    bool appended;
 
     theta_str = rpl_real_rep_copy_string(theta, env);
     if (theta_str == NULL) goto error;
-    const size_t theta_str_len = strlen(theta_str);
+    const size_t theta_str_len = rpl_unistring_get_length(theta_str);
 
-    const size_t buf_size = angle_str_len + theta_str_len + 1;
-    buf = calloc(buf_size, sizeof(char));
+    const size_t buf_size = angle_str_len + theta_str_len;
+    buf = rpl_unistring_new(buf_size);
     if (buf == NULL) goto error;
 
-    strlcpy(buf, angle_str, buf_size);
-    strlcat(buf, theta_str, buf_size);
+    appended = rpl_unistring_append(buf, angle_str);
+    if (appended == false) goto error;
 
-    free((void *)theta_str);
+    appended = rpl_unistring_append(buf, theta_str);
+    if (appended == false) goto error;
+
+    if (angle_str) rpl_unistring_release(angle_str);
+    if (theta_str) rpl_unistring_release(theta_str);
 
     return buf;
 
 error:
-    free((void *)theta_str);
-    free(buf);
-
+    if (angle_str) rpl_unistring_release(angle_str);
+    if (theta_str) rpl_unistring_release(theta_str);
+    if (buf) rpl_unistring_release(buf);
     return NULL;
 }
 

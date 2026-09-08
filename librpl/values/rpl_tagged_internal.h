@@ -31,7 +31,7 @@ void
 rpl_tagged_free(rpl_value_t val);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_tagged_copy_string(rpl_value_t tagged,
 		       rpl_environment_t RPL_NULLABLE env);
 

@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rpl_strbuffer.h"
 #include "rpl_value_internal.h"
+#include "rpl_unistring.h"
 
 
 RPL_SOURCE_BEGIN
@@ -376,7 +376,7 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
     return rpl_adjbuffer_append_element(buffer, rep);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_array_copy_string(rpl_value_t array,
 		      rpl_environment_t RPL_NULLABLE env)
 {
@@ -385,17 +385,15 @@ rpl_array_copy_string(rpl_value_t array,
 
     rpl_adjbuffer_t *buffer = &array->_reps._array._buffer;
 
-    const char *buf = NULL;
-
     const size_t count = rpl_adjbuffer_get_count(buffer);
-    rpl_strbuffer_t sb = rpl_strbuffer_new_empty(count * 8 + 2);
-    if (sb == NULL) goto error;
+    rpl_unistring_t buf = rpl_unistring_new(count * 8 + 2);
+    if (buf == NULL) goto error;
 
     bool appended;
 
     /* [a b c] */
 
-    appended = rpl_strbuffer_append_chars(sb, "[");
+    appended = rpl_unistring_append_char(buf, '[');
     if (appended == false) goto error;
 
     for (size_t idx = 0; idx < count; idx++) {
@@ -404,30 +402,31 @@ rpl_array_copy_string(rpl_value_t array,
 	switch (array->_reps._array._type) {
 	    case rpl_type_real: {
 		rpl_real_t *rep = element;
-		const char *rep_str = rpl_real_rep_copy_string(*rep,
-							       env);
+		rpl_unistring_t rep_str
+		    = rpl_real_rep_copy_string(*rep, env);
 		if (rep_str == NULL) goto error;
-		appended = rpl_strbuffer_append_chars(sb, rep_str);
-		free((void *)rep_str);
+		appended = rpl_unistring_append(buf, rep_str);
+		rpl_unistring_release(rep_str);
 		if (appended == false) goto error;
 	    } break;
 
 	    case rpl_type_complex: {
 		rpl_complex_t *rep = element;
-		const char *rep_str = rpl_complex_rep_copy_string(*rep,
-								  env);
+		rpl_unistring_t rep_str
+		    = rpl_complex_rep_copy_string(*rep, env);
 		if (rep_str == NULL) goto error;
-		appended = rpl_strbuffer_append_chars(sb, rep_str);
-		free((void *)rep_str);
+		appended = rpl_unistring_append(buf, rep_str);
+		rpl_unistring_release(rep_str);
 		if (appended == false) goto error;
 	    } break;
 
 	    case rpl_type_array: {
 		rpl_value_t sub = element;
-		const char *sub_str = rpl_array_copy_string(sub, env);
+		rpl_unistring_t sub_str
+		    = rpl_array_copy_string(sub, env);
 		if (sub_str == NULL) goto error;
-		appended = rpl_strbuffer_append_chars(sb, sub_str);
-		free((void *)sub_str);
+		appended = rpl_unistring_append(buf, sub_str);
+		rpl_unistring_release(sub_str);
 		if (appended == false) goto error;
 	    } break;
 
@@ -438,24 +437,18 @@ rpl_array_copy_string(rpl_value_t array,
 
 	if (idx < (count - 1)) {
 	    /* Add space between elements. */
-	    appended = rpl_strbuffer_append_chars(sb, " ");
+	    appended = rpl_unistring_append_char(buf, ' ');
 	    if (appended == false) goto error;
 	}
     }
 
-    appended = rpl_strbuffer_append_chars(sb, "]");
+    appended = rpl_unistring_append_char(buf, ']');
     if (appended == false) goto error;
-
-    buf = rpl_strbuffer_copy_chars(sb);
-    if (buf == NULL) goto error;
-
-    rpl_strbuffer_free(sb);
 
     return buf;
 
 error:
-    if (sb) rpl_strbuffer_free(sb);
-    free((void *)buf);
+    if (buf) rpl_unistring_release(buf);
     return NULL;
 }
 

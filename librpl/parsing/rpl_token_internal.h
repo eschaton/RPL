@@ -17,14 +17,14 @@ RPL_HEADER_BEGIN
 
 struct rpl_token {
     rpl_token_type_t _type;
-    const char * RPL_NULLABLE _str;
+    rpl_unistring_t RPL_NULLABLE _str;
     rpl_value_t RPL_NULLABLE _value;
 };
 
 RPL_EXPORT
 rpl_token_t RPL_NULLABLE
 rpl_token_new(rpl_token_type_t _type,
-	      const char * RPL_NULLABLE _str,
+	      rpl_unistring_t RPL_NULLABLE _str,
 	      rpl_value_t RPL_NULLABLE _value);
 
 

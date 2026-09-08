@@ -82,15 +82,21 @@ START_TEST(test_binary_printing)
     rpl_value_t four = rpl_integer_new(4);
     ck_assert_ptr_nonnull(four);
 
-    const char *three_str = rpl_value_copy_string(three, env);
+    rpl_unistring_t three_str = rpl_value_copy_string(three, env);
     ck_assert_ptr_nonnull(three_str);
-    ck_assert_str_eq(three_str, "# 11b");
-    free((void *)three_str);
+    char *three_utf8 = rpl_unistring_copy_utf8(three_str);
+    ck_assert_ptr_nonnull(three_utf8);
+    ck_assert_str_eq("# 11b", three_utf8);
+    rpl_unistring_release(three_str);
+    free(three_utf8);
 
-    const char *four_str = rpl_value_copy_string(four, env);
+    rpl_unistring_t four_str = rpl_value_copy_string(four, env);
     ck_assert_ptr_nonnull(four_str);
-    ck_assert_str_eq(four_str, "# 100b");
-    free((void *)four_str);
+    char *four_utf8 = rpl_unistring_copy_utf8(four_str);
+    ck_assert_ptr_nonnull(four_utf8);
+    ck_assert_str_eq("# 100b", four_utf8);
+    rpl_unistring_release(four_str);
+    free(four_utf8);
 
     rpl_value_release(three);
     rpl_value_retain(four);
@@ -107,15 +113,21 @@ START_TEST(test_decimal_printing)
     rpl_value_t four = rpl_integer_new(4);
     ck_assert_ptr_nonnull(four);
 
-    const char *three_str = rpl_value_copy_string(three, NULL);
+    rpl_unistring_t three_str = rpl_value_copy_string(three, NULL);
     ck_assert_ptr_nonnull(three_str);
-    ck_assert_str_eq(three_str, "# 3d");
-    free((void *)three_str);
+    char *three_utf8 = rpl_unistring_copy_utf8(three_str);
+    ck_assert_ptr_nonnull(three_utf8);
+    ck_assert_str_eq("# 3d", three_utf8);
+    rpl_unistring_release(three_str);
+    free(three_utf8);
 
-    const char *four_str = rpl_value_copy_string(four, NULL);
+    rpl_unistring_t four_str = rpl_value_copy_string(four, NULL);
     ck_assert_ptr_nonnull(four_str);
-    ck_assert_str_eq(four_str, "# 4d");
-    free((void *)four_str);
+    char *four_utf8 = rpl_unistring_copy_utf8(three_str);
+    ck_assert_ptr_nonnull(four_utf8);
+    ck_assert_str_eq("# 4d", four_utf8);
+    rpl_unistring_release(four_str);
+    free(four_utf8);
 
     rpl_value_release(three);
     rpl_value_retain(four);

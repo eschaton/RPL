@@ -123,7 +123,7 @@ rpl_list_append(rpl_value_t list, rpl_value_t list2)
     tail->_reps._list._cdr = list2;
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_list_copy_string(rpl_value_t list,
 		     rpl_environment_t RPL_NULLABLE env)
 {

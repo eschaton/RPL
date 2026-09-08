@@ -53,7 +53,7 @@ rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum)
     return value + (quantum - (value % quantum));
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_integer_copy_string(rpl_value_t integer,
 			rpl_environment_t RPL_NULLABLE env)
 {
@@ -63,7 +63,7 @@ rpl_integer_copy_string(rpl_value_t integer,
     return rpl_integer_rep_copy_string(integer->_reps._integer, env);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
 			    rpl_environment_t RPL_NULLABLE env)
 {
@@ -112,7 +112,9 @@ rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
 	} break;
     }
 
-    return strdup(tmpbuf);
+    const size_t tmpbuf_len = strlen(tmpbuf);
+
+    return rpl_unistring_new_from_utf8(tmpbuf, tmpbuf_len);
 }
 
 

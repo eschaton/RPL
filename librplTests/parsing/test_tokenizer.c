@@ -8,6 +8,8 @@
 
 #include "test_tokenizer.h"
 
+#include <stdlib.h>
+
 
 RPL_SOURCE_BEGIN
 
@@ -43,8 +45,13 @@ test_tokenizer_teardown(void)
 
 START_TEST(test_binary_integer)
 {
-    bool appended = rpl_tokenizer_append(tokenizer, "# 17h");
+    const char *text = "# 17h";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
     ck_assert(appended);
+    rpl_unistring_release(buf);
 
     rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(token);
@@ -65,8 +72,13 @@ START_TEST(test_name)
 
     /* Validate basic name tokenization. */
     {
-	appended = rpl_tokenizer_append(tokenizer, "'NAME'");
+	const char *text = "'NAME'";
+	const size_t text_len = strlen(text);
+	rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+	ck_assert_ptr_nonnull(buf);
+	appended = rpl_tokenizer_append(tokenizer, buf);
 	ck_assert(appended);
+	rpl_unistring_release(buf);
 
 	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(token);
@@ -76,16 +88,25 @@ START_TEST(test_name)
 	rpl_value_t value = rpl_token_get_value(token);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
-	ck_assert_int_eq(4, rpl_name_get_rep_len(value));
-	ck_assert_str_eq("NAME", rpl_name_get_rep(value));
+	rpl_unistring_t rep = rpl_name_get_rep(value);
+	ck_assert_ptr_nonnull(rep);
+	char *rep_utf8 = rpl_unistring_copy_utf8(rep);
+	ck_assert_ptr_nonnull(rep_utf8);
+	ck_assert_str_eq("NAME", rep_utf8);
+	free(rep_utf8);
 
 	rpl_token_free(token);
     }
 
     /* Validate tokenization of a name used to represent units. */
     {
-	appended = rpl_tokenizer_append(tokenizer, "'m/s^2'");
+	const char *text = "'m/s^2'";
+	const size_t text_len = strlen(text);
+	rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+	ck_assert_ptr_nonnull(buf);
+	appended = rpl_tokenizer_append(tokenizer, buf);
 	ck_assert(appended);
+	rpl_unistring_release(buf);
 
 	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(token);
@@ -95,8 +116,12 @@ START_TEST(test_name)
 	rpl_value_t value = rpl_token_get_value(token);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
-	ck_assert_int_eq(5, rpl_name_get_rep_len(value));
-	ck_assert_str_eq("m/s^2", rpl_name_get_rep(value));
+	rpl_unistring_t rep = rpl_name_get_rep(value);
+	ck_assert_ptr_nonnull(rep);
+	char *rep_utf8 = rpl_unistring_copy_utf8(rep);
+	ck_assert_ptr_nonnull(rep_utf8);
+	ck_assert_str_eq("m/s^2", rep_utf8);
+	free(rep_utf8);
 
 	rpl_token_free(token);
     }
@@ -105,9 +130,13 @@ END_TEST
 
 START_TEST(test_string)
 {
-    bool appended = rpl_tokenizer_append(tokenizer,
-					 "\"Hello, world!\\r\\n\"");
+    const char *text = "\"Hello, world!\\r\\n\"";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
     ck_assert(appended);
+    rpl_unistring_release(buf);
 
     rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(token);
@@ -116,8 +145,13 @@ START_TEST(test_string)
     rpl_value_t value = rpl_token_get_value(token);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_string, rpl_value_get_type(value));
-    ck_assert_int_eq(15, rpl_string_get_rep_len(value)); /* no quotes */
-    ck_assert_str_eq("Hello, world!\r\n", rpl_string_get_rep(value));
+    rpl_unistring_t rep = rpl_string_get_rep(value);
+    ck_assert_ptr_nonnull(rep);
+    char *rep_utf8 = rpl_unistring_copy_utf8(rep);
+    ck_assert_ptr_nonnull(rep_utf8);
+    ck_assert_int_eq(15, rpl_unistring_get_length(rep)); /* no quotes */
+    ck_assert_str_eq(rep_utf8, "Hello, world!\r\n");
+    free(rep_utf8);
 
     rpl_token_free(token);
 }

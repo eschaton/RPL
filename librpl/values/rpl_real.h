@@ -38,7 +38,7 @@ rpl_real_get_rep(rpl_value_t val);
  ``rpl_value_copy_string``, results in default behavior.)
  */
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_real_copy_angle_string(rpl_value_t val,
 			   rpl_environment_t RPL_NULLABLE env);
 

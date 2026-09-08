@@ -31,15 +31,15 @@ void
 rpl_tokenizer_free(rpl_tokenizer_t tokenizer);
 
 /*!
- Append UTF-8 text to the tokenizer's buffer.
+ Append text to the tokenizer's buffer.
 
- - NOTE: Some form of whitespace is required after every token; this is
+ - NOTE: Some form of whitespace is required after most tokens; this is
          most easily handled by appending a newline after other text if
 	 one is not already present.
  */
 RPL_EXPORT
 bool
-rpl_tokenizer_append(rpl_tokenizer_t tokenizer, const char *str);
+rpl_tokenizer_append(rpl_tokenizer_t tokenizer, rpl_unistring_t str);
 
 /*!
  Copy the next token from the tokenizer.

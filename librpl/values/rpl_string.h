@@ -19,15 +19,11 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_string_new(const char *rep, rpl_integer_t rep_len);
+rpl_string_new(rpl_unistring_t str);
 
 RPL_EXPORT
-const char *
+rpl_unistring_t
 rpl_string_get_rep(rpl_value_t val);
-
-RPL_EXPORT
-rpl_integer_t
-rpl_string_get_rep_len(rpl_value_t val);
 
 // TODO: Other string operations.
 

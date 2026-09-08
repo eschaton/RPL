@@ -59,7 +59,7 @@ rpl_unit_get_units(rpl_value_t unit)
     return unit->_reps._unit._units;
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_unit_copy_string(rpl_value_t unit,
 		     rpl_environment_t RPL_NULLABLE env)
 {
@@ -68,37 +68,43 @@ rpl_unit_copy_string(rpl_value_t unit,
 
     rpl_unit_t *rep = &unit->_reps._unit;
 
-    const char *scalar_str = NULL;
-    const char *units_str = NULL;
-    char *buf = NULL;
+    rpl_unistring_t scalar_str = NULL;
+    rpl_unistring_t units_str = NULL;
+    rpl_unistring_t buf = NULL;
+    bool appended = false;
 
     scalar_str = rpl_real_rep_copy_string(rep->_scalar, env);
     if (scalar_str == NULL) goto error;
-    const size_t scalar_str_len = strlen(scalar_str);
+    const size_t scalar_str_len = rpl_unistring_get_length(scalar_str);
 
-    units_str = rpl_name_copy_string(rep->_units, env);
+    units_str = rpl_name_copy_name_text(rep->_units, env);
     if (units_str == NULL) goto error;
-    const size_t units_str_len = strlen(units_str);
+    const size_t units_str_len = rpl_unistring_get_length(units_str);
 
     /* real_units */
     
-    const size_t buf_len = scalar_str_len + (units_str_len - 1) + 1;
-    buf = calloc(buf_len, sizeof(char));
+    const size_t buf_len = scalar_str_len + 1 + units_str_len;
+    buf = rpl_unistring_new(buf_len);
     if (buf == NULL) goto error;
 
-    strlcpy(buf, scalar_str, buf_len);
-    strlcat(buf, "_", buf_len);
-    strlcat(buf, &units_str[1], buf_len); /* drops surrounding ' */
+    appended = rpl_unistring_append(buf, scalar_str);
+    if (appended == false) goto error;
 
-    free((void *)scalar_str);
-    free((void *)units_str);
+    appended = rpl_unistring_append_char(buf, '_');
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append(buf, units_str);
+    if (appended == false) goto error;
+
+    rpl_unistring_release(scalar_str);
+    rpl_unistring_release(units_str);
 
     return buf;
 
 error:
-    free((void *)scalar_str);
-    free((void *)units_str);
-    free(buf);
+    if (scalar_str) rpl_unistring_release(scalar_str);
+    if (units_str) rpl_unistring_release(units_str);
+    if (buf) rpl_unistring_release(buf);
     return NULL;
 }
 

@@ -25,12 +25,12 @@ rpl_integer_t
 rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_integer_copy_string(rpl_value_t integer,
 			rpl_environment_t RPL_NULLABLE env);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
 			    rpl_environment_t RPL_NULLABLE env);
 

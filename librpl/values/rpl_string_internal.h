@@ -16,8 +16,7 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_string {
-    char *_chars;
-    rpl_integer_t _chars_len;
+    rpl_unistring_t _str;
 };
 typedef struct rpl_string rpl_string_t;
 
@@ -30,7 +29,7 @@ rpl_value_t RPL_NULLABLE
 rpl_string_copy(rpl_value_t string);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_string_copy_string(rpl_value_t string,
 		       rpl_environment_t RPL_NULLABLE env);
 

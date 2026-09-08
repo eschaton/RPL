@@ -23,6 +23,9 @@
 #include "rpl_token.h"
 #include "rpl_tokenizer.h"
 
+/* Utilities */
+#include "rpl_unistring.h"
+
 /* Values */
 #include "rpl_array.h"
 #include "rpl_complex.h"

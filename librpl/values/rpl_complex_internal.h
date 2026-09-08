@@ -30,12 +30,12 @@ void
 rpl_complex_free(rpl_value_t complex);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_complex_copy_string(rpl_value_t complex,
 			rpl_environment_t RPL_NULLABLE env);
 
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 			    rpl_environment_t RPL_NULLABLE env);
 

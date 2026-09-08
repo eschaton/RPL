@@ -19,17 +19,14 @@ RPL_SOURCE_BEGIN
 
 
 rpl_value_t RPL_NULLABLE
-rpl_string_new(const char *rep, rpl_integer_t rep_len)
+rpl_string_new(rpl_unistring_t rep)
 {
     assert(rep != NULL);
-    assert(strlen(rep) == rep_len);
 
     rpl_value_t string = rpl_value_new(rpl_type_string);
     if (string) {
-	string->_reps._string._chars = strdup(rep);
-	if (string->_reps._string._chars == NULL) goto error;
-
-	string->_reps._string._chars_len = rep_len;
+	string->_reps._string._str = rpl_unistring_copy(rep);
+	if (string->_reps._string._str == NULL) goto error;
     }
     return string;
 
@@ -44,7 +41,9 @@ rpl_string_free(rpl_value_t string)
     assert(string != NULL);
     assert(string->_type == rpl_type_string);
 
-    free(string->_reps._string._chars);
+    rpl_string_t *rep = &string->_reps._string;
+
+    rpl_unistring_release(rep->_str);
 }
 
 rpl_value_t RPL_NULLABLE
@@ -53,18 +52,20 @@ rpl_string_copy(rpl_value_t string)
     assert(string != NULL);
     assert(string->_type == rpl_type_string);
 
-    rpl_string_t *string_rep = &string->_reps._string;
+    rpl_string_t *rep = &string->_reps._string;
 
-    return rpl_string_new(string_rep->_chars, string_rep->_chars_len);
+    return rpl_string_new(rep->_str);
 }
 
-const char *
+rpl_unistring_t
 rpl_string_get_rep(rpl_value_t string)
 {
     assert(string != NULL);
     assert(string->_type == rpl_type_string);
 
-    return string->_reps._string._chars;
+    rpl_string_t *rep = &string->_reps._string;
+
+    return rep->_str;
 }
 
 rpl_integer_t
@@ -73,10 +74,12 @@ rpl_string_get_rep_len(rpl_value_t string)
     assert(string != NULL);
     assert(string->_type == rpl_type_string);
 
-    return string->_reps._string._chars_len;
+    rpl_string_t *rep = &string->_reps._string;
+
+    return rpl_unistring_get_length(rep->_str);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_string_copy_string(rpl_value_t string,
 		       rpl_environment_t RPL_NULLABLE env)
 {
@@ -86,15 +89,22 @@ rpl_string_copy_string(rpl_value_t string,
     rpl_string_t *rep = &string->_reps._string;
 
     /* "string" */
-    const size_t buf_len = 1 + rep->_chars_len + 1 + 1;
-    char *buf = calloc(sizeof(char), buf_len);
-    if (buf) {
-	buf[0] = '"';
-	strlcpy(&buf[1], rep->_chars, buf_len - 1);
-	buf[buf_len - 2] = '"';
-    }
+    rpl_unichar_t quote_arr[] = { '"' };
+
+    rpl_unistring_t buf = rpl_unistring_new_from_chars(quote_arr, 1);
+    if (buf == NULL) goto error;
+
+    bool appended = rpl_unistring_append(buf, rep->_str);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buf, '"');
+    if (appended == false) goto error;
 
     return buf;
+
+error:
+    if (buf) rpl_unistring_release(buf);
+    return NULL;
 }
 
 

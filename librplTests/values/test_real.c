@@ -55,15 +55,21 @@ START_TEST(test_printing)
     rpl_value_t four = rpl_real_new(4);
     ck_assert_ptr_nonnull(four);
 
-    const char *three_str = rpl_value_copy_string(three, NULL);
+    rpl_unistring_t three_str = rpl_value_copy_string(three, NULL);
     ck_assert_ptr_nonnull(three_str);
-    ck_assert_str_eq(three_str, "3");
-    free((void *)three_str);
+    char *three_utf8 = rpl_unistring_copy_utf8(three_str);
+    ck_assert_ptr_nonnull(three_utf8);
+    ck_assert_str_eq(three_utf8, "3");
+    rpl_unistring_release(three_str);
+    free(three_utf8);
 
-    const char *four_str = rpl_value_copy_string(four, NULL);
+    rpl_unistring_t four_str = rpl_value_copy_string(four, NULL);
     ck_assert_ptr_nonnull(four_str);
-    ck_assert_str_eq(four_str, "4");
-    free((void *)four_str);
+    char *four_utf8 = rpl_unistring_copy_utf8(four_str);
+    ck_assert_ptr_nonnull(four_utf8);
+    ck_assert_str_eq(four_utf8, "4");
+    rpl_unistring_release(four_str);
+    free(four_utf8);
 
     rpl_value_release(three);
     rpl_value_retain(four);
@@ -82,19 +88,24 @@ START_TEST(test_printing_angle)
     rpl_value_t qr = rpl_real_pi_div_2();
     ck_assert_ptr_nonnull(qr);
 
-    const char *qr_str = rpl_real_copy_angle_string(qr, env);
+    rpl_unistring_t qr_str = rpl_real_copy_angle_string(qr, env);
     ck_assert_ptr_nonnull(qr_str);
-    ck_assert_str_eq(qr_str, "∡90"); /* π/2 radians = 90° */
-    free((void *)qr_str);
+    char *qr_utf8 = rpl_unistring_copy_utf8(qr_str);
+    ck_assert_ptr_nonnull(qr_utf8);
+    ck_assert_str_eq(qr_utf8, "∡90"); /* π/2 radians = 90° */
+    rpl_unistring_release(qr_str);
+    free(qr_utf8);
 
     rpl_environment_set_angle_mode(env, rpl_angle_mode_radians);
     rpl_environment_set_coordinate_system(env,
 	rpl_coordinate_system_spherical);
 
-    const char *qr_str2 = rpl_real_copy_angle_string(qr, env);
-    ck_assert_ptr_nonnull(qr_str);
-    ck_assert_str_eq(qr_str2, "∢1.5708"); /* π/2 radians = 1.570796 */
-    free((void *)qr_str2);
+    rpl_unistring_t qr2_str = rpl_real_copy_angle_string(qr, env);
+    ck_assert_ptr_nonnull(qr2_str);
+    char *qr2_utf8 = rpl_unistring_copy_utf8(qr2_str);
+    ck_assert_str_eq(qr2_utf8, "∢1.5708"); /* π/2 radians = 1.570796 */
+    rpl_unistring_release(qr2_str);
+    free(qr2_utf8);
 
     rpl_value_release(qr);
 

@@ -38,7 +38,7 @@ rpl_complex_free(rpl_value_t complex)
     /* Nothing to do. */
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_complex_copy_string(rpl_value_t complex,
 			rpl_environment_t RPL_NULLABLE env)
 {
@@ -48,13 +48,14 @@ rpl_complex_copy_string(rpl_value_t complex,
     return rpl_complex_rep_copy_string(complex->_reps._complex, env);
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 			    rpl_environment_t RPL_NULLABLE env)
 {
-    const char *a_str = NULL;
-    const char *b_str = NULL;
-    char *buf = NULL;
+    rpl_unistring_t a_str = NULL;
+    rpl_unistring_t b_str = NULL;
+    rpl_unistring_t buf = NULL;
+    bool appended;
 
     const rpl_coordinate_system_t coordinate_system
 	= ((env == NULL)
@@ -87,29 +88,38 @@ rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 	} break;
     }
 
-    const size_t a_str_len = strlen(a_str);
-    const size_t b_str_len = strlen(b_str);
+    const size_t a_str_len = rpl_unistring_get_length(a_str);
+    const size_t b_str_len = rpl_unistring_get_length(b_str);
 
     /* (x,y) or (r,∡θ) */
-    const size_t buf_len = 1 + a_str_len + 1 + b_str_len + 1 + 1;
-    buf = calloc(buf_len, sizeof(char));
+    const size_t buf_len = 1 + a_str_len + 1 + b_str_len + 1;
+    buf = rpl_unistring_new(buf_len);
     if (buf == NULL) goto error;
 
-    strlcat(buf, "(", buf_len);
-    strlcat(buf, a_str, buf_len);
-    strlcat(buf, ",", buf_len);
-    strlcat(buf, b_str, buf_len);
-    strlcat(buf, ")", buf_len);
+    appended = rpl_unistring_append_char(buf, '(');
+    if (appended == false) goto error;
 
-    free((void *)a_str);
-    free((void *)b_str);
+    appended = rpl_unistring_append(buf, a_str);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buf, ',');
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append(buf, a_str);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buf, ')');
+    if (appended == false) goto error;
+
+    rpl_unistring_release(a_str);
+    rpl_unistring_release(b_str);
 
     return buf;
 
 error:
-    free((void *)a_str);
-    free((void *)b_str);
-    free(buf);
+    if (a_str) rpl_unistring_release(a_str);
+    if (b_str) rpl_unistring_release(b_str);
+    if (buf) rpl_unistring_release(buf);
     return NULL;
 }
 

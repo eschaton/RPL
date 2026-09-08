@@ -19,15 +19,11 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_name_new(const char *rep, rpl_integer_t rep_len);
+rpl_name_new(rpl_unistring_t name_text);
 
 RPL_EXPORT
-const char *
+rpl_unistring_t
 rpl_name_get_rep(rpl_value_t val);
-
-RPL_EXPORT
-rpl_integer_t
-rpl_name_get_rep_len(rpl_value_t val);
 
 
 RPL_HEADER_END

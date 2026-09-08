@@ -14,6 +14,7 @@
 
 #include "rpl_defines.h"
 #include "rpl_environment.h"
+#include "rpl_unistring.h"
 
 
 RPL_HEADER_BEGIN
@@ -96,11 +97,9 @@ rpl_value_copy(rpl_value_t val);
 
  As a convenience, passing `NULL` for @a env will behave as if a new,
  default environment is being passed.
-
- - NOTE: The memory for the string must be released with ``free(3)``.
  */
 RPL_EXPORT
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_value_copy_string(rpl_value_t val,
 		      rpl_environment_t RPL_NULLABLE env);
 

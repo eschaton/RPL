@@ -18,7 +18,7 @@ RPL_SOURCE_BEGIN
 
 rpl_token_t RPL_NULLABLE
 rpl_token_new(rpl_token_type_t type,
-	      const char * RPL_NULLABLE str,
+	      rpl_unistring_t RPL_NULLABLE str,
 	      rpl_value_t RPL_NULLABLE value)
 {
     if (type == rpl_token_type_identifier) assert(str != NULL);
@@ -28,7 +28,7 @@ rpl_token_new(rpl_token_type_t type,
     if (token) {
 	token->_type = type;
 	if (type == rpl_token_type_identifier) {
-	    token->_str = strdup(str);
+	    token->_str = rpl_unistring_copy(str);
 	    if (token->_str) goto error;
 	}
 	if (type == rpl_token_type_value && (value != NULL)) {
@@ -48,7 +48,11 @@ rpl_token_free(rpl_token_t token)
 {
     assert(token != NULL);
 
-    free((void *)token->_str);
+    if ((token->_type == rpl_token_type_identifier)
+	&& (token->_str != NULL))
+    {
+	rpl_unistring_release(token->_str);
+    }
 
     if ((token->_type == rpl_token_type_value)
 	&& (token->_value != NULL))
@@ -67,7 +71,7 @@ rpl_token_get_type(rpl_token_t token)
     return token->_type;
 }
 
-const char *
+rpl_unistring_t
 rpl_token_get_str(rpl_token_t token)
 {
     assert(token != NULL);

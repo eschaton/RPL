@@ -17,6 +17,7 @@
 #include "test_real.h"
 #include "test_stack.h"
 #include "test_tokenizer.h"
+#include "test_unistring.h"
 
 
 RPL_SOURCE_BEGIN
@@ -32,6 +33,7 @@ configured_tests_runner(void)
     srunner_add_suite(sr, test_real_suite());
     srunner_add_suite(sr, test_stack_suite());
     srunner_add_suite(sr, test_tokenizer_suite());
+    srunner_add_suite(sr, test_unistring_suite());
 
     return sr;
 }

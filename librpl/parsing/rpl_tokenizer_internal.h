@@ -11,7 +11,9 @@
 
 #include "rpl_tokenizer.h"
 
-#include "rpl_strbuffer.h"
+#include <unistd.h>
+
+#include "rpl_unistring.h"
 
 
 RPL_HEADER_BEGIN
@@ -19,17 +21,17 @@ RPL_HEADER_BEGIN
 
 struct rpl_tokenizer {
     rpl_context_t _context;
-    rpl_strbuffer_t _strbuffer;
+    rpl_unistring_t _strbuffer;
     ssize_t _cur;
 };
 
-char
+rpl_unichar_t
 rpl_tokenizer_get_char(rpl_tokenizer_t tokenizer);
 
 void
-rpl_tokenizer_unget_char(rpl_tokenizer_t tokenizer, char ch);
+rpl_tokenizer_unget_char(rpl_tokenizer_t tokenizer, rpl_unichar_t ch);
 
-char
+rpl_unichar_t
 rpl_tokenizer_peek_char(rpl_tokenizer_t tokenizer);
 
 bool

@@ -61,7 +61,7 @@ rpl_tagged_get_value(rpl_value_t tagged)
     return tagged->_reps._tagged._value;
 }
 
-const char * RPL_NULLABLE
+rpl_unistring_t RPL_NULLABLE
 rpl_tagged_copy_string(rpl_value_t tagged,
 		       rpl_environment_t RPL_NULLABLE env)
 {
@@ -70,40 +70,44 @@ rpl_tagged_copy_string(rpl_value_t tagged,
 
     rpl_tagged_t *rep = &tagged->_reps._tagged;
 
-    const char *tag_str = NULL;
-    const char *value_str = NULL;
-    char *buf = NULL;
+    rpl_unistring_t tag_str = NULL;
+    rpl_unistring_t value_str = NULL;
+    rpl_unistring_t buf = NULL;
+    bool appended = false;
 
-    tag_str = rpl_name_copy_string(rep->_tag, env);
+    tag_str = rpl_name_copy_name_text(rep->_tag, env);
     if (tag_str == NULL) goto error;
-    const size_t tag_str_len = strlen(tag_str);
+    const size_t tag_str_len = rpl_unistring_get_length(tag_str);
 
     value_str = rpl_value_copy_string(rep->_value, env);
     if (value_str == NULL) goto error;
-    const size_t value_str_len = strlen(value_str);
-
-    const size_t buf_len = tag_str_len + value_str_len + 1;
+    const size_t value_str_len = rpl_unistring_get_length(tag_str);
 
     /* :tag:value */
 
-    buf = calloc(sizeof(char), buf_len);
+    buf = rpl_unistring_new(tag_str_len + value_str_len + 2);
     if (buf == NULL) goto error;
 
-    strlcpy(buf, tag_str, buf_len);
-    strlcat(buf, value_str, buf_len);
+    appended = rpl_unistring_append_char(buf, ':');
+    if (appended == false) goto error;
 
-    buf[0] = ':';
-    buf[tag_str_len - 1] = ':';
+    appended = rpl_unistring_append(buf, tag_str);
+    if (appended == false) goto error;
 
-    free((void *)tag_str);
-    free((void *)value_str);
+    appended = rpl_unistring_append_char(buf, ':');
+
+    appended = rpl_unistring_append(buf, value_str);
+    if (appended == false) goto error;
+
+    rpl_unistring_release(tag_str);
+    rpl_unistring_release(value_str);
 
     return buf;
 
 error:
-    free((void *)tag_str);
-    free((void *)value_str);
-    free(buf);
+    if (tag_str) rpl_unistring_release(tag_str);
+    if (value_str) rpl_unistring_release(value_str);
+    if (buf) rpl_unistring_release(buf);
     return NULL;
 }
 
