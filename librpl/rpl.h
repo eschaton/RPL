@@ -12,7 +12,18 @@
 
 #include "rpl_defines.h"
 
-/* Types */
+/* Execution */
+#include "rpl_context.h"
+#include "rpl_environment.h"
+#include "rpl_operation.h"
+#include "rpl_stack.h"
+#include "rpl_tokenizer.h"
+
+/* Parsing */
+#include "rpl_token.h"
+#include "rpl_tokenizer.h"
+
+/* Values */
 #include "rpl_array.h"
 #include "rpl_complex.h"
 #include "rpl_integer.h"
@@ -24,13 +35,6 @@
 #include "rpl_tagged.h"
 #include "rpl_unit.h"
 #include "rpl_value.h"
-
-/* Execution */
-#include "rpl_context.h"
-#include "rpl_environment.h"
-#include "rpl_operation.h"
-#include "rpl_stack.h"
-#include "rpl_tokenizer.h"
 
 
 #endif /* __RPL__rpl__h__ */
