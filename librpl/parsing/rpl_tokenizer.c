@@ -17,6 +17,7 @@
 #include "rpl_name.h"
 #include "rpl_string.h"
 #include "rpl_token_internal.h"
+#include "rpl_unit.h"
 
 
 RPL_SOURCE_BEGIN
@@ -161,65 +162,72 @@ rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark)
     tokenizer->_cur = mark;
 }
 
-const rpl_unichar_t rpl_char_space = ' ';
-const rpl_unichar_t rpl_char_tab = '\t';
-const rpl_unichar_t rpl_char_linefeed = '\n';
-const rpl_unichar_t rpl_char_carriage_return = '\r';
-const rpl_unichar_t rpl_char_single_quote = '\'';
-const rpl_unichar_t rpl_char_double_quote = '"';
-const rpl_unichar_t rpl_char_backslash = '\\';
-const rpl_unichar_t rpl_char_at = '@';
-const rpl_unichar_t rpl_char_octothorpe = '#';
-const rpl_unichar_t rpl_char_colon = ':';
-const rpl_unichar_t rpl_char_parenthesis_open = '(';
-const rpl_unichar_t rpl_char_parenthesis_close = ')';
-const rpl_unichar_t rpl_char_bracket_open = '(';
-const rpl_unichar_t rpl_char_bracket_close = ')';
-const rpl_unichar_t rpl_char_brace_open = '(';
-const rpl_unichar_t rpl_char_brace_close = ')';
-const rpl_unichar_t rpl_char_chevron_open = 0xAB;
-const rpl_unichar_t rpl_char_chevron_close = 0xBB;
+const rpl_unichar_t rpl_unichar_space = ' ';
+const rpl_unichar_t rpl_unichar_tab = '\t';
+const rpl_unichar_t rpl_unichar_linefeed = '\n';
+const rpl_unichar_t rpl_unichar_carriage_return = '\r';
+const rpl_unichar_t rpl_unichar_single_quote = '\'';
+const rpl_unichar_t rpl_unichar_double_quote = '"';
+const rpl_unichar_t rpl_unichar_backslash = '\\';
+const rpl_unichar_t rpl_unichar_plus = '+';
+const rpl_unichar_t rpl_unichar_minus = '-';
+const rpl_unichar_t rpl_unichar_period = '.';
+const rpl_unichar_t rpl_unichar_comma = ',';
+const rpl_unichar_t rpl_unichar_at = '@';
+const rpl_unichar_t rpl_unichar_octothorpe = '#';
+const rpl_unichar_t rpl_unichar_colon = ':';
+const rpl_unichar_t rpl_unichar_underscore = '_';
+const rpl_unichar_t rpl_unichar_parenthesis_open = '(';
+const rpl_unichar_t rpl_unichar_parenthesis_close = ')';
+const rpl_unichar_t rpl_unichar_bracket_open = '[';
+const rpl_unichar_t rpl_unichar_bracket_close = ']';
+const rpl_unichar_t rpl_unichar_brace_open = '{';
+const rpl_unichar_t rpl_unichar_brace_close = '}';
+const rpl_unichar_t rpl_unichar_chevron_open = 0x000AB;
+const rpl_unichar_t rpl_unichar_chevron_close = 0x000BB;
+const rpl_unichar_t rpl_unichar_measured_angle = 0x02221;
+const rpl_unichar_t rpl_unichar_spherical_angle = 0x02222;
 
 bool
 rpl_char_is_end_of_line(rpl_unichar_t ch)
 {
-    return ((ch == rpl_char_linefeed)
-	    || (ch == rpl_char_carriage_return));
+    return ((ch == rpl_unichar_linefeed)
+	    || (ch == rpl_unichar_carriage_return));
 }
 
 bool
 rpl_char_is_whitespace(rpl_unichar_t ch)
 {
-    return ((ch == rpl_char_space)
-	    || (ch == rpl_char_tab)
+    return ((ch == rpl_unichar_space)
+	    || (ch == rpl_unichar_tab)
 	    || rpl_char_is_end_of_line(ch));
 }
 
 bool
 rpl_char_is_delimiter(rpl_unichar_t ch)
 {
-    return ((ch == rpl_char_parenthesis_open)
-	    || (ch == rpl_char_parenthesis_close))
-	|| ((ch == rpl_char_bracket_open)
-	    || (ch == rpl_char_bracket_close))
-	|| ((ch == rpl_char_brace_open)
-	    || (ch == rpl_char_brace_close))
-	|| ((ch == rpl_char_chevron_open)
-	    || (ch == rpl_char_chevron_close))
-	|| (ch == rpl_char_double_quote)
-	|| (ch == rpl_char_single_quote);
+    return ((ch == rpl_unichar_parenthesis_open)
+	    || (ch == rpl_unichar_parenthesis_close))
+	|| ((ch == rpl_unichar_bracket_open)
+	    || (ch == rpl_unichar_bracket_close))
+	|| ((ch == rpl_unichar_brace_open)
+	    || (ch == rpl_unichar_brace_close))
+	|| ((ch == rpl_unichar_chevron_open)
+	    || (ch == rpl_unichar_chevron_close))
+	|| (ch == rpl_unichar_double_quote)
+	|| (ch == rpl_unichar_single_quote);
 }
 
 bool
 rpl_char_is_comment_start(rpl_unichar_t ch)
 {
-    return (ch == rpl_char_at);
+    return (ch == rpl_unichar_at);
 }
 
 bool
 rpl_char_is_integer_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_octothorpe;
+    return ch == rpl_unichar_octothorpe;
 }
 
 bool
@@ -256,53 +264,55 @@ rpl_char_is_base_indicator(rpl_unichar_t ch)
     return (ch == 'b') || (ch == 'd') || (ch == 'h') || (ch == 'o');
 }
 
+/*! A real number can start with a sign, a digit, or a decimal point. */
 bool
 rpl_char_is_real_start(rpl_unichar_t ch)
 {
-    // TODO: rpl_char_is_real_start
-    return false;
+    return ((ch == rpl_unichar_plus) || (ch == rpl_unichar_minus))
+	|| (ch == rpl_unichar_period)
+	|| rpl_char_is_digit(ch);
 }
 
 bool
 rpl_char_is_complex_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_parenthesis_open;
+    return ch == rpl_unichar_parenthesis_open;
 }
 
 bool
 rpl_char_is_array_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_bracket_open;
+    return ch == rpl_unichar_bracket_open;
 }
 
 bool
 rpl_char_is_name_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_single_quote;
+    return ch == rpl_unichar_single_quote;
 }
 
 bool
 rpl_char_is_program_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_chevron_open;
+    return ch == rpl_unichar_chevron_open;
 }
 
 bool
 rpl_char_is_string_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_double_quote;
+    return ch == rpl_unichar_double_quote;
 }
 
 bool
 rpl_char_is_list_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_brace_open;
+    return ch == rpl_unichar_brace_open;
 }
 
 bool
 rpl_char_is_tagged_start(rpl_unichar_t ch)
 {
-    return ch == rpl_char_colon;
+    return ch == rpl_unichar_colon;
 }
 
 bool
@@ -433,7 +443,7 @@ rpl_tokenizer_copy_name_text(rpl_tokenizer_t tokenizer)
 	}
     } while (state != parser_state_end);
 
-    /* Do not allow name_text. */
+    /* Do not allow empty name_text. */
 
     if (rpl_unistring_get_length(buf) == 0) goto back_out;
 
@@ -441,6 +451,204 @@ rpl_tokenizer_copy_name_text(rpl_tokenizer_t tokenizer)
 
 back_out:
     if (buf) rpl_unistring_release(buf);
+    rpl_tokenizer_set_mark(tokenizer, mark);
+    return NULL;
+}
+
+/*!
+ Return a real value for the next token, if possible.
+
+ Real numbers use the syntax
+
+     real := /[+-]?[0-9]*(.[0-9]*)?([eE][+-][0-9]+)?/.
+
+ or, to describe it in prose describing more nuance than the above
+ allows:
+
+ - An optional sign;
+ - Optional while digits with an optional decimal point followed by zero
+   or more fractional digits;
+ - An optional exponent marker and exponent digits.
+
+ */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_copy_real_value(rpl_tokenizer_t tokenizer)
+{
+    assert(tokenizer != NULL);
+
+    rpl_value_t value = NULL;
+    rpl_unistring_t buf = NULL;
+    bool complete = false;
+    bool appended;
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_sign,
+	parser_state_whole_part,
+	parser_state_decimal_point,
+	parser_state_fractional_part,
+	parser_state_exponent_marker,
+	parser_state_exponent_sign,
+	parser_state_exponent_part,
+	parser_state_end,
+    } state = parser_state_start;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    buf = rpl_unistring_new(8);
+    if (buf == NULL) goto back_out;
+
+    int whole_digit_count = -1;
+    int fractional_digit_count = -1;
+    int exponent_digit_count = -1;
+    do {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    rpl_unichar_t ch = rpl_tokenizer_get_char(tokenizer);
+	    switch (state) {
+		case parser_state_start: {
+		    if ((ch == rpl_unichar_plus)
+			|| (ch == rpl_unichar_minus))
+		    {
+			state = parser_state_sign;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else if (rpl_char_is_digit(ch)) {
+			state = parser_state_whole_part;
+			whole_digit_count = 0;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else if (ch == rpl_unichar_period) {
+			state = parser_state_decimal_point;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else {
+			goto back_out;
+		    }
+		} break;
+
+		case parser_state_sign: {
+		    if ((ch == rpl_unichar_plus)
+			|| (ch == rpl_unichar_minus))
+		    {
+			appended = rpl_unistring_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			state = parser_state_whole_part;
+			whole_digit_count = 0;
+		    } else {
+			goto back_out;
+		    }
+		} break;
+
+		case parser_state_whole_part: {
+		    if (rpl_char_is_digit(ch)) {
+			appended = rpl_unistring_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			whole_digit_count += 1;
+		    } else if (ch == rpl_unichar_period) {
+			state = parser_state_decimal_point;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else if ((ch == 'E') || (ch == 'e')) {
+			state = parser_state_exponent_marker;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else {
+			complete = whole_digit_count > 0;
+			state = parser_state_end;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    }
+		} break;
+
+		case parser_state_decimal_point: {
+		    assert(ch == rpl_unichar_period);
+		    appended = rpl_unistring_append_char(buf, ch);
+		    if (appended == false) goto back_out;
+		    fractional_digit_count = 0;
+		    state = parser_state_fractional_part;
+		} break;
+
+		case parser_state_fractional_part: {
+		    if (rpl_char_is_digit(ch)) {
+			appended = rpl_unistring_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			fractional_digit_count += 1;
+		    } else if ((ch == 'E') || (ch == 'e')) {
+			state = parser_state_exponent_marker;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else {
+			complete = fractional_digit_count > 0;
+			state = parser_state_end;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    }
+		} break;
+
+		case parser_state_exponent_marker: {
+		    assert((ch == 'E') || (ch == 'e'));
+		    appended = rpl_unistring_append_char(buf, ch);
+		    if (appended == false) goto back_out;
+		    state = parser_state_exponent_sign;
+		} break;
+
+		case parser_state_exponent_sign: {
+		    if ((ch == rpl_unichar_plus)
+			|| (ch == rpl_unichar_minus))
+		    {
+			appended = rpl_unistring_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			exponent_digit_count = 0;
+			state = parser_state_exponent_part;
+		    } else if (rpl_char_is_digit(ch)) {
+			exponent_digit_count = 0;
+			state = parser_state_exponent_part;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    } else {
+			/*
+			 Not complete, something must come after 'E'
+			 (within the real) before another token.
+			 */
+			state = parser_state_end;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    }
+		} break;
+
+		case parser_state_exponent_part: {
+		    if (rpl_char_is_digit(ch)) {
+			appended = rpl_unistring_append_char(buf, ch);
+			if (appended == false) goto back_out;
+			exponent_digit_count += 1;
+		    } else {
+			complete = exponent_digit_count > 0;
+			state = parser_state_end;
+			rpl_tokenizer_unget_char(tokenizer, ch);
+		    }
+		} break;
+
+		case parser_state_end: {
+		    /*
+		     Shouldn't actually get here, the loop should exit.
+		     */
+		} break;
+	    }
+	} else {
+	    /* Break out of loop, no matter what's been parsed. */
+	    state = parser_state_end;
+	}
+    } while (state != parser_state_end);
+
+    if (!complete) goto back_out;
+
+    /* buf contains the textual form of a real number */
+
+    char *buf_utf8 = rpl_unistring_copy_utf8(buf);
+    if (buf_utf8 == NULL) goto back_out;
+    rpl_real_t rep = strtod(buf_utf8, NULL);
+    free(buf_utf8);
+
+    value = rpl_real_new(rep);
+    if (value == NULL) goto back_out;
+
+    rpl_unistring_release(buf);
+
+    return value;
+
+back_out:
+    if (buf) rpl_unistring_release(buf);
+    if (value) rpl_value_release(value);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
@@ -485,12 +693,12 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 	    rpl_unichar_t ch = rpl_tokenizer_get_char(tokenizer);
 	    switch (state) {
 		case parser_state_start: {
-		    assert(ch == rpl_char_octothorpe);
+		    assert(ch == rpl_unichar_octothorpe);
 		    state = parser_state_saw_octothorpe;
 		} break;
 
 		case parser_state_saw_octothorpe: {
-		    if (ch != rpl_char_space) {
+		    if (ch != rpl_unichar_space) {
 			/* Skip exactly one space. */
 			rpl_tokenizer_unget_char(tokenizer, ch);
 		    }
@@ -603,7 +811,57 @@ back_out:
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_real_or_unit
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    rpl_value_t real_part = NULL;
+    rpl_unistring_t unit_text = NULL;
+    rpl_value_t unit_part = NULL;
+    rpl_value_t value = NULL;
+
+    real_part = rpl_tokenizer_copy_real_value(tokenizer);
+    if (real_part == NULL) goto back_out;
+
+    if (rpl_tokenizer_has_char(tokenizer)) {
+	rpl_unichar_t ch = rpl_tokenizer_get_char(tokenizer);
+	if (ch == rpl_unichar_underscore) {
+	    unit_text = rpl_tokenizer_copy_name_text(tokenizer);
+	    if (unit_text == NULL) goto back_out;
+
+	    unit_part = rpl_name_new(unit_text);
+	    if (unit_part == NULL) goto back_out;
+
+	    value = rpl_unit_new(rpl_real_get_rep(real_part),
+				 unit_part);
+	    if (value == NULL) goto back_out;
+	} else {
+	    rpl_tokenizer_unget_char(tokenizer, ch);
+
+	    value = real_part;
+	    real_part = NULL;
+	}
+    }
+
+    if (value) {
+	token = rpl_token_new(rpl_token_type_value, NULL, value);
+	if (token == NULL) goto back_out;
+    }
+
+    if (real_part) rpl_value_release(real_part);
+    if (unit_text) rpl_unistring_release(unit_text);
+    if (unit_part) rpl_value_release(unit_part);
+
+    return token;
+
+back_out:
+    if (real_part) rpl_value_release(real_part);
+    if (unit_text) rpl_unistring_release(unit_text);
+    if (unit_part) rpl_value_release(unit_part);
+    if (value) rpl_value_release(value);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
@@ -645,7 +903,7 @@ rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
 
     if (rpl_tokenizer_has_char(tokenizer)) {
 	rpl_unichar_t open_quote = rpl_tokenizer_get_char(tokenizer);
-	if (open_quote != rpl_char_single_quote) goto back_out;
+	if (open_quote != rpl_unichar_single_quote) goto back_out;
     } else {
 	goto back_out;
     }
@@ -655,7 +913,7 @@ rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
 
     if (rpl_tokenizer_has_char(tokenizer)) {
 	rpl_unichar_t close_quote = rpl_tokenizer_get_char(tokenizer);
-	if (close_quote != rpl_char_single_quote) goto back_out;
+	if (close_quote != rpl_unichar_single_quote) goto back_out;
     } else {
 	goto back_out;
     }
@@ -713,7 +971,7 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 	    rpl_unichar_t ch = rpl_tokenizer_get_char(tokenizer);
 	    switch (state) {
 		case parser_state_start: {
-		    if (ch == rpl_char_double_quote) {
+		    if (ch == rpl_unichar_double_quote) {
 			state = parser_state_accumulating_content;
 		    } else {
 			rpl_tokenizer_unget_char(tokenizer, ch);
@@ -721,9 +979,9 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 		    }
 		} break;
 		case parser_state_accumulating_content: {
-		    if (ch == rpl_char_backslash) {
+		    if (ch == rpl_unichar_backslash) {
 			state = parser_state_saw_escape;
-		    } else if (ch == rpl_char_double_quote) {
+		    } else if (ch == rpl_unichar_double_quote) {
 			state = parser_state_end;
 		    } else {
 			appended = rpl_unistring_append_char(buf, ch);
@@ -734,16 +992,16 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 		    rpl_unichar_t to_append = 0;
 		    switch (ch) {
 			case 'n':
-			    to_append = rpl_char_linefeed;
+			    to_append = rpl_unichar_linefeed;
 			    break;
 			case 'r':
-			    to_append = rpl_char_carriage_return;
+			    to_append = rpl_unichar_carriage_return;
 			    break;
 			case 't':
-			    to_append = rpl_char_tab;
+			    to_append = rpl_unichar_tab;
 			    break;
-			case rpl_char_backslash:
-			case rpl_char_double_quote:
+			case rpl_unichar_backslash:
+			case rpl_unichar_double_quote:
 			    to_append = ch;
 			    break;
 		    }
