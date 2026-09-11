@@ -289,6 +289,8 @@ rpl_stream_FILE_open(rpl_stream_t stream, const char *path,
 	    saved_errno = ENOMEM;
 	    goto error;
 	}
+
+	aux->_path = pathdup;
     }
 
     return 0;

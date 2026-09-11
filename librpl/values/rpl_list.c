@@ -106,21 +106,7 @@ rpl_list_append(rpl_value_t list, rpl_value_t list2)
     assert(list2 != NULL);
     assert(list2->_type == rpl_type_list);
 
-    /* Follow list's cdr to a node that has a NULL cdr. */
-
-    rpl_value_t next = list;
-    rpl_value_t tail = NULL;
-    do {
-	assert(next->_type == rpl_type_list);
-	if (next->_reps._list._cdr == NULL) {
-	    tail = next;
-	}
-	next = next->_reps._list._cdr;
-    } while (tail != NULL);
-
-    /* Set the tail's cdr to val. */
-
-    tail->_reps._list._cdr = list2;
+    // TODO: rpl_list_append
 }
 
 rpl_unistring_t RPL_NULLABLE
