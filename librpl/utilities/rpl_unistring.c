@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -213,6 +214,15 @@ rpl_unistring_release(rpl_unistring_t str)
     }
 }
 
+void
+rpl_unistring_immortalize(rpl_unistring_t str)
+{
+    assert(str != NULL);
+    assert(str->_refcnt != INT_MAX);
+
+    str->_refcnt = INT_MAX;
+}
+
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_copy(rpl_unistring_t str)
 {
@@ -370,6 +380,49 @@ rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b)
 	return memcmp(a->_storage, b->_storage,
 		      a->_count * sizeof(rpl_unichar_t));
     }
+}
+
+rpl_unistring_t
+rpl_unistring_get_eol(void)
+{
+    static rpl_unistring_t rpl_unistring_eol = NULL;
+
+    if (rpl_unistring_eol == NULL) {
+	rpl_unichar_t ch = { '\n' };
+	rpl_unistring_eol = rpl_unistring_new_from_chars(&ch, 1);
+	assert(rpl_unistring_eol != NULL);
+	rpl_unistring_immortalize(rpl_unistring_eol);
+    }
+
+    return rpl_unistring_eol;
+}
+
+rpl_unistring_t
+rpl_unistring_with_digit(int d)
+{
+    assert((d >= 0) && (d <= 9));
+
+    static rpl_unistring_t rpl_unistring_digits[10] = { NULL };
+
+    if (rpl_unistring_digits[d] == NULL) {
+	rpl_unichar_t dch = { '0' + d };
+	rpl_unistring_digits[d] = rpl_unistring_new_from_chars(&dch, 1);
+	assert(rpl_unistring_digits[d] != NULL);
+	rpl_unistring_immortalize(rpl_unistring_digits[d]);
+    }
+
+    return rpl_unistring_digits[d];
+}
+
+rpl_unistring_t RPL_NULLABLE
+rpl_unistring_with_integer(int64_t i)
+{
+    char buf[64] = {0};
+
+    int len = snprintf(buf, 64, "%llu", i);
+    if (len < 0) return NULL;
+
+    return rpl_unistring_new_from_utf8(buf, len);
 }
 
 

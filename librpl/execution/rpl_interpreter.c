@@ -49,7 +49,6 @@ error:
     return NULL;
 }
 
-RPL_EXPORT
 void
 rpl_interpreter_free(rpl_interpreter_t interp)
 {
@@ -63,7 +62,14 @@ rpl_interpreter_free(rpl_interpreter_t interp)
     free(interp);
 }
 
-RPL_EXPORT
+rpl_context_t
+rpl_interpreter_get_context(rpl_interpreter_t interp)
+{
+    assert(interp != NULL);
+
+    return interp->_context;
+}
+
 bool
 rpl_interpreter_append_input(rpl_interpreter_t interp,
 			     rpl_unistring_t str)
@@ -74,7 +80,6 @@ rpl_interpreter_append_input(rpl_interpreter_t interp,
     return rpl_tokenizer_append(interp->_tokenizer, str);
 }
 
-RPL_EXPORT
 bool
 rpl_interpreter_has_output(rpl_interpreter_t interp)
 {
@@ -109,51 +114,140 @@ rpl_interpreter_step(rpl_interpreter_t interp)
 	rpl_token_free(token);
     }
 
-    bool appended;
-    rpl_unistring_t s = NULL;
-    rpl_unistring_t eol = NULL;
-
-    /* Dump the stack to the output. */
-
-    if (success) {
-	rpl_stack_t stack = rpl_context_get_stack(interp->_context);
-	assert(stack != NULL);
-
-	rpl_environment_t env
-	    = rpl_context_get_environment(interp->_context);
-	assert(env != NULL);
-
-	const rpl_integer_t depth = rpl_stack_get_depth(stack);
-	if (depth > 0) {
-	    eol = rpl_unistring_new_from_utf8("\n", 1);
-	    if (eol == NULL) goto error;
-
-	    for (rpl_integer_t i = depth; i > 0; --i) {
-		rpl_value_t v = rpl_stack_get_value_at_level(stack, i);
-		assert(v != NULL);
-
-		s = rpl_value_copy_string(v, env);
-		if (s == NULL) goto error;
-
-		appended = rpl_unistring_append(interp->_output, s);
-		if (appended == false) goto error;
-		rpl_unistring_release(s); s = NULL;
-
-		appended = rpl_unistring_append(interp->_output, eol);
-		if (appended == false) goto error;
-	    }
-
-	    rpl_unistring_release(eol);
-	}
-    }
-
-error:
-    if (eol) rpl_unistring_release(eol);
-    if (s) rpl_unistring_release(s);
-
     return success;
 }
 
+bool
+rpl_interpreter_output_stack(rpl_interpreter_t interp)
+{
+    assert(interp != NULL);
+
+    bool appended;
+    rpl_unistring_t s = NULL;
+
+    rpl_context_t context = interp->_context;
+
+    rpl_stack_t stack = rpl_context_get_stack(context);
+    assert(stack != NULL);
+
+    rpl_environment_t env = rpl_context_get_environment(context);
+    assert(env != NULL);
+
+    const rpl_integer_t depth = rpl_stack_get_depth(stack);
+    if (depth > 0) {
+	rpl_unistring_t eol = rpl_unistring_get_eol();
+
+	for (rpl_integer_t i = depth; i > 0; --i) {
+	    rpl_value_t v = rpl_stack_get_value_at_level(stack, i);
+	    assert(v != NULL);
+
+	    s = rpl_unistring_new(80);
+	    if (s == NULL) goto error;
+
+	    rpl_unistring_t is = rpl_unistring_with_integer(i);
+	    if (is == NULL) goto error;
+	    appended = rpl_unistring_append(s, is);
+	    rpl_unistring_release(is);
+	    if (appended == false) goto error;
+
+	    appended = rpl_unistring_append_char(s, ':');
+	    if (appended == false) goto error;
+
+	    appended = rpl_unistring_append_char(s, ' ');
+	    if (appended == false) goto error;
+
+	    rpl_unistring_t vs = rpl_value_copy_string(v, env);
+	    if (vs == NULL) goto error;
+	    appended = rpl_unistring_append(s, vs);
+	    rpl_unistring_release(vs);
+	    if (appended == false) goto error;
+
+	    appended = rpl_unistring_append(s, eol);
+	    if (appended == false) goto error;
+
+	    appended = rpl_unistring_append(interp->_output, s);
+	    if (appended == false) goto error;
+
+	    rpl_unistring_release(s); s = NULL;
+	}
+    }
+
+    return true;
+
+error:
+    if (s) rpl_unistring_release(s);
+
+    return false;
+}
+
+bool
+rpl_interpreter_eval_value(rpl_interpreter_t interp, rpl_value_t value)
+{
+    assert(interp != NULL);
+    assert(value != NULL);
+
+    /*
+     At this level, evaluating a value just involves pushing it on the
+     stack.
+     */
+
+    rpl_stack_t stack = rpl_context_get_stack(interp->_context);
+    rpl_stack_push(stack, value);
+
+    /* The stack takes ownership of the value. */
+
+    rpl_value_release(value);
+
+    return true;
+}
+
+bool
+rpl_interpreter_eval_identifier(rpl_interpreter_t interp,
+				rpl_unistring_t identifier)
+{
+    assert(interp != NULL);
+    assert(identifier != NULL);
+
+    bool success = false;
+
+    /*
+     If the identifier is in the operation table, get and invoke the
+     associated operation, and return whether its invocation succeeded.
+     */
+
+    rpl_operation_t op = rpl_operation_table_get(interp->_optable,
+						 identifier);
+    if (op) {
+	success = rpl_operation_invoke(op, interp->_context);
+	goto done;
+    }
+
+    /*
+     If the identifier represents a variable in the local or global
+     scope, evaluate its value the same way a direct value would be.
+     */
+
+    rpl_value_t value = rpl_scope_get_variable(interp->_local,
+					       identifier, true);
+    if (value) {
+	success = rpl_interpreter_eval_value(interp, value);
+	goto done;
+    }
+
+    /* Create a name from the identifier, and treat that as a value. */
+
+    rpl_value_t name = rpl_name_new(identifier);
+    if (name) {
+	success = rpl_interpreter_eval_value(interp, name);
+	goto done;
+    } else {
+	success = false;
+	goto done;
+    }
+
+done:
+    return success;
+}
 
 bool
 rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
@@ -166,67 +260,11 @@ rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
     rpl_token_type_t token_type = rpl_token_get_type(token);
     if (token_type == rpl_token_type_value) {
 	rpl_value_t value = rpl_token_get_value(token);
-	rpl_value_retain(value);
-
-	rpl_stack_t stack = rpl_context_get_stack(interp->_context);
-	rpl_stack_push(stack, value);
-	rpl_value_release(value);
-
-	success = true;
+	success = rpl_interpreter_eval_value(interp, value);
     } else if (token_type == rpl_token_type_identifier) {
 	rpl_unistring_t identifier = rpl_token_get_string(token);
-	rpl_unistring_retain(identifier);
 
-	rpl_stack_t stack = rpl_context_get_stack(interp->_context);
-
-	/*
-	 If the identifier is in the operation table, get and invoke the
-	 associated operation.
-	 */
-
-	rpl_operation_t op = rpl_operation_table_get(interp->_optable,
-						     identifier);
-	if (op) {
-	    bool opsuccess = rpl_operation_invoke(op, interp->_context);
-	    success = opsuccess;
-	    goto done;
-	}
-
-	/* If the identifier is in the local scope, push its value. */
-
-	rpl_value_t lv = rpl_scope_get_variable(interp->_local,
-						identifier);
-	if (lv) {
-	    rpl_stack_push(stack, lv);
-	    success = true;
-	    goto done;
-	}
-
-	/* If the identifier is in the global scope, push its value. */
-
-	rpl_value_t gv = rpl_scope_get_variable(interp->_global,
-						identifier);
-	if (gv) {
-	    rpl_stack_push(stack, gv);
-	    success = true;
-	    goto done;
-	}
-
-	/* Create a name from the identifier and push it. */
-
-	rpl_value_t name = rpl_name_new(identifier);
-	if (name) {
-	    rpl_stack_push(stack, name);
-	    rpl_value_release(name);
-	    success = true;
-	    goto done;
-	} else {
-	    success = false;
-	    goto done;
-	}
-
-    done:
-	rpl_unistring_release(identifier);
+	success = rpl_interpreter_eval_identifier(interp, identifier);
     } else {
 	/* Should never happen. */
 	assert((token_type == rpl_token_type_value)

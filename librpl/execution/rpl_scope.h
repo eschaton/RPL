@@ -34,10 +34,23 @@ RPL_EXPORT
 rpl_scope_t RPL_NULLABLE
 rpl_scope_get_parent(rpl_scope_t scope);
 
+/*!
+ Get the value of the named variable from a scope.
+
+ Optionally allows searching parent scopes as well.
+
+ @returns the variable's value or `NULL` if it isn't set
+ */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name);
+rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name,
+		       bool search_parents);
 
+/*!
+ Set the value of the named variable in a scope.
+
+ Unlike getting the value, this only operates on the passed scope.
+ */
 RPL_EXPORT
 bool
 rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,

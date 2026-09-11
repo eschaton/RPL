@@ -96,6 +96,21 @@ RPL_EXPORT
 int
 rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b);
 
+/*! Get the end-of-line string. */
+RPL_EXPORT
+rpl_unistring_t
+rpl_unistring_get_eol(void);
+
+/*! Get a string corresponding to the digit. */
+RPL_EXPORT
+rpl_unistring_t
+rpl_unistring_with_digit(int d);
+
+/*! Get a string with the value of the given integer. */
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_unistring_with_integer(int64_t i);
+
 
 RPL_HEADER_END
 

@@ -1085,6 +1085,7 @@ rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 	    && !rpl_char_is_delimiter(ch))
 	{
 	    appended = rpl_unistring_append_char(buf, ch);
+	    if (appended == false) goto back_out;
 	} else {
 	    rpl_tokenizer_unget_char(tokenizer, ch);
 	    complete = true;

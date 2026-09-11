@@ -95,6 +95,7 @@ rpl_tagged_copy_string(rpl_value_t tagged,
     if (appended == false) goto error;
 
     appended = rpl_unistring_append_char(buf, ':');
+    if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, value_str);
     if (appended == false) goto error;

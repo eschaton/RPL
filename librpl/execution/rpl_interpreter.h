@@ -13,6 +13,7 @@
 
 #include <stdbool.h>
 
+#include "rpl_context.h"
 #include "rpl_unistring.h"
 
 
@@ -32,6 +33,10 @@ void
 rpl_interpreter_free(rpl_interpreter_t interp);
 
 RPL_EXPORT
+rpl_context_t
+rpl_interpreter_get_context(rpl_interpreter_t interp);
+
+RPL_EXPORT
 bool
 rpl_interpreter_append_input(rpl_interpreter_t interp,
 			     rpl_unistring_t str);
@@ -48,6 +53,21 @@ rpl_interpreter_copy_output(rpl_interpreter_t interp);
 RPL_EXPORT
 bool
 rpl_interpreter_step(rpl_interpreter_t interp);
+
+/*!
+ Generate textual output representing the current state of the stack.
+
+ This will look like
+
+      2: 'foo'
+      1: 'bar'
+      0: 123
+
+ for a three-level stack.
+ */
+RPL_EXPORT
+bool
+rpl_interpreter_output_stack(rpl_interpreter_t interp);
 
 
 RPL_HEADER_END

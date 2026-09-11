@@ -101,6 +101,8 @@ rpl_operation_table_new(void)
 	if (initialized == false) goto error;
     }
 
+    return table;
+
 error:
     rpl_operation_table_free(table);
     return NULL;

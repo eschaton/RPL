@@ -79,15 +79,28 @@ rpl_scope_find_variable(rpl_scope_t scope, rpl_unistring_t name)
 }
 
 rpl_value_t RPL_NULLABLE
-rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name)
+rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name,
+		       bool search_parents)
 {
     assert(scope != NULL);
     assert(name != NULL);
 
     rpl_value_t value = NULL;
-    const ssize_t idx = rpl_scope_find_variable(scope, name);
-    if (idx != -1) {
-	value = rpl_adjbuffer_get(&scope->_values, idx);
+    ssize_t idx = -1;
+
+    /*
+     Starting with the passed scope, search up the scope chain (if the
+     caller requested it) until a value for the variable is found.
+     */
+
+    for (rpl_scope_t s = scope;
+	 search_parents && (s != NULL) && (idx == -1);
+	 s = s->_parent)
+    {
+	idx = rpl_scope_find_variable(s, name);
+	if (idx != -1) {
+	    value = rpl_adjbuffer_get(&s->_values, idx);
+	}
     }
 
     return value;
@@ -102,28 +115,44 @@ rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,
     assert(value != NULL);
 
     bool did_set = false;
+
+    /* The scope takes ownership of the name and value. */
+
+    rpl_unistring_retain(name);
+    rpl_value_retain(value);
+
+    /*
+     Find the variable in the scope if it's already present and, if so,
+     replace it there. Otherwise append it.
+     */
+
     const ssize_t idx = rpl_scope_find_variable(scope, name);
     if (idx != -1) {
 	rpl_adjbuffer_set(&scope->_values, idx, value);
-	rpl_value_retain(value);
 	did_set = true;
     } else {
-	bool appended;
-	appended = rpl_adjbuffer_append_element(&scope->_names, name);
-	if (appended) {
-	    rpl_unistring_retain(name);
-	    appended = rpl_adjbuffer_append_element(&scope->_values,
-						    value);
-	    if (appended) {
-		rpl_value_retain(value);
+	bool appended_name
+	    = rpl_adjbuffer_append_element(&scope->_names, name);
+	if (appended_name) {
+	    bool appended_value
+		= rpl_adjbuffer_append_element(&scope->_values, value);
+	    if (appended_value) {
 		did_set = true;
 	    } else {
+		/* If appending a value failed, un-append the name. */
 		const size_t name_idx
 		    = rpl_adjbuffer_get_count(&scope->_names) - 1;
 		rpl_adjbuffer_remove_element(&scope->_names, name_idx);
-		rpl_unistring_release(name);
+		did_set = false;
 	    }
 	}
+    }
+
+    /* The scope gives up ownership on failureto set. */
+
+    if (!did_set) {
+	rpl_unistring_release(name);
+	rpl_value_release(value);
     }
 
     return did_set;
