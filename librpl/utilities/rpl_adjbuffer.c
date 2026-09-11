@@ -292,5 +292,26 @@ rpl_adjbuffer_apply(rpl_adjbuffer_t *buffer,
     return (stop == false);
 }
 
+ssize_t
+rpl_adjbuffer_find(rpl_adjbuffer_t *buffer, void *element,
+		   rpl_adjbuffer_compare_f comparison,
+		   void * RPL_NULLABLE refcon)
+{
+    assert(buffer != NULL);
+    assert(element != NULL);
+    assert(comparison != NULL);
+
+    const size_t count = buffer->_count;
+    ssize_t found = -1;
+    for (size_t i = 0; (i < count) && (found == -1); i++) {
+	void *element1 = rpl_adjbuffer_get(buffer, i);
+	if ((*comparison)(buffer, element, element1, refcon)) {
+	    found = i;
+	}
+    }
+
+    return found;
+}
+
 
 RPL_SOURCE_END

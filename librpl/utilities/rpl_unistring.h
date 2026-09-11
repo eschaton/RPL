@@ -91,6 +91,11 @@ RPL_EXPORT
 char * RPL_NULLABLE
 rpl_unistring_copy_utf8(rpl_unistring_t str);
 
+/*! Compare two strings for equality, behaving like strcmp. */
+RPL_EXPORT
+int
+rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b);
+
 
 RPL_HEADER_END
 

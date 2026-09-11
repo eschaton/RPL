@@ -356,5 +356,21 @@ rpl_unistring_copy_utf8(rpl_unistring_t str)
     return realloc(utf8, utf8_idx + 1);
 }
 
+int
+rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b)
+{
+    assert(a != NULL);
+    assert(b != NULL);
+
+    if (a->_count < b->_count) {
+	return -1;
+    } else if (a->_count > b->_count) {
+	return 1;
+    } else /* a->_count == b->_count */ {
+	return memcmp(a->_storage, b->_storage,
+		      a->_count * sizeof(rpl_unichar_t));
+    }
+}
+
 
 RPL_SOURCE_END

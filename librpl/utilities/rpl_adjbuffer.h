@@ -117,6 +117,22 @@ rpl_adjbuffer_apply(rpl_adjbuffer_t *buffer,
 		    rpl_adjbuffer_apply_f function,
 		    void * RPL_NULLABLE refcon);
 
+/*! A function that can check two buffer elements for equality. */
+typedef bool (*rpl_adjbuffer_compare_f)(rpl_adjbuffer_t *buffer,
+					void *element0, void *element1,
+					void * RPL_NULLABLE refcon);
+
+/*!
+ Find an element's index, if it's in the buffer.
+
+ The comparison function may not modify the elements or the array.
+
+ @returns the element's index or `-1` if the element could not be found
+ */
+ssize_t
+rpl_adjbuffer_find(rpl_adjbuffer_t *buffer, void *element,
+		   rpl_adjbuffer_compare_f comparison,
+		   void * RPL_NULLABLE refcon);
 
 
 RPL_HEADER_END
