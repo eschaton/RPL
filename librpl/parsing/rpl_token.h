@@ -40,7 +40,7 @@ rpl_token_get_type(rpl_token_t token);
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
-rpl_token_get_str(rpl_token_t token);
+rpl_token_get_string(rpl_token_t token);
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE

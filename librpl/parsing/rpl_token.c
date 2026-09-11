@@ -28,8 +28,8 @@ rpl_token_new(rpl_token_type_t type,
     if (token) {
 	token->_type = type;
 	if (type == rpl_token_type_identifier) {
-	    token->_str = rpl_unistring_copy(str);
-	    if (token->_str) goto error;
+	    token->_string = rpl_unistring_copy(str);
+	    if (token->_string == NULL) goto error;
 	}
 	if (type == rpl_token_type_value && (value != NULL)) {
 	    token->_value = rpl_value_retain(value);
@@ -49,9 +49,9 @@ rpl_token_free(rpl_token_t token)
     assert(token != NULL);
 
     if ((token->_type == rpl_token_type_identifier)
-	&& (token->_str != NULL))
+	&& (token->_string != NULL))
     {
-	rpl_unistring_release(token->_str);
+	rpl_unistring_release(token->_string);
     }
 
     if ((token->_type == rpl_token_type_value)
@@ -72,11 +72,11 @@ rpl_token_get_type(rpl_token_t token)
 }
 
 rpl_unistring_t
-rpl_token_get_str(rpl_token_t token)
+rpl_token_get_string(rpl_token_t token)
 {
     assert(token != NULL);
 
-    return token->_str;
+    return token->_string;
 }
 
 rpl_value_t RPL_NULLABLE

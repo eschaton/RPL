@@ -268,6 +268,52 @@ START_TEST(test_string)
 }
 END_TEST
 
+START_TEST(test_identifier)
+{
+    const char *text = "hello world\n";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
+    ck_assert(appended);
+    rpl_unistring_release(buf);
+
+    {
+	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(token);
+	ck_assert_int_eq(rpl_token_type_identifier,
+			 rpl_token_get_type(token));
+
+	rpl_unistring_t string = rpl_token_get_string(token);
+	ck_assert_ptr_nonnull(string);
+	char *string_utf8 = rpl_unistring_copy_utf8(string);
+	ck_assert_ptr_nonnull(string_utf8);
+	ck_assert_int_eq(5, rpl_unistring_get_length(string));
+	ck_assert_str_eq(string_utf8, "hello");
+	free(string_utf8);
+
+	rpl_token_free(token);
+    }
+
+    {
+	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(token);
+	ck_assert_int_eq(rpl_token_type_identifier,
+			 rpl_token_get_type(token));
+
+	rpl_unistring_t string = rpl_token_get_string(token);
+	ck_assert_ptr_nonnull(string);
+	char *string_utf8 = rpl_unistring_copy_utf8(string);
+	ck_assert_ptr_nonnull(string_utf8);
+	ck_assert_int_eq(5, rpl_unistring_get_length(string));
+	ck_assert_str_eq(string_utf8, "world");
+	free(string_utf8);
+
+	rpl_token_free(token);
+    }
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -284,6 +330,7 @@ test_tokenizer_suite(void)
     tcase_add_test(tc_tokenizer, test_real);
     tcase_add_test(tc_tokenizer, test_name);
     tcase_add_test(tc_tokenizer, test_string);
+    tcase_add_test(tc_tokenizer, test_identifier);
 
     suite_add_tcase(s, tc_tokenizer);
 

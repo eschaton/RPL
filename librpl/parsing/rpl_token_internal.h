@@ -17,7 +17,7 @@ RPL_HEADER_BEGIN
 
 struct rpl_token {
     rpl_token_type_t _type;
-    rpl_unistring_t RPL_NULLABLE _str;
+    rpl_unistring_t RPL_NULLABLE _string;
     rpl_value_t RPL_NULLABLE _value;
 };
 
