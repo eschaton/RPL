@@ -61,6 +61,7 @@
 			publicHeaders = (
 				execution/rpl_context.h,
 				execution/rpl_environment.h,
+				execution/rpl_interpreter.h,
 				execution/rpl_operation.h,
 				execution/rpl_scope.h,
 				execution/rpl_stack.h,
