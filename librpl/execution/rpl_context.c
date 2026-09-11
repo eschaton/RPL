@@ -25,6 +25,15 @@ rpl_context_new(void)
 
 	context->_stack = rpl_stack_new(1024);
 	if (context->_stack == NULL) goto error;
+
+	context->_constant = rpl_scope_new(NULL);
+	if (context->_constant == NULL) goto error;
+
+	context->_global = rpl_scope_new(context->_constant);
+	if (context->_global == NULL) goto error;
+
+	context->_local = rpl_scope_new(context->_global);
+	if (context->_local == NULL) goto error;
     }
     return context;
 
@@ -42,9 +51,11 @@ rpl_context_free(rpl_context_t context)
 	rpl_environment_free(context->_environment);
     }
 
-    if (context->_stack) {
-	rpl_stack_free(context->_stack);
-    }
+    if (context->_stack) rpl_stack_free(context->_stack);
+
+    if (context->_constant) rpl_scope_free(context->_constant);
+    if (context->_global) rpl_scope_free(context->_global);
+    if (context->_local) rpl_scope_free(context->_local);
 
     free(context);
 }
@@ -63,6 +74,30 @@ rpl_context_get_stack(rpl_context_t context)
     assert(context != NULL);
 
     return context->_stack;
+}
+
+rpl_scope_t
+rpl_context_get_constant_scope(rpl_context_t context)
+{
+    assert(context != NULL);
+
+    return context->_constant;
+}
+
+rpl_scope_t
+rpl_context_get_global_scope(rpl_context_t context)
+{
+    assert(context != NULL);
+
+    return context->_global;
+}
+
+rpl_scope_t
+rpl_context_get_local_scope(rpl_context_t context)
+{
+    assert(context != NULL);
+
+    return context->_local;
 }
 
 

@@ -20,6 +20,7 @@ struct rpl_scope {
     rpl_scope_t RPL_NULLABLE _parent;
     rpl_adjbuffer_t _names;
     rpl_adjbuffer_t _values;
+    bool _is_mutable;
 };
 
 

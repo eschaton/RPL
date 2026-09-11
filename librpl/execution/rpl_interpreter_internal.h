@@ -24,8 +24,6 @@ struct rpl_interpreter {
     rpl_context_t _context;
     rpl_tokenizer_t _tokenizer;
     rpl_operation_table_t _optable;
-    rpl_scope_t _global;
-    rpl_scope_t _local;
     rpl_unistring_t _output;
 };
 

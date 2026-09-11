@@ -33,12 +33,6 @@ rpl_interpreter_new(void)
 	interp->_optable = rpl_operation_table_new();
 	if (interp->_optable == NULL) goto error;
 
-	interp->_global = rpl_scope_new(interp->_local);
-	if (interp->_global == NULL) goto error;
-
-	interp->_local = rpl_scope_new(interp->_global);
-	if (interp->_local == NULL) goto error;
-
 	interp->_output = rpl_unistring_new(80 * 24);
 	if (interp->_output == NULL) goto error;
     }
@@ -56,8 +50,7 @@ rpl_interpreter_free(rpl_interpreter_t interp)
 
     if (interp->_context) rpl_context_free(interp->_context);
     if (interp->_tokenizer) rpl_tokenizer_free(interp->_tokenizer);
-    if (interp->_global) rpl_scope_free(interp->_global);
-    if (interp->_local) rpl_scope_free(interp->_local);
+    if (interp->_output) rpl_unistring_release(interp->_output);
 
     free(interp);
 }
@@ -226,9 +219,10 @@ rpl_interpreter_eval_identifier(rpl_interpreter_t interp,
      If the identifier represents a variable in the local or global
      scope, evaluate its value the same way a direct value would be.
      */
+    rpl_scope_t scope = rpl_context_get_local_scope(interp->_context);
+    assert(scope != NULL);
 
-    rpl_value_t value = rpl_scope_get_variable(interp->_local,
-					       identifier, true);
+    rpl_value_t value = rpl_scope_get_variable(scope, identifier, true);
     if (value) {
 	success = rpl_interpreter_eval_value(interp, value);
 	goto done;

@@ -56,6 +56,16 @@ bool
 rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,
 		       rpl_value_t value);
 
+/*!
+ Make this scope immutable.
+
+ This is only really intended for the scope containing predefined
+ constants, after all the constants have been set within it.
+ */
+RPL_EXPORT
+void
+rpl_scope_make_immutable(rpl_scope_t scope);
+
 
 RPL_HEADER_END
 

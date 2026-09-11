@@ -29,6 +29,8 @@ rpl_scope_new(rpl_scope_t RPL_NULLABLE parent)
 	initialized = rpl_adjbuffer_init(&scope->_values, 8,
 					 sizeof(rpl_value_t));
 	if (initialized == false) goto error;
+
+	scope->_is_mutable = true;
     }
     return scope;
 
@@ -113,6 +115,7 @@ rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,
     assert(scope != NULL);
     assert(name != NULL);
     assert(value != NULL);
+    assert(scope->_is_mutable);
 
     bool did_set = false;
 
@@ -163,6 +166,7 @@ rpl_scope_remove_variable(rpl_scope_t scope, rpl_unistring_t name)
 {
     assert(scope != NULL);
     assert(name != NULL);
+    assert(scope->_is_mutable);
 
     rpl_value_t value = NULL;
     const ssize_t idx = rpl_scope_find_variable(scope, name);
@@ -175,6 +179,15 @@ rpl_scope_remove_variable(rpl_scope_t scope, rpl_unistring_t name)
 
     rpl_unistring_release(name);
     rpl_value_release(value);
+}
+
+void
+rpl_scope_make_immutable(rpl_scope_t scope)
+{
+    assert(scope != NULL);
+    assert(scope->_is_mutable);
+
+    scope->_is_mutable = false;
 }
 
 

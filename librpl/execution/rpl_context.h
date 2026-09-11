@@ -12,6 +12,7 @@
 #include "rpl_defines.h"
 
 #include "rpl_environment.h"
+#include "rpl_scope.h"
 #include "rpl_stack.h"
 
 
@@ -37,6 +38,21 @@ rpl_context_get_environment(rpl_context_t context);
 RPL_EXPORT
 rpl_stack_t
 rpl_context_get_stack(rpl_context_t context);
+
+/*! Get the scope in which predefined constants exist. */
+RPL_EXPORT
+rpl_scope_t
+rpl_context_get_constant_scope(rpl_context_t context);
+
+/*! Get the scope in which global variables exist. */
+RPL_EXPORT
+rpl_scope_t
+rpl_context_get_global_scope(rpl_context_t context);
+
+/*! Get the scope in which local variables exist. */
+RPL_EXPORT
+rpl_scope_t
+rpl_context_get_local_scope(rpl_context_t context);
 
 
 RPL_HEADER_END
