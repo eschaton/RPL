@@ -527,7 +527,9 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = "";
+				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/rpl_private/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/rpl/include;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -540,7 +542,9 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = "";
+				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/rpl_private/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/rpl/include;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
