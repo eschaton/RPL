@@ -58,6 +58,10 @@ bool
 rpl_scope_name_is_equal(rpl_adjbuffer_t *buffer, void *element0,
 			void *element1, void * RPL_NULLABLE refcon)
 {
+    assert(buffer != NULL);
+    assert(element0 != NULL);
+    assert(element1 != NULL);
+
     rpl_unistring_t str0 = element0;
     rpl_unistring_t str1 = element1;
 
@@ -136,7 +140,7 @@ rpl_scope_remove_variable(rpl_scope_t scope, rpl_unistring_t name)
     assert(idx != -1);
 
     value = rpl_adjbuffer_get(&scope->_values, idx);
-    
+
     rpl_adjbuffer_remove_element(&scope->_names, idx);
     rpl_adjbuffer_remove_element(&scope->_values, idx);
 

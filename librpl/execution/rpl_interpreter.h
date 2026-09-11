@@ -44,6 +44,11 @@ RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_interpreter_copy_output(rpl_interpreter_t interp);
 
+/*! Perform one iteration of the interpreter's read-eval-print loop. */
+RPL_EXPORT
+bool
+rpl_interpreter_step(rpl_interpreter_t interp);
+
 
 RPL_HEADER_END
 

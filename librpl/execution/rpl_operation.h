@@ -14,6 +14,7 @@
 #include <stdbool.h>
 
 #include "rpl_context.h"
+#include "rpl_unistring.h"
 
 
 RPL_HEADER_BEGIN
@@ -21,6 +22,10 @@ RPL_HEADER_BEGIN
 
 /*! An operation is an action taken in RPL. */
 typedef struct rpl_operation *rpl_operation_t;
+
+
+/*! A table of known, named operations in RPL. */
+typedef struct rpl_operation_table *rpl_operation_table_t;
 
 
 /*! RPL supports several types of operations. */
@@ -66,7 +71,7 @@ typedef bool (*rpl_operation_impl_t)(rpl_operation_t operation,
  */
 RPL_EXPORT
 rpl_operation_t RPL_NULLABLE
-rpl_operation_new(const char *name,
+rpl_operation_new(rpl_unistring_t name,
 		  rpl_operation_type_t type,
 		  rpl_operation_impl_t impl,
 		  void * RPL_NULLABLE refcon);
@@ -76,7 +81,7 @@ void
 rpl_operation_free(rpl_operation_t op);
 
 RPL_EXPORT
-const char *
+rpl_unistring_t
 rpl_operation_get_name(rpl_operation_t op);
 
 RPL_EXPORT
@@ -91,6 +96,25 @@ rpl_operation_get_refcon(rpl_operation_t op);
 RPL_EXPORT
 bool
 rpl_operation_invoke(rpl_operation_t op, rpl_context_t context);
+
+
+RPL_EXPORT
+rpl_operation_table_t RPL_NULLABLE
+rpl_operation_table_new(void);
+
+RPL_EXPORT
+void
+rpl_operation_table_free(rpl_operation_table_t table);
+
+RPL_EXPORT
+rpl_operation_t RPL_NULLABLE
+rpl_operation_table_get(rpl_operation_table_t table,
+			rpl_unistring_t name);
+
+RPL_EXPORT
+bool
+rpl_operation_table_set(rpl_operation_table_t table,
+			rpl_operation_t op);
 
 
 RPL_HEADER_END

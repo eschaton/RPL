@@ -11,16 +11,23 @@
 
 #include "rpl_operation.h"
 
+#include "rpl_adjbuffer.h"
+
 
 RPL_HEADER_BEGIN
 
 
 struct rpl_operation {
     rpl_operation_type_t _type;
-    const char *_name;
-    size_t _name_len;
+    rpl_unistring_t _name;
     rpl_operation_impl_t _impl;
     void * RPL_NULLABLE _refcon;
+};
+
+
+struct rpl_operation_table {
+    rpl_adjbuffer_t _names;
+    rpl_adjbuffer_t _ops;
 };
 
 
