@@ -1,6 +1,6 @@
 //
 //  test_stack.h
-//  RPL
+//  librplTests
 //
 //  Created by Chris Hanson on 8/31/26.
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.

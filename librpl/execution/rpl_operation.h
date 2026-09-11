@@ -1,13 +1,13 @@
 //
 //  rpl_operation.h
-//  RPL
+//  librpl
 //
 //  Created by Chris Hanson on 9/3/26.
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
-#ifndef __RPL__librpl_operation__h__
-#define __RPL__librpl_operation__h__
+#ifndef __RPL__rpl_operation__h__
+#define __RPL__rpl_operation__h__
 
 #include "rpl_defines.h"
 
@@ -96,4 +96,4 @@ rpl_operation_invoke(rpl_operation_t op, rpl_context_t context);
 RPL_HEADER_END
 
 
-#endif /* __RPL__librpl_operation__h__*/
+#endif /* __RPL__rpl_operation__h__*/

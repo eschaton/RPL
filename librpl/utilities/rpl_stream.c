@@ -1,6 +1,6 @@
 //
 //  rpl_stream.c
-//  RPL
+//  librpl
 //
 //  Created by Chris Hanson on 8/29/26.
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.

@@ -1,13 +1,13 @@
 //
 //  rpl_operation_internal.h
-//  RPL
+//  librpl
 //
 //  Created by Chris Hanson on 9/3/26.
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 //
 
-#ifndef __RPL__librpl_operation_internal__h__
-#define __RPL__librpl_operation_internal__h__
+#ifndef __RPL__rpl_operation_internal__h__
+#define __RPL__rpl_operation_internal__h__
 
 #include "rpl_operation.h"
 
@@ -27,4 +27,4 @@ struct rpl_operation {
 RPL_HEADER_END
 
 
-#endif /* __RPL__librpl_operation_internal__h__*/
+#endif /* __RPL__rpl_operation_internal__h__*/
