@@ -20,6 +20,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_complex_new(rpl_real_t x_rep, rpl_real_t y_rep)
+RPL_RETURNS_RETAINED
 {
     rpl_value_t complex = rpl_value_new(rpl_type_complex);
     if (complex) {
@@ -41,6 +42,7 @@ rpl_complex_free(rpl_value_t complex)
 rpl_unistring_t RPL_NULLABLE
 rpl_complex_copy_string(rpl_value_t complex,
 			rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(complex != NULL);
     assert(complex->_type == rpl_type_complex);
@@ -51,6 +53,7 @@ rpl_complex_copy_string(rpl_value_t complex,
 rpl_unistring_t RPL_NULLABLE
 rpl_complex_rep_copy_string(rpl_complex_t complex_rep,
 			    rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     rpl_unistring_t a_str = NULL;
     rpl_unistring_t b_str = NULL;

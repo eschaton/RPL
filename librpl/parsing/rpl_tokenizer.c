@@ -384,6 +384,7 @@ rpl_tokenizer_skip_comment(rpl_tokenizer_t tokenizer)
  */
 rpl_unistring_t RPL_NULLABLE
 rpl_tokenizer_copy_name_text(rpl_tokenizer_t tokenizer)
+RPL_RETURNS_RETAINED
 {
     assert(tokenizer != NULL);
 
@@ -473,6 +474,7 @@ back_out:
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_copy_real_value(rpl_tokenizer_t tokenizer)
+RPL_RETURNS_RETAINED
 {
     assert(tokenizer != NULL);
 
@@ -848,6 +850,7 @@ rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
     if (value) {
 	token = rpl_token_new(rpl_token_type_value, NULL, value);
 	if (token == NULL) goto back_out;
+	rpl_value_release(value);
     }
 
     if (real_part) rpl_value_release(real_part);
@@ -951,6 +954,7 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
     assert(tokenizer != NULL);
 
     rpl_token_t token = NULL;
+    rpl_value_t value = NULL;
     rpl_unistring_t buf = NULL;
     bool appended = false;
 
@@ -1026,7 +1030,7 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 	}
     } while (state != parser_state_end);
 
-    rpl_value_t value = rpl_string_new(buf);
+    value = rpl_string_new(buf);
     if (value == NULL) goto back_out;
 
     token = rpl_token_new(rpl_token_type_value, NULL, value);
@@ -1041,6 +1045,7 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 back_out:
     if (token) rpl_token_free(token);
     if (buf) rpl_unistring_release(buf);
+    if (value) rpl_value_release(value);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }

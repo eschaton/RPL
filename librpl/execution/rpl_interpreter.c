@@ -83,6 +83,7 @@ rpl_interpreter_has_output(rpl_interpreter_t interp)
 
 rpl_unistring_t RPL_NULLABLE
 rpl_interpreter_copy_output(rpl_interpreter_t interp)
+RPL_RETURNS_RETAINED
 {
     assert(interp != NULL);
 

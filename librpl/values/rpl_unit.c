@@ -20,6 +20,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_unit_new(rpl_real_t scalar, rpl_value_t units)
+RPL_RETURNS_RETAINED
 {
     assert(units != NULL);
     assert(units->_type == rpl_type_name);
@@ -62,6 +63,7 @@ rpl_unit_get_units(rpl_value_t unit)
 rpl_unistring_t RPL_NULLABLE
 rpl_unit_copy_string(rpl_value_t unit,
 		     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(unit != NULL);
     assert(unit->_type == rpl_type_program);

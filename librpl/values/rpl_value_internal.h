@@ -61,19 +61,23 @@ struct rpl_value {
 /*! Allocate a new value of the given type. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_value_new(rpl_type_t type);
-
+rpl_value_new(rpl_type_t type)
+RPL_RETURNS_RETAINED;
 
 /*! Free an allocated value. */
 RPL_EXPORT
 void
 rpl_value_free(rpl_value_t val);
 
-
 /*! Make a value immortal (immune from retain/release). */
 RPL_EXPORT
 void
 rpl_value_immortalize(rpl_value_t val);
+
+/*! Tell the analyzer that a value is not leaked. */
+RPL_EXPORT
+void
+rpl_value_not_leaked(rpl_value_t val RPL_RELEASES_ARGUMENT);
 
 
 /*!

@@ -87,7 +87,7 @@ rpl_value_retain(rpl_value_t val)
 }
 
 void
-rpl_value_release(rpl_value_t val)
+rpl_value_release(rpl_value_t val RPL_RELEASES_ARGUMENT)
 {
     assert(val != NULL);
     assert(val->_refs > 0);
@@ -111,8 +111,22 @@ rpl_value_immortalize(rpl_value_t val)
     val->_refs = RPL_INTEGER_MAX;
 }
 
+void
+rpl_value_not_leaked(rpl_value_t val RPL_RELEASES_ARGUMENT)
+{
+    assert(val != NULL);
+
+    /*
+     Nothing else to do: This function exists purely to supply its
+     argument annotation to the static analyzer. (This is mainly for
+     the situation where an "RPL_RETAINS_ARGUMENT" annotation would be
+     useful, but such a thing doesn't exist.)
+     */
+}
+
 rpl_value_t RPL_NULLABLE
 rpl_value_copy(rpl_value_t val)
+RPL_RETURNS_RETAINED
 {
     assert(val != NULL);
 
@@ -150,6 +164,7 @@ rpl_value_copy(rpl_value_t val)
 rpl_unistring_t RPL_NULLABLE
 rpl_value_copy_string(rpl_value_t val,
 		      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(val != NULL);
 

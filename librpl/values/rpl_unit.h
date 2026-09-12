@@ -20,7 +20,8 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_unit_new(rpl_real_t scalar, rpl_value_t units);
+rpl_unit_new(rpl_real_t scalar, rpl_value_t units)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_real_t

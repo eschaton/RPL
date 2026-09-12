@@ -35,28 +35,33 @@ typedef struct rpl_unistring *rpl_unistring_t;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
-rpl_unistring_new(size_t capacity);
+rpl_unistring_new(size_t capacity)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_new_from_chars(const rpl_unichar_t *chars,
-			     size_t chars_count);
+			     size_t chars_count)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
-rpl_unistring_new_from_utf8(const char *str, size_t str_len);
+rpl_unistring_new_from_utf8(const char *str, size_t str_len)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t
-rpl_unistring_retain(rpl_unistring_t str);
+rpl_unistring_retain(rpl_unistring_t str)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 void
-rpl_unistring_release(rpl_unistring_t str);
+rpl_unistring_release(rpl_unistring_t str RPL_RELEASES_ARGUMENT);
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
-rpl_unistring_copy(rpl_unistring_t str);
+rpl_unistring_copy(rpl_unistring_t str)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 size_t
@@ -109,7 +114,8 @@ rpl_unistring_with_digit(int d);
 /*! Get a string with the value of the given integer. */
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
-rpl_unistring_with_integer(int64_t i);
+rpl_unistring_with_integer(int64_t i)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

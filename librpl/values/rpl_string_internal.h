@@ -26,12 +26,14 @@ rpl_string_free(rpl_value_t string);
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_string_copy(rpl_value_t string);
+rpl_string_copy(rpl_value_t string)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_string_copy_string(rpl_value_t string,
-		       rpl_environment_t RPL_NULLABLE env);
+		       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

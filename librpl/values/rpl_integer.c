@@ -21,6 +21,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_integer_new(rpl_integer_t rep)
+RPL_RETURNS_RETAINED
 {
     rpl_value_t val = rpl_value_new(rpl_type_integer);
     if (val) {
@@ -56,6 +57,7 @@ rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum)
 rpl_unistring_t RPL_NULLABLE
 rpl_integer_copy_string(rpl_value_t integer,
 			rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(integer != NULL);
     assert(integer->_type == rpl_type_integer);
@@ -66,6 +68,7 @@ rpl_integer_copy_string(rpl_value_t integer,
 rpl_unistring_t RPL_NULLABLE
 rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
 			    rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     /* Use a local buffer of the longest possible string size. */
 

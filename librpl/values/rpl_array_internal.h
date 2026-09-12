@@ -35,12 +35,14 @@ rpl_array_offset_for_indices(rpl_value_t array, rpl_integer_t *indices);
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_copy(rpl_value_t array);
+rpl_array_copy(rpl_value_t array)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_array_copy_string(rpl_value_t array,
-		      rpl_environment_t RPL_NULLABLE env);
+		      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

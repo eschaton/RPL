@@ -11,6 +11,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_unistring_internal.h"
+#include "rpl_value_internal.h"
+
 
 RPL_SOURCE_BEGIN
 
@@ -101,7 +104,9 @@ rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name,
     {
 	idx = rpl_scope_find_variable(s, name);
 	if (idx != -1) {
-	    value = rpl_adjbuffer_get(&s->_values, idx);
+	    rpl_value_t *value_p = rpl_adjbuffer_get(&s->_values, idx);
+	    assert(value_p != NULL);
+	    value = *value_p;
 	}
     }
 
@@ -119,11 +124,6 @@ rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,
 
     bool did_set = false;
 
-    /* The scope takes ownership of the name and value. */
-
-    rpl_unistring_retain(name);
-    rpl_value_retain(value);
-
     /*
      Find the variable in the scope if it's already present and, if so,
      replace it there. Otherwise append it.
@@ -131,31 +131,34 @@ rpl_scope_set_variable(rpl_scope_t scope, rpl_unistring_t name,
 
     const ssize_t idx = rpl_scope_find_variable(scope, name);
     if (idx != -1) {
-	rpl_adjbuffer_set(&scope->_values, idx, value);
+	rpl_value_retain(value);
+	rpl_adjbuffer_set(&scope->_values, idx, &value);
 	did_set = true;
     } else {
+	/*
+	 Neither name nor value is leaked, because the scope takes
+	 ownership of them but that can't be expressed except by using
+	 the "rpl_…_not_leaked()" functions.
+	*/
+
 	bool appended_name
-	    = rpl_adjbuffer_append_element(&scope->_names, name);
+	    = rpl_adjbuffer_append_element(&scope->_names, &name);
 	if (appended_name) {
+	    rpl_unistring_not_leaked(rpl_unistring_retain(name));
 	    bool appended_value
-		= rpl_adjbuffer_append_element(&scope->_values, value);
+		= rpl_adjbuffer_append_element(&scope->_values, &value);
 	    if (appended_value) {
+		rpl_value_not_leaked(rpl_value_retain(value));
 		did_set = true;
 	    } else {
 		/* If appending a value failed, un-append the name. */
 		const size_t name_idx
 		    = rpl_adjbuffer_get_count(&scope->_names) - 1;
 		rpl_adjbuffer_remove_element(&scope->_names, name_idx);
+		rpl_unistring_release(name);
 		did_set = false;
 	    }
 	}
-    }
-
-    /* The scope gives up ownership on failureto set. */
-
-    if (!did_set) {
-	rpl_unistring_release(name);
-	rpl_value_release(value);
     }
 
     return did_set;

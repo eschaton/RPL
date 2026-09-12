@@ -18,6 +18,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_list_new(void)
+RPL_RETURNS_RETAINED
 {
     return rpl_value_new(rpl_type_list);
 }
@@ -25,6 +26,7 @@ rpl_list_new(void)
 rpl_value_t RPL_NULLABLE
 rpl_list_new_with_pair(rpl_value_t RPL_NULLABLE car,
 		       rpl_value_t RPL_NULLABLE cdr)
+RPL_RETURNS_RETAINED
 {
     rpl_value_t list = rpl_list_new();
     if (list) {
@@ -37,6 +39,7 @@ rpl_list_new_with_pair(rpl_value_t RPL_NULLABLE car,
 rpl_value_t RPL_NULLABLE
 rpl_list_new_with_array(rpl_value_t RPL_NONNULL * RPL_NONNULL elements,
 			rpl_integer_t elements_count)
+RPL_RETURNS_RETAINED
 {
     assert(elements != NULL);
     assert(elements_count > 0);
@@ -74,6 +77,7 @@ rpl_list_free(rpl_value_t list)
 
 rpl_value_t RPL_NULLABLE
 rpl_list_copy(rpl_value_t list)
+RPL_RETURNS_RETAINED
 {
     // TODO: rpl_list_copy
 
@@ -112,6 +116,7 @@ rpl_list_append(rpl_value_t list, rpl_value_t list2)
 rpl_unistring_t RPL_NULLABLE
 rpl_list_copy_string(rpl_value_t list,
 		     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     // TODO: rpl_list_copy_string
     return NULL;

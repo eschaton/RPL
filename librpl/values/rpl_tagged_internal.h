@@ -33,7 +33,8 @@ rpl_tagged_free(rpl_value_t val);
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_tagged_copy_string(rpl_value_t tagged,
-		       rpl_environment_t RPL_NULLABLE env);
+		       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

@@ -22,12 +22,14 @@ rpl_real_free(rpl_value_t real);
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_real_copy_string(rpl_value_t real,
-		     rpl_environment_t RPL_NULLABLE env);
+		     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_real_rep_copy_string(rpl_real_t real_rep,
-			 rpl_environment_t RPL_NULLABLE env);
+			 rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 /*!
  Create a string from a real that represents an angle in radians, taking
@@ -36,7 +38,8 @@ rpl_real_rep_copy_string(rpl_real_t real_rep,
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
-			       rpl_environment_t RPL_NULLABLE env);
+			       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

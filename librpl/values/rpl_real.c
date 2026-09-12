@@ -74,6 +74,7 @@ rpl_real_rep_copy_string(rpl_real_t real_rep,
 rpl_unistring_t RPL_NULLABLE
 rpl_real_copy_angle_string(rpl_value_t real,
 			   rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(real != NULL);
     assert(real->_type == rpl_type_real);
@@ -84,6 +85,7 @@ rpl_real_copy_angle_string(rpl_value_t real,
 rpl_unistring_t RPL_NULLABLE
 rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 			       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     const char * const cyl_angle_str = "∡";
     const size_t cyl_angle_str_len = strlen(cyl_angle_str);

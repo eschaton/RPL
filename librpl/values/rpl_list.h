@@ -20,17 +20,20 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_list_new(void);
+rpl_list_new(void)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_list_new_with_pair(rpl_value_t RPL_NULLABLE car,
-		       rpl_value_t RPL_NULLABLE cdr);
+		       rpl_value_t RPL_NULLABLE cdr)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_list_new_with_array(rpl_value_t RPL_NONNULL * RPL_NONNULL elements,
-			rpl_integer_t elements_count);
+			rpl_integer_t elements_count)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE

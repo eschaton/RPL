@@ -19,7 +19,8 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_string_new(rpl_unistring_t str);
+rpl_string_new(rpl_unistring_t str)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t

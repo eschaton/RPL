@@ -19,7 +19,8 @@ RPL_HEADER_BEGIN
 
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_tagged_new(rpl_value_t tag, rpl_value_t value);
+rpl_tagged_new(rpl_value_t tag, rpl_value_t value)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_value_t

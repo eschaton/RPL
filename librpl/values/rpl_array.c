@@ -63,6 +63,7 @@ rpl_array_type_size(rpl_type_t type)
 
 rpl_value_t RPL_NULLABLE
 rpl_array_new(rpl_type_t type, rpl_integer_t capacity)
+RPL_RETURNS_RETAINED
 {
     assert(rpl_array_is_supported_type(type));
 
@@ -86,6 +87,7 @@ rpl_value_t RPL_NULLABLE
 rpl_array_new_with_values(rpl_type_t type,
 			  rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
 			  rpl_integer_t vals_count)
+RPL_RETURNS_RETAINED
 {
     assert(rpl_array_is_supported_type(type));
     assert(vals != NULL);
@@ -140,6 +142,7 @@ rpl_array_free(rpl_value_t array)
 
 rpl_value_t RPL_NULLABLE
 rpl_array_copy(rpl_value_t array)
+RPL_RETURNS_RETAINED
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);
@@ -163,6 +166,11 @@ rpl_array_copy(rpl_value_t array)
 		    if (element_copy == NULL) goto error;
 		    rpl_adjbuffer_set(&copy_rep->_buffer, i,
 				      element_copy);
+		    /*
+		     element_copy is not leaked, because the array copy
+		     takes ownership of it but that can't be expressed
+		    */
+		    rpl_value_not_leaked(element_copy);
 		}
 	    }
 	} else {
@@ -200,6 +208,7 @@ rpl_array_get_count(rpl_value_t array)
 
 rpl_value_t RPL_NULLABLE
 rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx)
+RPL_RETURNS_RETAINED
 {
     rpl_value_t result;
 
@@ -379,6 +388,7 @@ rpl_array_append_value(rpl_value_t array, rpl_value_t value)
 rpl_unistring_t RPL_NULLABLE
 rpl_array_copy_string(rpl_value_t array,
 		      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(array != NULL);
     assert(array->_type == rpl_type_array);

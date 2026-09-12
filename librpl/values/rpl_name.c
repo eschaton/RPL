@@ -28,6 +28,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_name_new(rpl_unistring_t name_text)
+RPL_RETURNS_RETAINED
 {
     assert(name_text != NULL);
 
@@ -69,6 +70,7 @@ rpl_name_get_rep(rpl_value_t name)
 rpl_unistring_t RPL_NULLABLE
 rpl_name_copy_name_text(rpl_value_t name,
 			rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(name != NULL);
 
@@ -80,6 +82,7 @@ rpl_name_copy_name_text(rpl_value_t name,
 rpl_unistring_t RPL_NULLABLE
 rpl_name_copy_string(rpl_value_t name,
 		     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(name != NULL);
     assert(name->_type == rpl_type_name);

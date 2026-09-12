@@ -27,6 +27,14 @@ RPL_EXPORT
 void
 rpl_unistring_free(rpl_unistring_t str);
 
+RPL_EXPORT
+void
+rpl_unistring_immortalize(rpl_unistring_t str);
+
+RPL_EXPORT
+void
+rpl_unistring_not_leaked(rpl_unistring_t str RPL_RELEASES_ARGUMENT);
+
 
 RPL_HEADER_END
 

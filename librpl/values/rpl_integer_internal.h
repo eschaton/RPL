@@ -27,12 +27,14 @@ rpl_integer_round_to_next(rpl_integer_t value, rpl_integer_t quantum);
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_integer_copy_string(rpl_value_t integer,
-			rpl_environment_t RPL_NULLABLE env);
+			rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
-			    rpl_environment_t RPL_NULLABLE env);
+			    rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
 
 
 RPL_HEADER_END

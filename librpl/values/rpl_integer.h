@@ -30,7 +30,8 @@ typedef uint64_t rpl_integer_t;
 /*! Create a new integer value. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_integer_new(rpl_integer_t rep);
+rpl_integer_new(rpl_integer_t rep)
+RPL_RETURNS_RETAINED;
 
 /*! Get the underlying representation of an integer value. */
 RPL_EXPORT

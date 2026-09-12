@@ -20,6 +20,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_tagged_new(rpl_value_t tag, rpl_value_t value)
+RPL_RETURNS_RETAINED
 {
     assert(tag != NULL);
     assert(tag->_type == rpl_type_name);
@@ -64,6 +65,7 @@ rpl_tagged_get_value(rpl_value_t tagged)
 rpl_unistring_t RPL_NULLABLE
 rpl_tagged_copy_string(rpl_value_t tagged,
 		       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(tagged != NULL);
     assert(tagged->_type == rpl_type_tagged);

@@ -20,6 +20,7 @@ RPL_SOURCE_BEGIN
 
 rpl_value_t RPL_NULLABLE
 rpl_string_new(rpl_unistring_t rep)
+RPL_RETURNS_RETAINED
 {
     assert(rep != NULL);
 
@@ -48,6 +49,7 @@ rpl_string_free(rpl_value_t string)
 
 rpl_value_t RPL_NULLABLE
 rpl_string_copy(rpl_value_t string)
+RPL_RETURNS_RETAINED
 {
     assert(string != NULL);
     assert(string->_type == rpl_type_string);
@@ -82,6 +84,7 @@ rpl_string_get_rep_len(rpl_value_t string)
 rpl_unistring_t RPL_NULLABLE
 rpl_string_copy_string(rpl_value_t string,
 		       rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
 {
     assert(string != NULL);
     assert(string->_type == rpl_type_string);

@@ -62,6 +62,7 @@ error:
 
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_new(size_t capacity)
+RPL_RETURNS_RETAINED
 {
     rpl_unistring_t str = calloc(1, sizeof(struct rpl_unistring));
     if (str) {
@@ -82,6 +83,7 @@ error:
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_new_from_chars(const rpl_unichar_t *chars,
 			     size_t chars_count)
+RPL_RETURNS_RETAINED
 {
     assert(chars != NULL);
 
@@ -96,6 +98,7 @@ rpl_unistring_new_from_chars(const rpl_unichar_t *chars,
 
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_new_from_utf8(const char *str, size_t str_len)
+RPL_RETURNS_RETAINED
 {
     assert(str != NULL);
 
@@ -190,6 +193,7 @@ rpl_unistring_free(rpl_unistring_t str)
 
 rpl_unistring_t
 rpl_unistring_retain(rpl_unistring_t str)
+RPL_RETURNS_RETAINED
 {
     assert(str != NULL);
 
@@ -201,7 +205,7 @@ rpl_unistring_retain(rpl_unistring_t str)
 }
 
 void
-rpl_unistring_release(rpl_unistring_t str)
+rpl_unistring_release(rpl_unistring_t str RPL_RELEASES_ARGUMENT)
 {
     assert(str != NULL);
 
@@ -223,8 +227,22 @@ rpl_unistring_immortalize(rpl_unistring_t str)
     str->_refcnt = INT_MAX;
 }
 
+void
+rpl_unistring_not_leaked(rpl_unistring_t str RPL_RELEASES_ARGUMENT)
+{
+    assert(str != NULL);
+
+    /*
+     Nothing else to do: This function exists purely to supply its
+     argument annotation to the static analyzer. (This is mainly for
+     the situation where an "RPL_RETAINS_ARGUMENT" annotation would be
+     useful, but such a thing doesn't exist.)
+     */
+}
+
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_copy(rpl_unistring_t str)
+RPL_RETURNS_RETAINED
 {
     assert(str != NULL);
 
@@ -416,6 +434,7 @@ rpl_unistring_with_digit(int d)
 
 rpl_unistring_t RPL_NULLABLE
 rpl_unistring_with_integer(int64_t i)
+RPL_RETURNS_RETAINED
 {
     char buf[64] = {0};
 

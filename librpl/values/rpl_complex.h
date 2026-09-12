@@ -28,7 +28,8 @@ RPL_HEADER_BEGIN
 /*! Create a new complex value in rectangular coordinates. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_complex_new(rpl_real_t x_rep, rpl_real_t y_rep);
+rpl_complex_new(rpl_real_t x_rep, rpl_real_t y_rep)
+RPL_RETURNS_RETAINED;
 
 
 // TODO: Complex Number Operations

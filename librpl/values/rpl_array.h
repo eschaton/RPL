@@ -28,7 +28,8 @@ rpl_array_is_supported_type(rpl_type_t type);
 /*! Create a new RPL array. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_new(rpl_type_t type, rpl_integer_t capacity);
+rpl_array_new(rpl_type_t type, rpl_integer_t capacity)
+RPL_RETURNS_RETAINED;
 
 /*!
  Create a new RPL array with an existing set of values.
@@ -40,7 +41,8 @@ RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_array_new_with_values(rpl_type_t type,
 			  rpl_value_t RPL_NONNULL * RPL_NONNULL vals,
-			  rpl_integer_t vals_count);
+			  rpl_integer_t vals_count)
+RPL_RETURNS_RETAINED;
 
 /*! Get the type of the elements in the array. */
 RPL_EXPORT
@@ -59,7 +61,8 @@ rpl_array_get_count(rpl_value_t array);
  */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx);
+rpl_array_copy_value(rpl_value_t array, rpl_integer_t idx)
+RPL_RETURNS_RETAINED;
 
 /*! Set a value within an array. */
 RPL_EXPORT
