@@ -50,6 +50,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9F0DCDCF30560A8E00EBF478 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
+		9F0DCDD030560A8E00EBF478 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		9F0DCDD130560A8E00EBF478 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9F0DCDD230560A8E00EBF478 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		9F4215353042459E00DDEB08 /* librplTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = librplTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDD768E30411A3600A62C18 /* RPL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RPL; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FDD786B30414F5900A62C18 /* librpl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librpl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +137,10 @@
 		9FDD768530411A3600A62C18 = {
 			isa = PBXGroup;
 			children = (
+				9F0DCDD130560A8E00EBF478 /* README.md */,
+				9F0DCDD030560A8E00EBF478 /* COPYING */,
+				9F0DCDCF30560A8E00EBF478 /* CONTRIBUTING.md */,
+				9F0DCDD230560A8E00EBF478 /* TODO.md */,
 				9FDD769030411A3600A62C18 /* RPL */,
 				9FDD787530414FC500A62C18 /* librpl */,
 				9F4215363042459E00DDEB08 /* librplTests */,
