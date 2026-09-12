@@ -115,9 +115,27 @@ rpl_operation_table_set(rpl_operation_table_t table,
 	    success = true;
 	} else {
 	    const size_t name_idx
-	    = rpl_adjbuffer_get_count(&table->_names) - 1;
+		= rpl_adjbuffer_get_count(&table->_names) - 1;
 	    rpl_adjbuffer_remove_element(&table->_names, name_idx);
 	}
+    }
+
+    return success;
+}
+
+bool
+rpl_operation_table_iterate(rpl_operation_table_t table,
+			    rpl_operation_table_iter_f iter,
+			    void * RPL_NULLABLE refcon)
+{
+    bool success = true;
+
+    const size_t count = rpl_adjbuffer_get_count(&table->_ops);
+    for (size_t i = 0; (i < count) && success; i++) {
+	rpl_operation_t *op = rpl_adjbuffer_get(&table->_ops, i);
+	assert(op != NULL);
+
+	success = (*iter)(table, *op, i, refcon);
     }
 
     return success;

@@ -40,6 +40,36 @@ bool
 rpl_operation_table_set(rpl_operation_table_t table,
 			rpl_operation_t op);
 
+/*!
+ An operation table iteration function.
+
+ The function must not mutate the table or the operation.
+
+ @returns `true` to continue iterating, `false` to stop
+ */
+typedef bool
+(*rpl_operation_table_iter_f)(rpl_operation_table_t table,
+			      rpl_operation_t op,
+			      size_t idx,
+			      void * RPL_NULLABLE refcon);
+
+/*!
+ Iterate an operation table.
+
+ Calls a function once for each operation in the table.
+
+ This **must not** be used to mutate the table; its main purpose is to
+ allow something that presents a UI atop librpl to learn what operations
+ are available.
+
+ @returns `true` if iteration completed, `false` if it was incomplete
+ */
+RPL_EXPORT
+bool
+rpl_operation_table_iterate(rpl_operation_table_t table,
+			    rpl_operation_table_iter_f iter,
+			    void * RPL_NULLABLE refcon);
+
 
 RPL_HEADER_END
 
