@@ -13,6 +13,7 @@
 
 #include "rpl_context.h"
 #include "rpl_operation.h"
+#include "rpl_operation_table.h"
 #include "rpl_scope.h"
 #include "rpl_tokenizer.h"
 

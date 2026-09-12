@@ -25,12 +25,6 @@ struct rpl_operation {
 };
 
 
-struct rpl_operation_table {
-    rpl_adjbuffer_t _names;
-    rpl_adjbuffer_t _ops;
-};
-
-
 RPL_HEADER_END
 
 

@@ -24,10 +24,6 @@ RPL_HEADER_BEGIN
 typedef struct rpl_operation *rpl_operation_t;
 
 
-/*! A table of known, named operations in RPL. */
-typedef struct rpl_operation_table *rpl_operation_table_t;
-
-
 /*! RPL supports several types of operations. */
 typedef enum rpl_operation_type {
     /*!
@@ -96,25 +92,6 @@ rpl_operation_get_refcon(rpl_operation_t op);
 RPL_EXPORT
 bool
 rpl_operation_invoke(rpl_operation_t op, rpl_context_t context);
-
-
-RPL_EXPORT
-rpl_operation_table_t RPL_NULLABLE
-rpl_operation_table_new(void);
-
-RPL_EXPORT
-void
-rpl_operation_table_free(rpl_operation_table_t table);
-
-RPL_EXPORT
-rpl_operation_t RPL_NULLABLE
-rpl_operation_table_get(rpl_operation_table_t table,
-			rpl_unistring_t name);
-
-RPL_EXPORT
-bool
-rpl_operation_table_set(rpl_operation_table_t table,
-			rpl_operation_t op);
 
 
 RPL_HEADER_END
