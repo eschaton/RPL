@@ -19,7 +19,8 @@ RPL_SOURCE_BEGIN
 
 
 rpl_interpreter_t RPL_NULLABLE
-rpl_interpreter_new(void)
+rpl_interpreter_new(rpl_configure_interpreter_f configurator,
+		    void * RPL_NULLABLE refcon)
 {
     rpl_interpreter_t interp
 	= calloc(1, sizeof(struct rpl_interpreter));
@@ -35,6 +36,9 @@ rpl_interpreter_new(void)
 
 	interp->_output = rpl_unistring_new(80 * 24);
 	if (interp->_output == NULL) goto error;
+
+	bool configured = (*configurator)(interp, refcon);
+	if (configured == false) goto error;
     }
     return interp;
 

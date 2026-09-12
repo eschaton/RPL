@@ -24,9 +24,23 @@ RPL_HEADER_BEGIN
 typedef struct rpl_interpreter *rpl_interpreter_t;
 
 
+/*!
+ A function that configures the interpreter.
+
+ The interpreter's context can be modified as desired by this function.
+ Its main purpose is to populate the constant scope and operation table.
+
+ @returns `true` on success, `false` on failure
+ */
+typedef bool (*rpl_configure_interpreter_f)(rpl_interpreter_t interp,
+					    void * RPL_NULLABLE refcon);
+
+
+/*! Creates and configures a new interpreter. */
 RPL_EXPORT
 rpl_interpreter_t RPL_NULLABLE
-rpl_interpreter_new(void);
+rpl_interpreter_new(rpl_configure_interpreter_f configurator,
+		    void * RPL_NULLABLE refcon);
 
 RPL_EXPORT
 void
