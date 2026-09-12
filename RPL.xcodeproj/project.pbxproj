@@ -59,6 +59,7 @@
 		9F4215473042475B00DDEB08 /* Exceptions for "librpl" folder in "librpl" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
+				execution/operations/rpl_operations.h,
 				execution/rpl_context.h,
 				execution/rpl_environment.h,
 				execution/rpl_interpreter.h,
