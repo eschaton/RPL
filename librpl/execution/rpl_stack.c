@@ -23,6 +23,10 @@ RPL_SOURCE_BEGIN
  the code slightly more straightforward.
  */
 
+/*
+ TODO: Support arbitrary stack growth.
+ */
+
 
 rpl_stack_t RPL_NULLABLE
 rpl_stack_new(rpl_integer_t depth)
@@ -86,6 +90,7 @@ rpl_stack_push(rpl_stack_t stack, rpl_value_t value)
 
 rpl_value_t RPL_NULLABLE
 rpl_stack_pop(rpl_stack_t stack)
+RPL_RETURNS_RETAINED
 {
     assert(stack != NULL);
     assert(stack->_level > 0);
@@ -99,33 +104,12 @@ rpl_stack_pop(rpl_stack_t stack)
      */
     stack->_values[stack->_level] = NULL;
 
+    /*
+     There is no need to retain the value before returning it, because
+     the stack is passing its ownership to the caller.
+     */
+
     return result;
-}
-
-void
-rpl_stack_drop(rpl_stack_t stack)
-{
-    assert(stack != NULL);
-    assert(stack->_level > 0);
-
-    rpl_value_t popped = rpl_stack_pop(stack);
-
-    rpl_value_release(popped);
-}
-
-rpl_value_t RPL_NULLABLE
-rpl_stack_dup(rpl_stack_t stack)
-{
-    assert(stack != NULL);
-    assert(stack->_level > 0);
-
-    rpl_value_t top = stack->_values[stack->_level - 1];
-    rpl_value_t dup = rpl_value_copy(top);
-    if (dup) {
-	rpl_stack_push(stack, dup);
-    }
-
-    return dup;
 }
 
 rpl_value_t

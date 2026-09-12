@@ -22,7 +22,7 @@ RPL_HEADER_BEGIN
 typedef struct rpl_stack *rpl_stack_t;
 
 
-/*! Create a stack of a given depth. */
+/*! Create a stack of a given initial depth. */
 RPL_EXPORT
 rpl_stack_t RPL_NULLABLE
 rpl_stack_new(rpl_integer_t depth);
@@ -32,12 +32,12 @@ RPL_EXPORT
 void
 rpl_stack_free(rpl_stack_t stack);
 
-/*! Get the total depth of a stack. */
+/*! Get the current depth of the stack. */
 RPL_EXPORT
 rpl_integer_t
 rpl_stack_get_depth(rpl_stack_t stack);
 
-/*! Get the current stack level (where a push will go). */
+/*! Get the current stack level. */
 RPL_EXPORT
 rpl_integer_t
 rpl_stack_get_level(rpl_stack_t stack);
@@ -50,17 +50,8 @@ rpl_stack_push(rpl_stack_t stack, rpl_value_t value);
 /*! Pop and return the value at the top of the stack. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_stack_pop(rpl_stack_t stack);
-
-/*! Drop the item that's at the top of the stack. */
-RPL_EXPORT
-void
-rpl_stack_drop(rpl_stack_t stack);
-
-/*! Duplicate the item that's at thetop of the stack. */
-RPL_EXPORT
-rpl_value_t RPL_NULLABLE
-rpl_stack_dup(rpl_stack_t stack);
+rpl_stack_pop(rpl_stack_t stack)
+RPL_RETURNS_RETAINED;
 
 /*!
  Get the value at the given level.
