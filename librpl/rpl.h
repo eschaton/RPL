@@ -15,7 +15,11 @@
 /* Execution */
 #include "rpl_context.h"
 #include "rpl_environment.h"
+#include "rpl_interpreter.h"
 #include "rpl_operation.h"
+#include "rpl_operation_table.h"
+#include "rpl_operations.h"
+#include "rpl_scope.h"
 #include "rpl_stack.h"
 #include "rpl_tokenizer.h"
 

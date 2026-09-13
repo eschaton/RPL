@@ -5,8 +5,7 @@ This is the current to-do list for RPL.
 
 ## General
 
-- Set up an entry point for `librpl` that initializes everything to a
-  default state.
+Nothing at the moment.
 
 
 ## Value Types

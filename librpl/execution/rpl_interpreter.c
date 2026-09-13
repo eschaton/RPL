@@ -19,7 +19,7 @@ RPL_SOURCE_BEGIN
 
 
 rpl_interpreter_t RPL_NULLABLE
-rpl_interpreter_new(rpl_configure_interpreter_f configurator,
+rpl_interpreter_new(rpl_configure_interpreter_f RPL_NULLABLE config,
 		    void * RPL_NULLABLE refcon)
 {
     rpl_interpreter_t interp
@@ -37,8 +37,21 @@ rpl_interpreter_new(rpl_configure_interpreter_f configurator,
 	interp->_output = rpl_unistring_new(80 * 24);
 	if (interp->_output == NULL) goto error;
 
-	bool configured = (*configurator)(interp, refcon);
+	/* Perform requested configuration. */
+
+	rpl_configure_interpreter_f real_config
+	    = (config != NULL) ? config : rpl_configure_defaults;
+
+	bool configured = (*real_config)(interp, refcon);
 	if (configured == false) goto error;
+
+	/* Mark the scope containing constants as read-only. */
+
+	rpl_scope_t constant_scope
+	    = rpl_context_get_constant_scope(interp->_context);
+	assert(constant_scope != NULL);
+
+	rpl_scope_make_immutable(constant_scope);
     }
     return interp;
 
@@ -65,6 +78,14 @@ rpl_interpreter_get_context(rpl_interpreter_t interp)
     assert(interp != NULL);
 
     return interp->_context;
+}
+
+rpl_operation_table_t
+rpl_interpreter_get_operation_table(rpl_interpreter_t interp)
+{
+    assert(interp != NULL);
+
+    return interp->_optable;
 }
 
 bool
