@@ -123,7 +123,7 @@ START_TEST(test_decimal_printing)
 
     rpl_unistring_t four_str = rpl_value_copy_string(four, NULL);
     ck_assert_ptr_nonnull(four_str);
-    char *four_utf8 = rpl_unistring_copy_utf8(three_str);
+    char *four_utf8 = rpl_unistring_copy_utf8(four_str);
     ck_assert_ptr_nonnull(four_utf8);
     ck_assert_str_eq("# 4d", four_utf8);
     rpl_unistring_release(four_str);
