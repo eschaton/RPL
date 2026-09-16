@@ -18,6 +18,8 @@
 #include "rpl_integer.h"
 #include "rpl_real.h"
 
+#include "rpl_unicode.h"
+
 
 RPL_SOURCE_BEGIN
 
@@ -47,6 +49,7 @@ rpl_configure_defaults(rpl_interpreter_t interp,
     constant_scope = rpl_context_get_constant_scope(context);
     assert(constant_scope != NULL);
 
+    success = success && rpl_unicode_initialize();
     success = success && rpl_operations_configure(table);
     success = success && rpl_constants_configure(constant_scope);
 

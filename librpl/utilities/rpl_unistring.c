@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_unicode.h"
+
 
 RPL_SOURCE_BEGIN
 
@@ -104,75 +106,12 @@ RPL_RETURNS_RETAINED
 
     rpl_unistring_t res = rpl_unistring_new(str_len);
     if (res) {
-	size_t res_idx = 0;
-	rpl_unichar_t res_ch = 0x00000000;
-	int remaining = 0;
-
-	for (size_t str_idx = 0; str_idx < str_len; str_idx++) {
-	    const uint8_t byte = str[str_idx];
-	    const rpl_unichar_t raw = byte;
-	    switch (remaining) {
-		case 0: {
-		    if ((raw & 0x80) == 0x00) {
-			res_ch = raw;
-			res->_storage[res_idx] = res_ch;
-			res_idx += 1;
-			remaining = 0;
-		    } else if ((raw & 0xE0) == 0xC0) {
-			res_ch = ((raw & 0x1F) << 6);
-			remaining = 1;
-		    } else if ((raw & 0xF0) == 0xE0) {
-			res_ch = ((raw & 0x0F) << 12);
-			remaining = 2;
-		    } else if ((raw & 0xF8) == 0xF0) {
-			res_ch = ((raw & 0x07) << 18);
-			remaining = 3;
-		    } else {
-			/* Invalid sequence */
-			goto error;
-		    }
-		} break;
-
-		case 1: {
-		    if ((raw & 0xC0) == 0x80) {
-			res_ch |= (raw & 0x3F);
-			res->_storage[res_idx] = res_ch;
-			res_idx += 1;
-			remaining = 0;
-		    } else {
-			/* Invalid sequence */
-			goto error;
-		    }
-		} break;
-
-		case 2: {
-		    if ((raw & 0xC0) == 0x80) {
-			res_ch |= ((raw & 0x3F) << 6);
-			remaining = 1;
-		    } else {
-			/* Invalid sequence */
-			goto error;
-		    }
-		} break;
-
-		case 3: {
-		    if ((raw & 0xC0) == 0x80) {
-			res_ch |= ((raw & 0x3F) << 12);
-			remaining = 2;
-		    } else {
-			/* Invalid sequence */
-			goto error;
-		    }
-		} break;
-
-		default: {
-		    /* Logic error. */
-		    assert((remaining >= 0) && (remaining <= 3));
-		} break;
-	    }
-	}
-
-	res->_count = res_idx;
+	size_t stsize = res->_capacity * sizeof(rpl_unichar_t);
+	bool converted
+	    = rpl_unicode_convert_from_utf8((void *)str, str_len,
+					    res->_storage, &stsize);
+	if (converted == false) goto error;
+	res->_count = stsize / sizeof(rpl_unichar_t);
     }
 
     return res;
@@ -355,33 +294,28 @@ rpl_unistring_copy_utf8(rpl_unistring_t str)
 {
     assert(str != NULL);
 
-    const size_t utf8_max = str->_count * 4 + 1;
+    const size_t ucs4_size = str->_count * sizeof(rpl_unichar_t);
+    const size_t utf8_max = str->_count * 6;
     char *utf8 = calloc(utf8_max, sizeof(char));
+    if (utf8 == NULL) goto error;
 
-    size_t utf8_idx = 0;
-    for (size_t str_idx = 0; str_idx < str->_count; str_idx++) {
-	rpl_unichar_t str_ch = str->_storage[str_idx];
+    size_t utf8_size = utf8_max;
 
-	if (str_ch < 0x80) {
-	    utf8[utf8_idx++] = (char) (str_ch & 0x7F);
-	} else if ((str_ch >= 0x80) && (str_ch < 0x800)) {
-	    utf8[utf8_idx++] = 0xC0 | ((str_ch & 0x07C0) >> 6);
-	    utf8[utf8_idx++] = 0x80 | (str_ch & 0x003F);
-	} else if ((str_ch >= 0x800) && (str_ch < 0x10000)) {
-	    utf8[utf8_idx++] = 0xE0 | ((str_ch & 0xF000) >> 12);
-	    utf8[utf8_idx++] = 0x80 | ((str_ch & 0x0FC0) >> 6);
-	    utf8[utf8_idx++] = 0x80 | (str_ch & 0x003F);
-	} else {
-	    utf8[utf8_idx++] = 0xF0 | ((str_ch & 0x1C0000) >> 18);
-	    utf8[utf8_idx++] = 0x80 | ((str_ch & 0x03F000) >> 12);
-	    utf8[utf8_idx++] = 0x80 | ((str_ch & 0x000FC0) >> 6);
-	    utf8[utf8_idx++] = 0x80 | (str_ch & 0x00003F);
-	}
-    }
+    bool converted
+	= rpl_unicode_convert_to_utf8(str->_storage, ucs4_size,
+				      utf8, &utf8_size);
+    if (converted == false) goto error;
 
-    utf8[utf8_idx] = '\0';
+    char *result = realloc(utf8, utf8_size + 1);
+    if (result == NULL) goto error;
 
-    return realloc(utf8, utf8_idx + 1);
+    result[utf8_size] = '\0';
+
+    return result;
+
+error:
+    free(utf8);
+    return NULL;
 }
 
 int
