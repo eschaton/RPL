@@ -14,19 +14,21 @@
 RPL_SOURCE_BEGIN
 
 
+rpl_interpreter_t interpreter = NULL;
+
 void
 test_interpreter_setup(void)
 {
     tests_shared_setup();
 
-    /* Add other setup here. */
+    interpreter = rpl_interpreter_new(NULL, NULL);
 }
 
 
 void
 test_interpreter_teardown(void)
 {
-    /* Add other teardown here. */
+    rpl_interpreter_free(interpreter);
 
     tests_shared_teardown();
 }
@@ -36,10 +38,45 @@ test_interpreter_teardown(void)
 
 START_TEST(test_creation)
 {
-    rpl_interpreter_t interpreter = rpl_interpreter_new(NULL, NULL);
     ck_assert_ptr_nonnull(interpreter);
+}
+END_TEST
 
-    rpl_interpreter_free(interpreter);
+START_TEST(test_trivial_execution)
+{
+    const char * text_c = "123\n"
+			  "DUP\n";
+    const size_t text_c_len = strlen(text_c);
+    rpl_unistring_t text = rpl_unistring_new_from_utf8(text_c,
+						       text_c_len);
+    ck_assert_ptr_nonnull(text);
+
+    bool appended = rpl_interpreter_append_input(interpreter, text);
+    ck_assert(appended);
+
+    bool did_push = rpl_interpreter_step(interpreter);
+    ck_assert(did_push);
+
+    bool did_DUP = rpl_interpreter_step(interpreter);
+    ck_assert(did_DUP);
+
+    rpl_context_t context = rpl_interpreter_get_context(interpreter);
+    ck_assert_ptr_nonnull(context);
+
+    rpl_stack_t stack = rpl_context_get_stack(context);
+    ck_assert_ptr_nonnull(stack);
+
+    ck_assert_int_eq(2, rpl_stack_get_level(stack));
+
+    rpl_value_t level_0 = rpl_stack_get_value_at_level(stack, 0);
+    ck_assert_ptr_nonnull(level_0);
+    ck_assert_int_eq(rpl_type_real, rpl_value_get_type(level_0));
+    ck_assert_double_eq(123, rpl_real_get_rep(level_0));
+
+    rpl_value_t level_1 = rpl_stack_get_value_at_level(stack, 1);
+    ck_assert_ptr_nonnull(level_1);
+    ck_assert_int_eq(rpl_type_real, rpl_value_get_type(level_1));
+    ck_assert_double_eq(123, rpl_real_get_rep(level_1));
 }
 END_TEST
 
@@ -56,6 +93,7 @@ test_interpreter_suite(void)
 			      test_interpreter_setup,
 			      test_interpreter_teardown);
     tcase_add_test(tc_interpreter, test_creation);
+    tcase_add_test(tc_interpreter, test_trivial_execution);
 
     suite_add_tcase(s, tc_interpreter);
 

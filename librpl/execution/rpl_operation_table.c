@@ -59,10 +59,10 @@ rpl_operation_table_name_is_equal(rpl_adjbuffer_t *buffer,
     assert(element0 != NULL);
     assert(element1 != NULL);
 
-    rpl_unistring_t str0 = element0;
-    rpl_unistring_t str1 = element1;
+    rpl_unistring_t *str0 = element0;
+    rpl_unistring_t *str1 = element1;
 
-    return rpl_unistring_compare(str0, str1) == 0;
+    return rpl_unistring_compare(*str0, *str1) == 0;
 }
 
 ssize_t
@@ -72,7 +72,7 @@ rpl_operation_table_find(rpl_operation_table_t table,
     assert(table != NULL);
     assert(name != NULL);
 
-    return rpl_adjbuffer_find(&table->_names, name,
+    return rpl_adjbuffer_find(&table->_names, &name,
 			      rpl_operation_table_name_is_equal, NULL);
 }
 
@@ -83,14 +83,15 @@ rpl_operation_table_get(rpl_operation_table_t table,
     assert(table != NULL);
     assert(name != NULL);
 
-    rpl_operation_t op = NULL;
+    rpl_operation_t *op = NULL;
 
     ssize_t idx = rpl_operation_table_find(table, name);
     if (idx != -1) {
 	op = rpl_adjbuffer_get(&table->_ops, idx);
     }
 
-    return op;
+    if (op == NULL) return NULL;
+    else return *op;
 }
 
 bool
@@ -100,7 +101,7 @@ rpl_operation_table_set(rpl_operation_table_t table,
     assert(table != NULL);
     assert(op != NULL);
 
-    bool success = false;
+    bool success;
 
     rpl_unistring_t name = rpl_operation_get_name(op);
     assert(name != NULL);
@@ -117,7 +118,10 @@ rpl_operation_table_set(rpl_operation_table_t table,
 	    const size_t name_idx
 		= rpl_adjbuffer_get_count(&table->_names) - 1;
 	    rpl_adjbuffer_remove_element(&table->_names, name_idx);
+	    success = false;
 	}
+    } else {
+	success = false;
     }
 
     return success;
