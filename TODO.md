@@ -5,7 +5,12 @@ This is the current to-do list for RPL.
 
 ## General
 
-Nothing at the moment.
+- Use ICU for to implement case-insensitivity.
+
+
+## Interpreter
+
+- Make identifiers case-insensitive.
 
 
 ## Value Types
@@ -14,6 +19,7 @@ Nothing at the moment.
   feasible.
 - Implement `rpl_list_t` in terms of `rpl_adjbuffer_t`.
 - Implement `rpl_program_t` in terms of calls to the interpreter.
+- Make `rpl_name_t` case-insensitive.
 
 
 ## Operations
