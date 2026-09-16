@@ -403,7 +403,7 @@ RPL_RETURNS_RETAINED
 
     /* [a b c] */
 
-    appended = rpl_unistring_append_char(buf, '[');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_bracket_open);
     if (appended == false) goto error;
 
     for (size_t idx = 0; idx < count; idx++) {
@@ -447,12 +447,14 @@ RPL_RETURNS_RETAINED
 
 	if (idx < (count - 1)) {
 	    /* Add space between elements. */
-	    appended = rpl_unistring_append_char(buf, ' ');
+	    appended = rpl_unistring_append_char(buf,
+						 rpl_unichar_space);
 	    if (appended == false) goto error;
 	}
     }
 
-    appended = rpl_unistring_append_char(buf, ']');
+    appended = rpl_unistring_append_char(buf,
+					 rpl_unichar_bracket_close);
     if (appended == false) goto error;
 
     return buf;

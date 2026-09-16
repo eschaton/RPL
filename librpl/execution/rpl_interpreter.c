@@ -169,10 +169,10 @@ rpl_interpreter_output_stack(rpl_interpreter_t interp)
 	    rpl_unistring_release(is);
 	    if (appended == false) goto error;
 
-	    appended = rpl_unistring_append_char(s, ':');
+	    appended = rpl_unistring_append_char(s, rpl_unichar_colon);
 	    if (appended == false) goto error;
 
-	    appended = rpl_unistring_append_char(s, ' ');
+	    appended = rpl_unistring_append_char(s, rpl_unichar_space);
 	    if (appended == false) goto error;
 
 	    rpl_unistring_t vs = rpl_value_copy_string(v, env);

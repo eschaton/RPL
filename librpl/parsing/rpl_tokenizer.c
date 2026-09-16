@@ -162,32 +162,6 @@ rpl_tokenizer_set_mark(rpl_tokenizer_t tokenizer, ssize_t mark)
     tokenizer->_cur = mark;
 }
 
-const rpl_unichar_t rpl_unichar_space = ' ';
-const rpl_unichar_t rpl_unichar_tab = '\t';
-const rpl_unichar_t rpl_unichar_linefeed = '\n';
-const rpl_unichar_t rpl_unichar_carriage_return = '\r';
-const rpl_unichar_t rpl_unichar_single_quote = '\'';
-const rpl_unichar_t rpl_unichar_double_quote = '"';
-const rpl_unichar_t rpl_unichar_backslash = '\\';
-const rpl_unichar_t rpl_unichar_plus = '+';
-const rpl_unichar_t rpl_unichar_minus = '-';
-const rpl_unichar_t rpl_unichar_period = '.';
-const rpl_unichar_t rpl_unichar_comma = ',';
-const rpl_unichar_t rpl_unichar_at = '@';
-const rpl_unichar_t rpl_unichar_octothorpe = '#';
-const rpl_unichar_t rpl_unichar_colon = ':';
-const rpl_unichar_t rpl_unichar_underscore = '_';
-const rpl_unichar_t rpl_unichar_parenthesis_open = '(';
-const rpl_unichar_t rpl_unichar_parenthesis_close = ')';
-const rpl_unichar_t rpl_unichar_bracket_open = '[';
-const rpl_unichar_t rpl_unichar_bracket_close = ']';
-const rpl_unichar_t rpl_unichar_brace_open = '{';
-const rpl_unichar_t rpl_unichar_brace_close = '}';
-const rpl_unichar_t rpl_unichar_chevron_open = 0x000AB;
-const rpl_unichar_t rpl_unichar_chevron_close = 0x000BB;
-const rpl_unichar_t rpl_unichar_measured_angle = 0x02221;
-const rpl_unichar_t rpl_unichar_spherical_angle = 0x02222;
-
 bool
 rpl_char_is_end_of_line(rpl_unichar_t ch)
 {

@@ -406,7 +406,7 @@ rpl_unistring_get_eol(void)
     static rpl_unistring_t rpl_unistring_eol = NULL;
 
     if (rpl_unistring_eol == NULL) {
-	rpl_unichar_t ch = { '\n' };
+	rpl_unichar_t ch = { rpl_unichar_linefeed };
 	rpl_unistring_eol = rpl_unistring_new_from_chars(&ch, 1);
 	assert(rpl_unistring_eol != NULL);
 	rpl_unistring_immortalize(rpl_unistring_eol);

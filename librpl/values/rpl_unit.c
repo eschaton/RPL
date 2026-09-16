@@ -92,7 +92,7 @@ RPL_RETURNS_RETAINED
     appended = rpl_unistring_append(buf, scalar_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, '_');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_underscore);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, units_str);

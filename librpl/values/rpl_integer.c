@@ -81,8 +81,8 @@ RPL_RETURNS_RETAINED
 			     : rpl_base_decimal);
     switch (base) {
 	case rpl_base_binary: {
-	    tmpbuf[0] = '#';
-	    tmpbuf[1]= ' ';
+	    tmpbuf[0] = (char)rpl_unichar_octothorpe;
+	    tmpbuf[1]= (char)rpl_unichar_space;
 
 	    int digit = 2;
 	    bool saw_one = false;

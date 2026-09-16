@@ -107,9 +107,9 @@ START_TEST(test_conversion_to_utf8)
 
     {
 	rpl_unichar_t program_arr[] = {
-	    0x000000AB, ' ',
+	    rpl_unichar_chevron_open, ' ',
 	    'p', 'r', 'o', 'g', 'r', 'a', 'm',
-	    ' ', 0x000000BB,
+	    ' ', rpl_unichar_chevron_close,
 	};
 
 	rpl_unistring_t program

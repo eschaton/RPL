@@ -92,7 +92,7 @@ RPL_RETURNS_RETAINED
     rpl_string_t *rep = &string->_reps._string;
 
     /* "string" */
-    rpl_unichar_t quote_arr[] = { '"' };
+    rpl_unichar_t quote_arr[] = { rpl_unichar_double_quote };
 
     rpl_unistring_t buf = rpl_unistring_new_from_chars(quote_arr, 1);
     if (buf == NULL) goto error;
@@ -100,7 +100,7 @@ RPL_RETURNS_RETAINED
     bool appended = rpl_unistring_append(buf, rep->_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, '"');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_double_quote);
     if (appended == false) goto error;
 
     return buf;

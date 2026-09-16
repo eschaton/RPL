@@ -99,19 +99,21 @@ RPL_RETURNS_RETAINED
     buf = rpl_unistring_new(buf_len);
     if (buf == NULL) goto error;
 
-    appended = rpl_unistring_append_char(buf, '(');
+    appended = rpl_unistring_append_char(buf,
+					 rpl_unichar_parenthesis_open);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, a_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, ',');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_comma);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, a_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, ')');
+    appended = rpl_unistring_append_char(buf,
+					 rpl_unichar_parenthesis_close);
     if (appended == false) goto error;
 
     rpl_unistring_release(a_str);

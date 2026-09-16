@@ -118,6 +118,35 @@ rpl_unistring_with_integer(int64_t i)
 RPL_RETURNS_RETAINED;
 
 
+/* MARK: - Well-Known Code Point Constants */
+
+#define rpl_unichar_space		((rpl_unichar_t) ' ')
+#define rpl_unichar_tab			((rpl_unichar_t) '\t')
+#define rpl_unichar_linefeed		((rpl_unichar_t) '\n')
+#define rpl_unichar_carriage_return	((rpl_unichar_t) '\r')
+#define rpl_unichar_single_quote	((rpl_unichar_t) '\'')
+#define rpl_unichar_double_quote	((rpl_unichar_t) '"')
+#define rpl_unichar_backslash		((rpl_unichar_t) '\\')
+#define rpl_unichar_plus		((rpl_unichar_t) '+')
+#define rpl_unichar_minus		((rpl_unichar_t) '-')
+#define rpl_unichar_period		((rpl_unichar_t) '.')
+#define rpl_unichar_comma		((rpl_unichar_t) ',')
+#define rpl_unichar_at			((rpl_unichar_t) '@')
+#define rpl_unichar_octothorpe		((rpl_unichar_t) '#')
+#define rpl_unichar_colon		((rpl_unichar_t) ':')
+#define rpl_unichar_underscore		((rpl_unichar_t) '_')
+#define rpl_unichar_parenthesis_open	((rpl_unichar_t) '(')
+#define rpl_unichar_parenthesis_close	((rpl_unichar_t) ')')
+#define rpl_unichar_bracket_open	((rpl_unichar_t) '[')
+#define rpl_unichar_bracket_close	((rpl_unichar_t) ']')
+#define rpl_unichar_brace_open		((rpl_unichar_t) '{')
+#define rpl_unichar_brace_close		((rpl_unichar_t) '}')
+#define rpl_unichar_chevron_open	((rpl_unichar_t) 0x000AB)
+#define rpl_unichar_chevron_close	((rpl_unichar_t) 0x000BB)
+#define rpl_unichar_measured_angle	((rpl_unichar_t) 0x02221)
+#define rpl_unichar_spherical_angle	((rpl_unichar_t) 0x02222)
+
+
 RPL_HEADER_END
 
 

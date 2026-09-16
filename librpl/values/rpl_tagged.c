@@ -90,13 +90,13 @@ RPL_RETURNS_RETAINED
     buf = rpl_unistring_new(tag_str_len + value_str_len + 2);
     if (buf == NULL) goto error;
 
-    appended = rpl_unistring_append_char(buf, ':');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_colon);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, tag_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, ':');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_colon);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buf, value_str);

@@ -90,7 +90,7 @@ RPL_RETURNS_RETAINED
     rpl_name_t *rep = &name->_reps._name;
 
     /* 'name' */
-    rpl_unichar_t quote_arr[] = { '\'' };
+    rpl_unichar_t quote_arr[] = { rpl_unichar_single_quote };
 
     rpl_unistring_t buf = rpl_unistring_new_from_chars(quote_arr, 1);
     if (buf == NULL) goto error;
@@ -98,7 +98,7 @@ RPL_RETURNS_RETAINED
     bool appended = rpl_unistring_append(buf, rep->_name_text);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buf, '\'');
+    appended = rpl_unistring_append_char(buf, rpl_unichar_single_quote);
     if (appended == false) goto error;
 
     return buf;
