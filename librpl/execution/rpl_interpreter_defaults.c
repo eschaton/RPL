@@ -50,7 +50,7 @@ rpl_configure_defaults(rpl_interpreter_t interp,
     success = success && rpl_operations_configure(table);
     success = success && rpl_constants_configure(constant_scope);
 
-    return true;
+    return success;
 }
 
 
@@ -102,8 +102,8 @@ rpl_constants_configure(rpl_scope_t scope)
 	bool did_set = rpl_scope_set_variable(scope, name, value);
 	if (did_set == false) goto error;
 
-	rpl_unistring_release(name);
-	rpl_value_release(value);
+	rpl_unistring_release(name); name = NULL;
+	rpl_value_release(value); value = NULL;
     }
 
     return true;
