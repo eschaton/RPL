@@ -213,10 +213,6 @@ rpl_interpreter_eval_value(rpl_interpreter_t interp, rpl_value_t value)
     rpl_stack_t stack = rpl_context_get_stack(interp->_context);
     rpl_stack_push(stack, value);
 
-    /* The stack takes ownership of the value. */
-
-    rpl_value_release(value);
-
     return true;
 }
 
