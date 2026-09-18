@@ -29,8 +29,35 @@ struct rpl_interpreter {
 };
 
 
+/*!
+ The evaluation modes the interpreter supports.
+*/
+typedef enum rpl_interpreter_mode {
+    /*!
+     In immediate mode, identifiers corresponding to commands and
+     variables are evaluated by the interpreter as soon as they are
+     encountered.
+     */
+    rpl_interpreter_mode_immedate = 0,
+
+    /*!
+     In deferred mode, identifiers corresponding to commands and
+     variables push a name on the stack, on the assumption that they
+     will be evaluated separately later.
+     */
+    rpl_interpreter_mode_deferred,
+} rpl_interpreter_mode_t;
+
+
+/*!
+ Evaluate one token in the interpreter's current context.
+
+ Evaluates a token according to the @a mode.
+ */
+RPL_EXPORT
 bool
-rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token);
+rpl_interpreter_eval_token(rpl_interpreter_t interp, rpl_token_t token,
+			   rpl_interpreter_mode_t mode);
 
 
 RPL_HEADER_END

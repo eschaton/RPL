@@ -129,7 +129,10 @@ rpl_interpreter_step(rpl_interpreter_t interp)
 
     rpl_token_t token = rpl_tokenizer_copy_next(interp->_tokenizer);
     if (token) {
-	success = rpl_interpreter_eval(interp, token);
+	// TODO: Base mode on state of return stack.
+	rpl_interpreter_mode_t mode = rpl_interpreter_mode_immedate;
+
+	success = rpl_interpreter_eval_token(interp, token, mode);
 	rpl_token_free(token);
     }
 
@@ -205,10 +208,7 @@ rpl_interpreter_eval_value(rpl_interpreter_t interp, rpl_value_t value)
     assert(interp != NULL);
     assert(value != NULL);
 
-    /*
-     At this level, evaluating a value just involves pushing it on the
-     stack.
-     */
+    /* Evaluating a value always involves pushing it on the stack. */
 
     rpl_stack_t stack = rpl_context_get_stack(interp->_context);
     rpl_stack_push(stack, value);
@@ -217,8 +217,8 @@ rpl_interpreter_eval_value(rpl_interpreter_t interp, rpl_value_t value)
 }
 
 bool
-rpl_interpreter_eval_identifier(rpl_interpreter_t interp,
-				rpl_unistring_t identifier)
+rpl_interpreter_eval_identifier_immediate(rpl_interpreter_t interp,
+					  rpl_unistring_t identifier)
 {
     assert(interp != NULL);
     assert(identifier != NULL);
@@ -267,7 +267,30 @@ done:
 }
 
 bool
-rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
+rpl_interpreter_eval_identifier_deferred(rpl_interpreter_t interp,
+					 rpl_unistring_t identifier)
+{
+    assert(interp != NULL);
+    assert(identifier != NULL);
+
+    bool success = false;
+
+    /* Create a name from the identifier, and treat that as a value. */
+
+    rpl_value_t name = rpl_name_new(identifier);
+    if (name) {
+	success = rpl_interpreter_eval_value(interp, name);
+	rpl_value_release(name);
+    } else {
+	success = false;
+    }
+
+    return success;
+}
+
+bool
+rpl_interpreter_eval_token(rpl_interpreter_t interp, rpl_token_t token,
+			   rpl_interpreter_mode_t mode)
 {
     assert(interp != NULL);
     assert(token != NULL);
@@ -281,7 +304,18 @@ rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
     } else if (token_type == rpl_token_type_identifier) {
 	rpl_unistring_t identifier = rpl_token_get_string(token);
 
-	success = rpl_interpreter_eval_identifier(interp, identifier);
+	switch (mode) {
+	    case rpl_interpreter_mode_immedate: {
+		success
+		    = rpl_interpreter_eval_identifier_immediate(interp,
+							    identifier);
+	    } break;
+	    case rpl_interpreter_mode_deferred: {
+		success
+		    = rpl_interpreter_eval_identifier_deferred(interp,
+							   identifier);
+	    } break;
+	}
     } else {
 	/* Should never happen. */
 	assert((token_type == rpl_token_type_value)
