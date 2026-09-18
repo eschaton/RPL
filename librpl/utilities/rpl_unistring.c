@@ -318,19 +318,38 @@ error:
     return NULL;
 }
 
-int
-rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b)
+bool
+rpl_unistring_is_equal(rpl_unistring_t a, rpl_unistring_t b)
 {
     assert(a != NULL);
     assert(b != NULL);
 
-    if (a->_count < b->_count) {
-	return -1;
-    } else if (a->_count > b->_count) {
-	return 1;
+    if (a == b) {
+	return true;
+    } else if ((a->_count == 0) && (b->_count == 0)) {
+	return true;
+    } else if (a->_count != b->_count) {
+	return false;
     } else /* a->_count == b->_count */ {
 	return memcmp(a->_storage, b->_storage,
-		      a->_count * sizeof(rpl_unichar_t));
+		      a->_count * sizeof(rpl_unichar_t)) == 0;
+    }
+}
+
+bool
+rpl_unistring_is_equal_case_insensitive(rpl_unistring_t a,
+					rpl_unistring_t b)
+{
+    assert(a != NULL);
+    assert(b != NULL);
+
+    if (a == b) {
+	return true;
+    } else if ((a->_count == 0) && (b->_count == 0)) {
+	return true;
+    } else {
+	return rpl_unicode_is_equal_case_folded(a->_storage, a->_count,
+						b->_storage, b->_count);
     }
 }
 

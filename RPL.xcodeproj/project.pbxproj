@@ -541,7 +541,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = "";
-				OTHER_LDFLAGS = "-liconv";
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-licucore",
+				);
 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/rpl_private/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/rpl/include;
@@ -557,7 +560,10 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = "";
-				OTHER_LDFLAGS = "-liconv";
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-licucore",
+				);
 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/rpl_private/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/rpl/include;

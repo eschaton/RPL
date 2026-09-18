@@ -96,10 +96,19 @@ RPL_EXPORT
 char * RPL_NULLABLE
 rpl_unistring_copy_utf8(rpl_unistring_t str);
 
-/*! Compare two strings for equality, behaving like strcmp. */
+/*! Compare two strings for equality. */
 RPL_EXPORT
-int
-rpl_unistring_compare(rpl_unistring_t a, rpl_unistring_t b);
+bool
+rpl_unistring_is_equal(rpl_unistring_t a, rpl_unistring_t b);
+
+/*!
+ Compare two strings for case-insensitive equality, using full Unicode
+ case-folding rules.
+ */
+RPL_EXPORT
+bool
+rpl_unistring_is_equal_case_insensitive(rpl_unistring_t a,
+					rpl_unistring_t b);
 
 /*! Get the end-of-line string. */
 RPL_EXPORT

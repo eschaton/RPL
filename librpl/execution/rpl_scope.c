@@ -67,10 +67,10 @@ rpl_scope_name_is_equal(rpl_adjbuffer_t *buffer, void *element0,
     assert(element0 != NULL);
     assert(element1 != NULL);
 
-    rpl_unistring_t str0 = element0;
-    rpl_unistring_t str1 = element1;
+    rpl_unistring_t *str0 = element0;
+    rpl_unistring_t *str1 = element1;
 
-    return rpl_unistring_compare(str0, str1) == 0;
+    return rpl_unistring_is_equal_case_insensitive(*str0, *str1);
 }
 
 ssize_t
@@ -171,17 +171,17 @@ rpl_scope_remove_variable(rpl_scope_t scope, rpl_unistring_t name)
     assert(name != NULL);
     assert(scope->_is_mutable);
 
-    rpl_value_t value = NULL;
+    rpl_value_t *pvalue = NULL;
     const ssize_t idx = rpl_scope_find_variable(scope, name);
     assert(idx != -1);
 
-    value = rpl_adjbuffer_get(&scope->_values, idx);
+    pvalue = rpl_adjbuffer_get(&scope->_values, idx);
 
     rpl_adjbuffer_remove_element(&scope->_names, idx);
     rpl_adjbuffer_remove_element(&scope->_values, idx);
 
     rpl_unistring_release(name);
-    rpl_value_release(value);
+    rpl_value_release(*pvalue);
 }
 
 void

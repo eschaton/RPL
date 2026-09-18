@@ -65,6 +65,17 @@ bool
 rpl_unicode_convert_to_utf8(void *ucs4, size_t ucs4_size,
 			    void *utf8, size_t *utf8_size);
 
+/*!
+ A convenience wrapper for ``u_strCaseCompare`` from ICU, to perform a
+ case-folded identity comparison against two UCS-4 strings.
+
+ - NOTE: This SPI uses _code point counts_ rather than _byte sizes_.
+ */
+RPL_EXPORT
+bool
+rpl_unicode_is_equal_case_folded(void *a, size_t a_count,
+				 void *b, size_t b_count);
+
 
 RPL_HEADER_END
 

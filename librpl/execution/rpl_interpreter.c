@@ -255,6 +255,7 @@ rpl_interpreter_eval_identifier(rpl_interpreter_t interp,
     rpl_value_t name = rpl_name_new(identifier);
     if (name) {
 	success = rpl_interpreter_eval_value(interp, name);
+	rpl_value_release(name);
 	goto done;
     } else {
 	success = false;

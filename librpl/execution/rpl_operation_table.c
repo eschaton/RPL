@@ -62,7 +62,7 @@ rpl_operation_table_name_is_equal(rpl_adjbuffer_t *buffer,
     rpl_unistring_t *str0 = element0;
     rpl_unistring_t *str1 = element1;
 
-    return rpl_unistring_compare(*str0, *str1) == 0;
+    return rpl_unistring_is_equal_case_insensitive(*str0, *str1);
 }
 
 ssize_t

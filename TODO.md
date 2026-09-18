@@ -5,12 +5,13 @@ This is the current to-do list for RPL.
 
 ## General
 
-- Use ICU for to implement case-insensitivity.
+- Variable scope persistence.
+- Concept of variable directories.
 
 
 ## Interpreter
 
-- Make identifiers case-insensitive.
+- Figure out how to implement programs & control flow.
 
 
 ## Value Types
@@ -19,7 +20,6 @@ This is the current to-do list for RPL.
   feasible.
 - Implement `rpl_list_t` in terms of `rpl_adjbuffer_t`.
 - Implement `rpl_program_t` in terms of calls to the interpreter.
-- Make `rpl_name_t` case-insensitive.
 
 
 ## Operations
