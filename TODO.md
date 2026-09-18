@@ -11,7 +11,7 @@ This is the current to-do list for RPL.
 
 ## Interpreter
 
-- Figure out how to implement programs & control flow.
+- Adjust interpreter to support control flow.
 
 
 ## Value Types
@@ -19,11 +19,13 @@ This is the current to-do list for RPL.
 - Switch `rpl_real_t` to use `long double` or even 128-bit double where
   feasible.
 - Implement `rpl_list_t` in terms of `rpl_adjbuffer_t`.
-- Implement `rpl_program_t` in terms of calls to the interpreter.
+- Implement `rpl_program_t` in terms of calls to the interpreter and
+  `rpl_return_t`.
 
 
 ## Operations
 
+- Add basic control-flow operations
 - Add basic arithmetic operations
 - Add basic trigonometric operations
 - Add basic variable operations

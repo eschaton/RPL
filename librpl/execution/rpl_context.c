@@ -26,6 +26,9 @@ rpl_context_new(void)
 	context->_stack = rpl_stack_new(1024);
 	if (context->_stack == NULL) goto error;
 
+	context->_return_stack = rpl_return_stack_new(1024);
+	if (context->_return_stack == NULL) goto error;
+
 	context->_constant = rpl_scope_new(NULL);
 	if (context->_constant == NULL) goto error;
 
@@ -52,6 +55,9 @@ rpl_context_free(rpl_context_t context)
     }
 
     if (context->_stack) rpl_stack_free(context->_stack);
+    if (context->_return_stack) {
+	rpl_return_stack_free(context->_return_stack);
+    }
 
     if (context->_constant) rpl_scope_free(context->_constant);
     if (context->_global) rpl_scope_free(context->_global);
@@ -74,6 +80,14 @@ rpl_context_get_stack(rpl_context_t context)
     assert(context != NULL);
 
     return context->_stack;
+}
+
+rpl_return_stack_t
+rpl_context_get_return_stack(rpl_context_t context)
+{
+    assert(context != NULL);
+
+    return context->_return_stack;
 }
 
 rpl_scope_t

@@ -18,6 +18,7 @@ RPL_HEADER_BEGIN
 struct rpl_context {
     rpl_environment_t _environment;
     rpl_stack_t _stack;
+    rpl_return_stack_t _return_stack;
     rpl_scope_t _constant;
     rpl_scope_t _global;
     rpl_scope_t _local;

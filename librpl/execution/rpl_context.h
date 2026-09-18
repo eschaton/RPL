@@ -12,6 +12,7 @@
 #include "rpl_defines.h"
 
 #include "rpl_environment.h"
+#include "rpl_return_stack.h"
 #include "rpl_scope.h"
 #include "rpl_stack.h"
 
@@ -38,6 +39,10 @@ rpl_context_get_environment(rpl_context_t context);
 RPL_EXPORT
 rpl_stack_t
 rpl_context_get_stack(rpl_context_t context);
+
+RPL_EXPORT
+rpl_return_stack_t
+rpl_context_get_return_stack(rpl_context_t context);
 
 /*! Get the scope in which predefined constants exist. */
 RPL_EXPORT

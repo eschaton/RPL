@@ -27,8 +27,8 @@ typedef struct rpl_operation *rpl_operation_t;
 /*! RPL supports several types of operations. */
 typedef enum rpl_operation_type {
     /*!
-     An immediate operation may only be performed directly on the
-     command line, not used in a program.
+     An immediate operation is always invoked immediately upon being
+     encountered by the interpreter. This is used for control flow.
      */
     rpl_operation_type_immediate = 0,
 
