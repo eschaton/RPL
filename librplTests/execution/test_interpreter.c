@@ -80,6 +80,43 @@ START_TEST(test_trivial_execution)
 }
 END_TEST
 
+START_TEST(test_STO_and_RCL)
+{
+    const char * text_c = "123 'A' STO\n";
+    const size_t text_c_len = strlen(text_c);
+    rpl_unistring_t text = rpl_unistring_new_from_utf8(text_c,
+						       text_c_len);
+    ck_assert_ptr_nonnull(text);
+
+    bool appended = rpl_interpreter_append_input(interpreter, text);
+    ck_assert(appended);
+
+    bool did_push_123 = rpl_interpreter_step(interpreter);
+    ck_assert(did_push_123);
+
+    bool did_push_name = rpl_interpreter_step(interpreter);
+    ck_assert(did_push_name);
+
+    bool did_STO = rpl_interpreter_step(interpreter);
+    ck_assert(did_STO);
+
+    rpl_context_t context = rpl_interpreter_get_context(interpreter);
+    ck_assert_ptr_nonnull(context);
+
+    rpl_scope_t scope = rpl_context_get_local_scope(context);
+    ck_assert_ptr_nonnull(scope);
+
+    rpl_unistring_t name = rpl_unistring_new_from_utf8("A", 1);
+    ck_assert_ptr_nonnull(name);
+
+    rpl_value_t value = rpl_scope_get_variable(scope, name, false);
+    ck_assert_ptr_nonnull(value);
+    ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
+    rpl_real_t value_rep = rpl_real_get_rep(value);
+    ck_assert_double_eq(value_rep, 123);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -94,6 +131,7 @@ test_interpreter_suite(void)
 			      test_interpreter_teardown);
     tcase_add_test(tc_interpreter, test_creation);
     tcase_add_test(tc_interpreter, test_trivial_execution);
+    tcase_add_test(tc_interpreter, test_STO_and_RCL);
 
     suite_add_tcase(s, tc_interpreter);
 

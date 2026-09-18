@@ -99,8 +99,8 @@ rpl_scope_get_variable(rpl_scope_t scope, rpl_unistring_t name,
      */
 
     for (rpl_scope_t s = scope;
-	 search_parents && (s != NULL) && (idx == -1);
-	 s = s->_parent)
+	 (s != NULL) && (idx == -1);
+	 s = search_parents ? s->_parent : NULL)
     {
 	idx = rpl_scope_find_variable(s, name);
 	if (idx != -1) {

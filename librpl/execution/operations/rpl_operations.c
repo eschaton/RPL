@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "rpl_stack_ops.h"
+#include "rpl_variable_ops.h"
 
 
 RPL_SOURCE_BEGIN
@@ -24,7 +25,7 @@ rpl_operations_configure(rpl_operation_table_t table)
     success = success && rpl_configure_stack_ops(table);
     /* success = success && rpl_configure_arith_ops(table); */
     /* success = success && rpl_configure_trig_ops(table); */
-    /* success = success && rpl_configure_var_ops(table); */
+    success = success && rpl_configure_variable_ops(table);
     /* success = success && rpl_configure_integer_ops(table); */
     /* success = success && rpl_configure_array_ops(table); */
     /* success = success && rpl_configure_list_ops(table); */
