@@ -14,16 +14,17 @@
 
 RPL_HEADER_BEGIN
 
+
 bool
-rpl_stack_op_dup(rpl_operation_t operation,
+rpl_stack_op_DUP(rpl_operation_t operation,
 		 rpl_context_t context);
 
 bool
-rpl_stack_op_drop(rpl_operation_t operation,
+rpl_stack_op_DROP(rpl_operation_t operation,
 		  rpl_context_t context);
 
 bool
-rpl_stack_op_swap(rpl_operation_t operation,
+rpl_stack_op_SWAP(rpl_operation_t operation,
 		  rpl_context_t context);
 
 

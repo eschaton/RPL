@@ -9,20 +9,17 @@
 #include "rpl_stack_ops_internal.h"
 
 #include <assert.h>
-#include <string.h>
+
+#include "rpl_operations_internal.h"
 
 
 RPL_SOURCE_BEGIN
 
 
-struct rpl_stack_op_entry {
-    const char *_name;
-    rpl_operation_type_t _type;
-    rpl_operation_impl_t _impl;
-} rpl_stack_op_entries[] = {
-    { "DUP", rpl_operation_type_function, rpl_stack_op_dup },
-    { "DROP", rpl_operation_type_function, rpl_stack_op_drop },
-    { "SWAP", rpl_operation_type_function, rpl_stack_op_swap },
+rpl_op_definition_t rpl_stack_op_defs[] = {
+    { "DUP", rpl_operation_type_function, rpl_stack_op_DUP },
+    { "DROP", rpl_operation_type_function, rpl_stack_op_DROP },
+    { "SWAP", rpl_operation_type_function, rpl_stack_op_SWAP },
     { NULL, 0, NULL },
 };
 
@@ -32,43 +29,14 @@ rpl_configure_stack_ops(rpl_operation_table_t table)
 {
     assert(table != NULL);
 
-    bool added;
-
-    rpl_unistring_t name = NULL;
-    rpl_operation_t op = NULL;
-
-    for (struct rpl_stack_op_entry *entry = &rpl_stack_op_entries[0];
-	 (entry->_name != NULL);
-	 entry++)
-    {
-	const size_t name_len = strlen(entry->_name);
-	assert(name_len != 0);
-
-	name = rpl_unistring_new_from_utf8(entry->_name, name_len);
-	if (name == NULL) goto error;
-
-	op = rpl_operation_new(name, entry->_type, entry->_impl, NULL);
-	if (op == NULL) goto error;
-
-	rpl_unistring_release(name); name = NULL;
-
-	added = rpl_operation_table_set(table, op);
-	if (added == false) goto error;
-    }
-
-    return true;
-
-error:
-    if (name) rpl_unistring_release(name);
-    if (op) rpl_operation_free(op);
-    return false;
+    return rpl_operations_register_defs(table, rpl_stack_op_defs);
 }
 
 
 /* MARK: - Stack Operations */
 
 bool
-rpl_stack_op_dup(rpl_operation_t operation,
+rpl_stack_op_DUP(rpl_operation_t operation,
 		 rpl_context_t context)
 {
     assert(operation != NULL);
@@ -108,7 +76,7 @@ error:
 }
 
 bool
-rpl_stack_op_drop(rpl_operation_t operation,
+rpl_stack_op_DROP(rpl_operation_t operation,
 		  rpl_context_t context)
 {
     assert(operation != NULL);
@@ -134,7 +102,7 @@ error:
 }
 
 bool
-rpl_stack_op_swap(rpl_operation_t operation,
+rpl_stack_op_SWAP(rpl_operation_t operation,
 		  rpl_context_t context)
 {
     assert(operation != NULL);
