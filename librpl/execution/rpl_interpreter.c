@@ -129,8 +129,16 @@ rpl_interpreter_step(rpl_interpreter_t interp)
 
     rpl_token_t token = rpl_tokenizer_copy_next(interp->_tokenizer);
     if (token) {
-	// TODO: Base mode on state of return stack.
-	rpl_interpreter_mode_t mode = rpl_interpreter_mode_immedate;
+	rpl_return_stack_t ret_stack
+	    = rpl_context_get_return_stack(interp->_context);
+	assert(ret_stack != NULL);
+
+	rpl_interpreter_mode_t mode;
+	if (rpl_return_stack_get_level(ret_stack) == 0) {
+	    mode = rpl_interpreter_mode_immedate;
+	} else {
+	    mode = rpl_interpreter_mode_deferred;
+	}
 
 	success = rpl_interpreter_eval_token(interp, token, mode);
 	rpl_token_free(token);
@@ -275,7 +283,29 @@ rpl_interpreter_eval_identifier_deferred(rpl_interpreter_t interp,
 
     bool success = false;
 
-    /* Create a name from the identifier, and treat that as a value. */
+    /*
+     Even in deferred mode, the interpreter needs to see whether an
+     identifier corresponds to an operation: If it does, and that
+     operation is an immediate operation, it still must be invoked in
+     order to implement control flow.
+     */
+
+    rpl_operation_t op = rpl_operation_table_get(interp->_optable,
+						 identifier);
+    if (op) {
+	rpl_operation_type_t op_type = rpl_operation_get_type(op);
+	if (op_type == rpl_operation_type_immediate) {
+	    success = rpl_operation_invoke(op, interp->_context);
+	    goto done;
+	} else {
+	    /* Fall through, treat the identifier as a name. */
+	}
+    }
+
+    /*
+     Create a name from the identifier, and treat that as a
+     value to push on the stack.
+     */
 
     rpl_value_t name = rpl_name_new(identifier);
     if (name) {
@@ -284,7 +314,8 @@ rpl_interpreter_eval_identifier_deferred(rpl_interpreter_t interp,
     } else {
 	success = false;
     }
-
+    
+done:
     return success;
 }
 
