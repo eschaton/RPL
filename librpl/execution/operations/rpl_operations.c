@@ -22,14 +22,14 @@ rpl_operations_configure(rpl_operation_table_t table)
 {
     bool success = true;
 
-    success = success && rpl_configure_stack_ops(table);
     /* success = success && rpl_configure_arith_ops(table); */
-    /* success = success && rpl_configure_trig_ops(table); */
-    success = success && rpl_configure_variable_ops(table);
-    /* success = success && rpl_configure_integer_ops(table); */
     /* success = success && rpl_configure_array_ops(table); */
+    /* success = success && rpl_configure_integer_ops(table); */
     /* success = success && rpl_configure_list_ops(table); */
     /* success = success && rpl_configure_program_ops(table); */
+    success = success && rpl_configure_stack_ops(table);
+    /* success = success && rpl_configure_trig_ops(table); */
+    success = success && rpl_configure_variable_ops(table);
 
     return success;
 }
