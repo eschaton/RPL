@@ -49,6 +49,11 @@ RPL_EXPORT
 rpl_return_t
 rpl_return_stack_pop(rpl_return_stack_t stack);
 
+/*! Get the topmost open return on the return stack. */
+RPL_EXPORT
+rpl_return_t RPL_NULLABLE
+rpl_return_stack_get_top_open(rpl_return_stack_t stack);
+
 
 RPL_HEADER_END
 

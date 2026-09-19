@@ -15,21 +15,51 @@
 RPL_HEADER_BEGIN
 
 
-bool
-rpl_cflow_op_IF(rpl_operation_t operation,
-		rpl_context_t context);
+/*! Declare or define a control-flow operation. */
+#define RPL_CFLOW_OP_DECLARE(name) \
+    bool \
+    rpl_cflow_op_ ## name (rpl_operation_t operation, \
+			   rpl_context_t context)
 
-bool
-rpl_cflow_op_THEN(rpl_operation_t operation,
-		  rpl_context_t context);
+/*! Declare or define a control-flow return operation. */
+#define RPL_CFLOW_RET_DECLARE(name) \
+    bool \
+    rpl_cflow_op_ ## name ## _ret(rpl_return_t ret, \
+				  rpl_context_t context)
 
-bool
-rpl_cflow_op_ELSE(rpl_operation_t operation,
-		  rpl_context_t context);
 
-bool
-rpl_cflow_op_END(rpl_operation_t operation,
-		 rpl_context_t context);
+/* MARK: - Control Flow Operations */
+
+RPL_CFLOW_OP_DECLARE(IF);
+RPL_CFLOW_OP_DECLARE(THEN);
+RPL_CFLOW_OP_DECLARE(ELSE);
+
+RPL_CFLOW_OP_DECLARE(DO);
+RPL_CFLOW_OP_DECLARE(UNTIL);
+RPL_CFLOW_OP_DECLARE(WHILE);
+RPL_CFLOW_OP_DECLARE(REPEAT);
+
+RPL_CFLOW_OP_DECLARE(END);
+
+RPL_CFLOW_OP_DECLARE(FOR);
+RPL_CFLOW_OP_DECLARE(START);
+RPL_CFLOW_OP_DECLARE(NEXT);
+RPL_CFLOW_OP_DECLARE(STEP);
+
+
+/* MARK: - Control Flow Return Operations */
+
+RPL_CFLOW_RET_DECLARE(IF);
+RPL_CFLOW_RET_DECLARE(THEN);
+RPL_CFLOW_RET_DECLARE(ELSE);
+
+RPL_CFLOW_RET_DECLARE(DO);
+RPL_CFLOW_RET_DECLARE(UNTIL);
+RPL_CFLOW_RET_DECLARE(WHILE);
+RPL_CFLOW_RET_DECLARE(REPEAT);
+
+RPL_CFLOW_RET_DECLARE(FOR);
+RPL_CFLOW_RET_DECLARE(START);
 
 
 RPL_HEADER_END

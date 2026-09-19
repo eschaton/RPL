@@ -99,5 +99,23 @@ rpl_return_stack_pop(rpl_return_stack_t stack)
     return result;
 }
 
+rpl_return_t RPL_NULLABLE
+rpl_return_stack_get_top_open(rpl_return_stack_t stack)
+{
+    assert(stack != NULL);
+    assert(stack->_level > 0);
+
+    /* Look down through the stack for the nearest open return. */
+
+    for (rpl_integer_t i = stack->_level; i >= 0; --i) {
+	rpl_return_t ret = stack->_returns[i];
+	assert(ret != NULL);
+
+	if (rpl_return_is_open(ret)) return ret;
+    }
+
+    return NULL;
+}
+
 
 RPL_SOURCE_END
