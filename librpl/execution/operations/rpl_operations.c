@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "rpl_cflow_ops.h"
 #include "rpl_stack_ops.h"
 #include "rpl_variable_ops.h"
 
@@ -24,6 +25,7 @@ rpl_operations_configure(rpl_operation_table_t table)
 
     /* success = success && rpl_configure_arith_ops(table); */
     /* success = success && rpl_configure_array_ops(table); */
+    success = success && rpl_configure_cflow_ops(table);
     /* success = success && rpl_configure_integer_ops(table); */
     /* success = success && rpl_configure_list_ops(table); */
     /* success = success && rpl_configure_program_ops(table); */
