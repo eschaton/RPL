@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "rpl_cflow_ops.h"
+#include "rpl_logical_ops.h"
 #include "rpl_stack_ops.h"
 #include "rpl_variable_ops.h"
 
@@ -28,6 +29,7 @@ rpl_operations_configure(rpl_operation_table_t table)
     success = success && rpl_configure_cflow_ops(table);
     /* success = success && rpl_configure_integer_ops(table); */
     /* success = success && rpl_configure_list_ops(table); */
+    success = success && rpl_configure_logical_ops(table);
     /* success = success && rpl_configure_program_ops(table); */
     success = success && rpl_configure_stack_ops(table);
     /* success = success && rpl_configure_trig_ops(table); */
