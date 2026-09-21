@@ -11,8 +11,6 @@
 
 #include "rpl_value.h"
 
-#include "rpl_integer.h"
-
 
 RPL_HEADER_BEGIN
 

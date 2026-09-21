@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_identifier.h"
 #include "rpl_name.h"
 #include "rpl_operation.h"
 
@@ -287,7 +288,9 @@ rpl_interpreter_eval_identifier_deferred(rpl_interpreter_t interp,
      Even in deferred mode, the interpreter needs to see whether an
      identifier corresponds to an operation: If it does, and that
      operation is an immediate operation, it still must be invoked in
-     order to implement control flow.
+     order to implement control flow. If it does, but that operation is
+     not an immediate operation, it must instead be pushed in a form
+     that can be invoked later during control flow.
      */
 
     rpl_operation_t op = rpl_operation_table_get(interp->_optable,
@@ -298,13 +301,21 @@ rpl_interpreter_eval_identifier_deferred(rpl_interpreter_t interp,
 	    success = rpl_operation_invoke(op, interp->_context);
 	    goto done;
 	} else {
-	    /* Fall through, treat the identifier as a name. */
+	    rpl_value_t iv = rpl_identifier_new(identifier);
+	    if (iv == NULL) {
+		success = false;
+		/* TODO: Signal 'resourc exhaustion' condition */
+		goto done;
+	    }
+
+	    success = rpl_interpreter_eval_value(interp, iv);
+	    rpl_value_release(iv);
 	}
     }
 
     /*
-     Create a name from the identifier, and treat that as a
-     value to push on the stack.
+     The name doesn't correspond to an operation, so create a name from
+     the identifier, and evaluate it (which pushes it on the stack).
      */
 
     rpl_value_t name = rpl_name_new(identifier);

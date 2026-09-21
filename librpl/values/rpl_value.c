@@ -35,16 +35,17 @@ rpl_value_free(rpl_value_t val)
     assert(val->_refs == 0);
 
     switch (val->_type) {
-	case rpl_type_integer: rpl_integer_free(val); break;
-	case rpl_type_real:    rpl_real_free(val);    break;
-	case rpl_type_complex: rpl_complex_free(val); break;
-	case rpl_type_array:   rpl_array_free(val);   break;
-	case rpl_type_name:    rpl_name_free(val);    break;
-	case rpl_type_program: rpl_program_free(val); break;
-	case rpl_type_string:  rpl_string_free(val);  break;
-	case rpl_type_list:    rpl_list_free(val);    break;
-	case rpl_type_tagged:  rpl_tagged_free(val);  break;
-	case rpl_type_unit:    rpl_unit_free(val);    break;
+	case rpl_type_integer:    rpl_integer_free(val);    break;
+	case rpl_type_real:       rpl_real_free(val);       break;
+	case rpl_type_complex:    rpl_complex_free(val);    break;
+	case rpl_type_array:      rpl_array_free(val);      break;
+	case rpl_type_name:       rpl_name_free(val);       break;
+	case rpl_type_program:    rpl_program_free(val);    break;
+	case rpl_type_string:     rpl_string_free(val);     break;
+	case rpl_type_list:       rpl_list_free(val);       break;
+	case rpl_type_tagged:     rpl_tagged_free(val);     break;
+	case rpl_type_unit:       rpl_unit_free(val);       break;
+	case rpl_type_identifier: rpl_identifier_free(val); break;
     }
 
     free(val);
@@ -141,6 +142,7 @@ RPL_RETURNS_RETAINED
 	case rpl_type_program:
 	case rpl_type_tagged:
 	case rpl_type_unit:
+	case rpl_type_identifier:
 	    result = rpl_value_retain(val);
 	    break;
 
@@ -179,6 +181,8 @@ RPL_RETURNS_RETAINED
 	case rpl_type_list:    return rpl_list_copy_string(val, env);
 	case rpl_type_tagged:  return rpl_tagged_copy_string(val, env);
 	case rpl_type_unit:    return rpl_unit_copy_string(val, env);
+	case rpl_type_identifier:
+	    return rpl_identifier_copy_string(val, env);
     }
 
     return NULL;

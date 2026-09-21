@@ -58,6 +58,12 @@ enum rpl_type {
      and `m/s^2` as the name part.
      */
     rpl_type_unit,
+
+    /*!
+     An identifier in RPL is an internal construct solely for use by the
+     interpreter.
+     */
+    rpl_type_identifier,
 };
 typedef enum rpl_type rpl_type_t;
 

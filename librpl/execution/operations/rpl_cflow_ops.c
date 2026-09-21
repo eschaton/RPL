@@ -247,7 +247,47 @@ rpl_cflow_op_IF_ret(rpl_return_t ret,
 {
     assert(ret != NULL);
     assert(context != NULL);
+    assert(rpl_return_is_open(ret) == false);
 
+    /*
+     Validate the entries. There should always be at least one, the one
+     that started the return.
+     */
+
+    const rpl_integer_t entry_count = rpl_return_get_count(ret);
+
+    if (entry_count == 2) {
+	/* Should be: IF ... THEN ... END */
+    } else if (entry_count == 3) {
+	/* Should be: IF ... THEN ... ELSE ... END */
+    } else {
+	// TODO: Signal 'bad IF construct' condition
+	goto error;
+    }
+
+    rpl_integer_t ifL;
+    rpl_return_operation_t ifOp = rpl_return_get_entry(ret, 0, &ifL);
+    assert(ifOp == rpl_cflow_op_IF_ret);
+
+    rpl_integer_t thenL;
+    rpl_return_operation_t thenOp = rpl_return_get_entry(ret, 1,
+							 &thenL);
+    assert(thenOp == rpl_cflow_op_THEN_ret);
+
+    rpl_integer_t elseL;
+    rpl_return_operation_t elseOp
+	= (entry_count == 3) ? rpl_return_get_entry(ret, 2, &elseL)
+			     : NULL;
+    assert((elseOp == NULL) || (elseOp == rpl_cflow_op_ELSE_ret));
+
+    /*
+     Call back into the interpreter to perform the test, which is on the
+     stack at levels ifL to (but not through) thenL.
+     */
+
+    //xxx
+
+error:
     return false;//xxx
 }
 
