@@ -107,7 +107,7 @@ rpl_return_stack_get_top_open(rpl_return_stack_t stack)
 
     /* Look down through the stack for the nearest open return. */
 
-    for (rpl_integer_t i = stack->_level; i >= 0; --i) {
+    for (rpl_integer_t i = stack->_level - 1; i >= 0; --i) {
 	rpl_return_t ret = stack->_returns[i];
 	assert(ret != NULL);
 
