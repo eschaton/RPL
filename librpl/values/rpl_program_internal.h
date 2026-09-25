@@ -11,22 +11,25 @@
 
 #include "rpl_program.h"
 
-#include "rpl_value.h"
+#include "rpl_adjbuffer.h"
 
 
 RPL_HEADER_BEGIN
 
 
 struct rpl_program {
-    // TODO: programs
+    /*! The values that make up the program. */
+    rpl_adjbuffer_t _values;
 };
 typedef struct rpl_program rpl_program_t;
 
 
+/*! Free resources held by the program. */
 RPL_EXPORT
 void
 rpl_program_free(rpl_value_t program);
 
+/*! Copy a string representation of the program. */
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_program_copy_string(rpl_value_t program,
