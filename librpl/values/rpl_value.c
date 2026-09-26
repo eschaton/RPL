@@ -188,5 +188,27 @@ RPL_RETURNS_RETAINED
     return NULL;
 }
 
+bool
+rpl_value_release_adjbuffer_f(rpl_adjbuffer_t *buffer, void *element,
+			      size_t idx, void * RPL_NULLABLE refcon)
+{
+    assert(element != NULL);
+
+    rpl_value_t *value = element;
+    assert(value != NULL);
+    if (*value) {
+	rpl_value_release(*value);
+    }
+
+    return true;
+}
+
+bool
+rpl_value_release_adjbuffer(rpl_adjbuffer_t *vals)
+{
+    return rpl_adjbuffer_apply(vals, &rpl_value_release_adjbuffer_f,
+			       NULL);
+}
+
 
 RPL_SOURCE_END

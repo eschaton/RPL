@@ -42,6 +42,8 @@ rpl_program_free(rpl_value_t program)
     assert(program->_type == rpl_type_program);
     rpl_program_t *rep = &program->_reps._program;
 
+    (void) rpl_value_release_adjbuffer(&rep->_values);
+
     rpl_adjbuffer_deinit(&rep->_values);
 }
 
@@ -76,6 +78,8 @@ rpl_program_append(rpl_value_t program, rpl_value_t value)
     assert(program->_type == rpl_type_program);
     assert(value != NULL);
     rpl_program_t *rep = &program->_reps._program;
+
+    rpl_value_retain(value);
 
     return rpl_adjbuffer_append_element(&rep->_values, &value);
 }

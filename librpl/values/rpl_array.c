@@ -114,19 +114,6 @@ error:
     return NULL;
 }
 
-bool
-rpl_subarray_free_f(rpl_adjbuffer_t *buffer, void *element, size_t idx,
-		    void * RPL_NULLABLE refcon)
-{
-    assert(element != NULL);
-
-    rpl_value_t array = element;
-
-    rpl_value_free(array);
-
-    return true;
-}
-
 void
 rpl_array_free(rpl_value_t array)
 {
@@ -134,9 +121,7 @@ rpl_array_free(rpl_value_t array)
     assert(array->_type == rpl_type_array);
     
     if (array->_reps._array._type == rpl_type_array) {
-	(void) rpl_adjbuffer_apply(&array->_reps._array._buffer,
-				   &rpl_subarray_free_f,
-				   NULL);
+	(void)rpl_value_release_adjbuffer(&array->_reps._array._buffer);
     }
 
     rpl_adjbuffer_deinit(&array->_reps._array._buffer);

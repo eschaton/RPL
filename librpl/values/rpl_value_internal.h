@@ -92,6 +92,15 @@ void
 rpl_value_release_array(rpl_value_t RPL_NULLABLE * RPL_NONNULL vals,
 			rpl_integer_t vals_count);
 
+/*!
+ Release every non-`NULL` value in an ``librpl`rpl_adjbuffer_t`` of
+ values.
+
+ - NOTE: Does not free or deinit the `adbjbuffer` itself.
+ */
+RPL_EXPORT
+bool
+rpl_value_release_adjbuffer(rpl_adjbuffer_t * vals);
 
 
 RPL_HEADER_END
