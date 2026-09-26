@@ -78,6 +78,7 @@
 				utilities/rpl_unistring.h,
 				values/rpl_array.h,
 				values/rpl_complex.h,
+				values/rpl_identifier.h,
 				values/rpl_integer.h,
 				values/rpl_list.h,
 				values/rpl_name.h,

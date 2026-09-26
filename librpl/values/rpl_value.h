@@ -58,6 +58,13 @@ enum rpl_type {
      and `m/s^2` as the name part.
      */
     rpl_type_unit,
+
+    /*!
+     An identifier is a string representing either a varable access or a
+     command in a program. (As opposed to a name, which needs to be
+     passed to `RCL` or `EVAL` to behave as a variable or a command.)
+     */
+    rpl_type_identifier,
 };
 typedef enum rpl_type rpl_type_t;
 
