@@ -18,7 +18,7 @@
 #include "rpl_identifier.h"
 #include "rpl_integer.h"
 #include "rpl_name.h"
-#include "rpl_program.h"
+#include "rpl_program_internal.h"
 #include "rpl_string.h"
 #include "rpl_unit.h"
 
@@ -1198,6 +1198,365 @@ back_out:
     return NULL;
 }
 
+bool
+rpl_token_is_control_flow_start(rpl_token_t token,
+				rpl_program_type_t *type)
+{
+    assert(token != NULL);
+    assert(type != NULL);
+
+    /* Non-identifier tokens can't start control flow. */
+    if (rpl_token_get_type(token) != rpl_token_type_identifier) {
+	return false;
+    }
+
+    rpl_unistring_t identifier = rpl_token_get_string(token);
+    assert(identifier != NULL);
+
+    /* All control-flow identifiers are 2-5 characters in length. */
+    const size_t ident_len = rpl_unistring_get_length(identifier);
+    if ((ident_len < 2) || (ident_len > 5)) return false;
+
+    /* Search the set of control-flow identifiers for a match. */
+    struct cflow_start {
+	const char *utf8;
+	size_t len;
+	rpl_program_type_t type;
+    } starts[] = {
+	{ "DO", 2, rpl_program_type_DO },
+	{ "IF", 2, rpl_program_type_IF },
+	{ "FOR", 3, rpl_program_type_FOR },
+	{ "CASE", 4, rpl_program_type_CASE },
+	{ "START", 5, rpl_program_type_START },
+	{ "WHILE", 5, rpl_program_type_WHILE },
+	{ NULL, 0, rpl_program_type_generic },
+    };
+
+    bool found = false;
+    for (struct cflow_start *start = &starts[0];
+	 (start->utf8 != NULL) && !found;
+	 start++)
+    {
+	if (rpl_unistring_is_equal_case_insensitive_utf8(identifier,
+							 start->utf8))
+	{
+	    *type = start->type;
+	    found = true;
+	}
+    }
+
+    return found;
+
+error:
+    return false;
+}
+
+bool
+rpl_tokenizer_is_keyword(rpl_unistring_t ident, const char *keyword)
+{
+    assert(ident != NULL);
+    assert(keyword != NULL);
+
+    return rpl_unistring_is_equal_case_insensitive_utf8(ident, keyword);
+}
+
+/*! Parse a `DO ... UNTIL ... END` construct into a program. */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_DO(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse DO
+    return NULL;
+}
+
+/*!
+ Parse an `IF ... THEN ... [ELSE ...] END` construct into a program.
+
+ At this point, the tokenizer has already consumed the `IF` identifier,
+ and has saved a mark, so it's sufficient to return `NULL` to back out.
+ */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
+{
+    assert(tokenizer != NULL);
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_then,
+	parser_state_else,
+	parser_state_end,
+    } state = parser_state_start;
+
+    rpl_value_t program = NULL;
+    rpl_value_t test_subp = NULL;
+    rpl_value_t then_subp = NULL;
+    rpl_value_t else_subp = NULL;
+    rpl_token_t token = NULL;
+    bool appended;
+
+    program = rpl_program_new_with_type(rpl_program_type_IF);
+    if (program == NULL) goto back_out;
+
+    test_subp
+	= rpl_program_new_with_type(rpl_program_type_intermediate);
+    if (test_subp == NULL) goto back_out;
+
+    then_subp
+	= rpl_program_new_with_type(rpl_program_type_intermediate);
+    if (then_subp == NULL) goto back_out;
+
+    else_subp
+	= rpl_program_new_with_type(rpl_program_type_intermediate);
+    if (else_subp == NULL) goto back_out;
+
+    do {
+	token = rpl_tokenizer_copy_next(tokenizer);
+	if (token == NULL) goto back_out;
+
+	rpl_token_type_t type = rpl_token_get_type(token);
+	rpl_value_t value = NULL;
+	rpl_unistring_t ident = NULL;
+
+	if (type == rpl_token_type_value) {
+	    value = rpl_token_get_value(token);
+	} else {
+	    ident = rpl_token_get_string(token);
+	}
+
+	switch (state) {
+	    case parser_state_start: {
+		/*
+		 Until a `THEN` is seen, accumulate to the "test"
+		 subprogram.
+		 */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "THEN")) {
+		    state = parser_state_then;
+		} else {
+		    if (value) {
+			appended = rpl_program_append(test_subp, value);
+		    } else {
+			rpl_value_t iv = rpl_identifier_new(ident);
+			if (iv == NULL) goto back_out;
+
+			appended = rpl_program_append(test_subp, iv);
+			rpl_value_release(iv);
+		    }
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_then: {
+		/*
+		 Until an `ELSE` or `END` is seen, accumulate to the
+		 "then" subprogram.
+		 */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "ELSE")) {
+		    state = parser_state_else;
+		} else if (ident && rpl_tokenizer_is_keyword(ident,
+							     "END"))
+		{
+		    /* No "else" subprogram, clear it. */
+		    rpl_value_release(else_subp); else_subp = NULL;
+
+		    state = parser_state_end;
+		} else {
+		    if (value) {
+			appended = rpl_program_append(then_subp, value);
+		    } else {
+			rpl_value_t iv = rpl_identifier_new(ident);
+			if (iv == NULL) goto back_out;
+
+			appended = rpl_program_append(then_subp, iv);
+			rpl_value_release(iv);
+		    }
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_else: {
+		/*
+		 Until an `END` is seen, accumulate to the "else"
+		 subprogram.
+		 */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "END")) {
+		    state = parser_state_end;
+		} else {
+		    if (value) {
+			appended = rpl_program_append(else_subp, value);
+		    } else {
+			rpl_value_t iv = rpl_identifier_new(ident);
+			if (iv == NULL) goto back_out;
+
+			appended = rpl_program_append(else_subp, iv);
+			rpl_value_release(iv);
+		    }
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_end: {
+		/* Shouldn't actually get here, the loop should exit. */
+	    } break;
+	}
+
+	rpl_token_free(token); token = NULL;
+    } while (state != parser_state_end);
+
+    appended = rpl_program_append(program, test_subp);
+    if (appended == false) goto back_out;
+
+    appended = rpl_program_append(program, then_subp);
+    if (appended == false) goto back_out;
+
+    if (else_subp) {
+	appended = rpl_program_append(program, else_subp);
+	if (appended == false) goto back_out;
+
+	rpl_unistring_t IFTE_str = rpl_unistring_new_from_utf8("IFTE",
+							       4);
+	if (IFTE_str == NULL) goto back_out;
+
+	rpl_value_t IFTE = rpl_identifier_new(IFTE_str);
+	rpl_unistring_release(IFTE_str);
+	if (IFTE == NULL) goto back_out;
+
+	appended = rpl_program_append(program, IFTE);
+	rpl_value_release(IFTE);
+	if (appended == false) goto back_out;
+    } else {
+
+	rpl_unistring_t IFT_str = rpl_unistring_new_from_utf8("IFT", 3);
+	if (IFT_str == NULL) goto back_out;
+
+	rpl_value_t IFT = rpl_identifier_new(IFT_str);
+	rpl_unistring_release(IFT_str);
+	if (IFT == NULL) goto back_out;
+
+	appended = rpl_program_append(program, IFT);
+	rpl_value_release(IFT);
+	if (appended == false) goto back_out;
+    }
+
+back_out:
+    if (program) rpl_value_release(program);
+    if (token) rpl_token_free(token);
+    return NULL;
+}
+
+/*! Parse a `FOR ... NEXT|STEP` construct into a program. */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_FOR(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse FOR
+    return NULL;
+}
+
+/*!
+ Parse a `CASE ... {THEN ... END} ... END` construct into a program.
+ */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse CASE
+    return NULL;
+}
+
+/*! Parse a `START ... NEXT|STEP` construct into a program. */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_START(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse START
+    return NULL;
+}
+
+/*! Parse a `WHILE ... REPEAT ... END` construct into a program. */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse WHILE
+    return NULL;
+}
+
+/*!
+ Tokenize one of the several control-flow constructs.
+
+ Several control-flow constructs in RPL have special syntax that doesn't
+ fit neatly with the stack-based model. These are represented instead by
+ creating equivalent programs, and labeling these programs with their
+ associated construct so they can be printed in an equivalent form to
+ how they were written.
+
+ The constructs are:
+
+     DO ... UNTIL ... END
+     IF ... THEN ... [ELSE ...] END
+     FOR ... NEXT|STEP
+     CASE ... {THEN ... END} [...] END
+     START ... NEXT|STEP
+     WHILE ... REPEAT ... END
+
+ Each one has its own tokenizer that produces a program.
+ */
+rpl_token_t RPL_NULLABLE
+rpl_tokenizer_tokenize_control_flow(rpl_tokenizer_t tokenizer,
+				    rpl_token_t start_token,
+				    rpl_program_type_t type)
+{
+    assert(tokenizer != NULL);
+    assert(start_token != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_value_t program = NULL;
+
+    switch (type) {
+	case rpl_program_type_generic:
+	case rpl_program_type_intermediate:
+	    assert(false); /* These should never happen. */
+	    break;
+
+	case rpl_program_type_DO:
+	    program = rpl_tokenizer_parse_DO(tokenizer);
+	    break;
+
+	case rpl_program_type_IF:
+	    program = rpl_tokenizer_parse_IF(tokenizer);
+	    break;
+
+	case rpl_program_type_FOR:
+	    program = rpl_tokenizer_parse_FOR(tokenizer);
+	    break;
+
+	case rpl_program_type_CASE:
+	    program = rpl_tokenizer_parse_CASE(tokenizer);
+	    break;
+
+	case rpl_program_type_START:
+	    program = rpl_tokenizer_parse_START(tokenizer);
+	    break;
+
+	case rpl_program_type_WHILE:
+	    program = rpl_tokenizer_parse_WHILE(tokenizer);
+	    break;
+    }
+
+    if (program == NULL) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_value, NULL, program);
+    // TODO: Signal 'resource exhaustion' condition
+    if (token == NULL) goto back_out;
+
+    rpl_value_release(program); /* owned by token now */
+
+    return token;
+
+back_out:
+    if (token) rpl_token_free(token);
+    if (program) rpl_value_release(program);
+    return NULL;
+}
+
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer)
 {
@@ -1257,7 +1616,29 @@ rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer)
 	}
 
 	if ((token == NULL) && rpl_char_is_identifier_start(ch)) {
+	    ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
 	    token = rpl_tokenizer_tokenize_identifier(tokenizer);
+	    if (token) {
+		/*
+		 Some identifiers are special and introduce a control
+		 flow construct, which is represented as a program.
+		 */
+		rpl_program_type_t type;
+		if (rpl_token_is_control_flow_start(token, &type)) {
+		    token
+			= rpl_tokenizer_tokenize_control_flow(tokenizer,
+							      token,
+							      type);
+		    if (token == NULL) {
+			/*
+			 Upon failure to parse a complete control-flow
+			 construct, the mark must be reset.
+			 */
+			rpl_tokenizer_set_mark(tokenizer, mark);
+		    }
+		}
+	    }
 	}
     }
 
