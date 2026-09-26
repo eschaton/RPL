@@ -11,8 +11,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_identifier.h"
 #include "rpl_name.h"
 #include "rpl_operation.h"
+#include "rpl_program.h"
 
 
 RPL_SOURCE_BEGIN
@@ -267,6 +269,30 @@ done:
 }
 
 bool
+rpl_interpreter_eval_program(rpl_interpreter_t interp,
+			     rpl_value_t program)
+{
+    assert(interp != NULL);
+    assert(program != NULL);
+    assert(rpl_value_get_type(program) == rpl_type_program);
+
+    const rpl_integer_t count = rpl_program_get_count(program);
+    for (rpl_integer_t i = 0; i < count ; i++) {
+	rpl_value_t value = rpl_program_get_value(program, i);
+	assert(value != NULL);
+
+	bool success = rpl_interpreter_eval_value(interp, value);
+	// TODO: Signal 'evaluation failed' condition
+	if (success == false) goto error;
+    }
+
+    return true;
+
+error:
+    return false;
+}
+
+bool
 rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
 {
     assert(interp != NULL);
@@ -277,7 +303,20 @@ rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
     rpl_token_type_t token_type = rpl_token_get_type(token);
     if (token_type == rpl_token_type_value) {
 	rpl_value_t value = rpl_token_get_value(token);
-	success = rpl_interpreter_eval_value(interp, value);
+	assert(value != NULL);
+
+	rpl_type_t type = rpl_value_get_type(value);
+	if (type == rpl_type_identifier) {
+	    rpl_unistring_t identifier = rpl_identifier_get_rep(value);
+	    assert(identifier != NULL);
+
+	    success = rpl_interpreter_eval_identifier(interp,
+						      identifier);
+	} else if (type == rpl_type_program) {
+	    success = rpl_interpreter_eval_program(interp, value);
+	} else {
+	    success = rpl_interpreter_eval_value(interp, value);
+	}
     } else if (token_type == rpl_token_type_identifier) {
 	rpl_unistring_t identifier = rpl_token_get_string(token);
 
