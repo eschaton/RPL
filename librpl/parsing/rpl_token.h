@@ -24,8 +24,7 @@ typedef struct rpl_token *rpl_token_t;
 
 /*! Types of tokens in RPL. */
 typedef enum rpl_token_type {
-    rpl_token_type_unknown = 0,
-    rpl_token_type_value,
+    rpl_token_type_value = 1,
     rpl_token_type_identifier,
 } rpl_token_type_t;
 
