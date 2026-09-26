@@ -19,11 +19,12 @@ RPL_SOURCE_BEGIN
 
 
 rpl_value_t RPL_NULLABLE
-rpl_program_new(void)
+rpl_program_new_with_type(rpl_program_type_t type)
 {
     rpl_value_t val = rpl_value_new(rpl_type_program);
     if (val) {
 	rpl_program_t *rep = &val->_reps._program;
+	rep->_type = type;
 	bool inited = rpl_adjbuffer_init(&rep->_values, 8,
 					 sizeof(rpl_value_t));
 	if (inited == false) goto error;
@@ -33,6 +34,12 @@ rpl_program_new(void)
 error:
     rpl_value_release(val);
     return NULL;
+}
+
+rpl_value_t RPL_NULLABLE
+rpl_program_new(void)
+{
+    return rpl_program_new_with_type(rpl_program_type_generic);
 }
 
 void
@@ -92,6 +99,8 @@ RPL_RETURNS_RETAINED
     assert(program != NULL);
     assert(program->_type == rpl_type_program);
 
+    // TODO: Handle control-flow programs specially.
+
     bool appended = false;
     rpl_unistring_t vs = NULL;
     rpl_unistring_t buffer = rpl_unistring_new(16);
@@ -131,6 +140,15 @@ error:
     if (vs) rpl_unistring_release(vs);
     if (buffer) rpl_unistring_release(buffer);
     return NULL;
+}
+
+rpl_program_type_t
+rpl_program_get_type(rpl_value_t program)
+{
+    assert(program != NULL);
+    rpl_program_t *rep = &program->_reps._program;
+
+    return rep->_type;
 }
 
 

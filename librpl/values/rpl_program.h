@@ -17,6 +17,7 @@
 RPL_HEADER_BEGIN
 
 
+/*! Create a new general-purpose program. */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
 rpl_program_new(void);
