@@ -13,10 +13,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_token_internal.h"
+
+#include "rpl_identifier.h"
 #include "rpl_integer.h"
 #include "rpl_name.h"
+#include "rpl_program.h"
 #include "rpl_string.h"
-#include "rpl_token_internal.h"
 #include "rpl_unit.h"
 
 
@@ -918,7 +921,115 @@ back_out:
 rpl_token_t RPL_NULLABLE
 rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 {
-    // TODO: Implement rpl_tokenizer_tokenize_program
+    assert(tokenizer != NULL);
+
+    rpl_token_t token = NULL;
+    rpl_value_t program = NULL;
+    rpl_token_t next = NULL;
+    rpl_value_t value = NULL;
+    rpl_unistring_t identifier = NULL;
+    bool complete = false;
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_accumulating_tokens,
+	parser_state_end,
+    } state = parser_state_start;
+
+    const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
+
+    program = rpl_program_new();
+    if (program == NULL) goto back_out;
+
+    do {
+	if (rpl_tokenizer_has_char(tokenizer)) {
+	    rpl_unichar_t ch = rpl_tokenizer_get_char(tokenizer);
+	    switch (state) {
+		case parser_state_start: {
+		    if (ch == rpl_unichar_chevron_open) {
+			state = parser_state_accumulating_tokens;
+		    } else {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+			goto back_out;
+		    }
+		} break;
+
+		case parser_state_accumulating_tokens: {
+		    /*
+		     Get tokens until a `»` is seen in the input stream.
+		     Since any program in the input stream will show up
+		     as a single token here (as this is a recursive
+		     descent parser), nesting is handled automatically.
+		     */
+		    if (ch == rpl_unichar_chevron_close) {
+			complete = true;
+			state = parser_state_end;
+		    } else if (rpl_char_is_whitespace(ch)) {
+			/* Just skip whitespace characters. */
+		    } else {
+			rpl_tokenizer_unget_char(tokenizer, ch);
+
+			next = rpl_tokenizer_copy_next(tokenizer);
+			if (next == NULL) goto back_out;
+
+			switch (rpl_token_get_type(next)) {
+			    case rpl_token_type_value: {
+				value = rpl_token_get_value(next);
+				assert(value != NULL);
+
+				bool appended
+				    = rpl_program_append(program,
+							 value);
+				if (appended == false) goto back_out;
+			    } break;
+
+			    case rpl_token_type_identifier: {
+				identifier = rpl_token_get_string(next);
+				assert(identifier != NULL);
+
+				value = rpl_identifier_new(identifier);
+				if (value == NULL) goto back_out;
+
+				bool appended
+				    = rpl_program_append(program,
+							 value);
+				if (appended == false) goto back_out;
+			    } break;
+			}
+
+			rpl_token_free(next); next = NULL;
+			value = NULL;
+		    }
+		} break;
+
+		case parser_state_end: {
+		    /*
+		     Shouldn't actually get here, the loop should exit.
+		     */
+		} break;
+	    }
+	} else {
+	    /* Break out of loop, no matter what's been parsed. */
+	    state = parser_state_end;
+	}
+    } while (state != parser_state_end);
+
+    /* Back out if the program is incomplete. */
+
+    if (complete == false) goto back_out;
+
+    token = rpl_token_new(rpl_token_type_value, NULL, program);
+    if (token == NULL) goto back_out;
+
+    rpl_value_release(program); /* owned by token now */
+
+    return token;
+
+back_out:
+    if (token) rpl_token_free(token);
+    if (program) rpl_value_release(program);
+    if (next) rpl_token_free(next);
+    rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 

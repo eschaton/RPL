@@ -10,6 +10,8 @@
 
 #include <stdlib.h>
 
+#include "rpl_identifier.h"
+
 
 RPL_SOURCE_BEGIN
 
@@ -314,6 +316,51 @@ START_TEST(test_identifier)
 }
 END_TEST
 
+START_TEST(test_program)
+{
+    const char *text = "« DUP + »\n";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
+    ck_assert(appended);
+    rpl_unistring_release(buf);
+
+    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+    ck_assert_ptr_nonnull(token);
+    ck_assert_int_eq(rpl_token_type_value,
+		     rpl_token_get_type(token));
+
+    rpl_value_t value = rpl_token_get_value(token);
+    ck_assert_ptr_nonnull(value);
+    ck_assert_int_eq(rpl_type_program, rpl_value_get_type(value));
+
+    ck_assert_int_eq(2, rpl_program_get_count(value));
+
+    rpl_value_t dup = rpl_program_get_value(value, 0);
+    ck_assert_ptr_nonnull(dup);
+    ck_assert_int_eq(rpl_type_identifier, rpl_value_get_type(dup));
+    rpl_unistring_t dup_str = rpl_identifier_get_rep(dup);
+    ck_assert_ptr_nonnull(dup_str);
+    const char *dup_utf8 = rpl_unistring_copy_utf8(dup_str);
+    ck_assert_ptr_nonnull(dup_str);
+    ck_assert_str_eq("DUP", dup_utf8);
+    free((void *)dup_utf8);
+
+    rpl_value_t plus = rpl_program_get_value(value, 1);
+    ck_assert_ptr_nonnull(plus);
+    ck_assert_int_eq(rpl_type_identifier, rpl_value_get_type(plus));
+    rpl_unistring_t plus_str = rpl_identifier_get_rep(plus);
+    ck_assert_ptr_nonnull(plus_str);
+    const char *plus_utf8 = rpl_unistring_copy_utf8(plus_str);
+    ck_assert_ptr_nonnull(plus_str);
+    ck_assert_str_eq("+", plus_utf8);
+    free((void *)plus_utf8);
+
+    rpl_token_free(token);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -331,6 +378,7 @@ test_tokenizer_suite(void)
     tcase_add_test(tc_tokenizer, test_name);
     tcase_add_test(tc_tokenizer, test_string);
     tcase_add_test(tc_tokenizer, test_identifier);
+    tcase_add_test(tc_tokenizer, test_program);
 
     suite_add_tcase(s, tc_tokenizer);
 
