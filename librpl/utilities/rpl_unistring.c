@@ -353,6 +353,25 @@ rpl_unistring_is_equal_case_insensitive(rpl_unistring_t a,
     }
 }
 
+bool
+rpl_unistring_is_equal_case_insensitive_utf8(rpl_unistring_t a,
+					     const char *b_utf8)
+{
+    assert(a != NULL);
+    assert(b_utf8 != NULL);
+
+    const size_t b_utf8_len = strlen(b_utf8);
+
+    rpl_unistring_t b = rpl_unistring_new_from_utf8(b_utf8, b_utf8_len);
+    if (b == NULL) return false; /* not much else we can do */
+
+    bool result = rpl_unistring_is_equal_case_insensitive(a, b);
+
+    rpl_unistring_release(b);
+
+    return result;
+}
+
 rpl_unistring_t
 rpl_unistring_get_eol(void)
 {

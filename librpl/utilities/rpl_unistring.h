@@ -110,6 +110,14 @@ bool
 rpl_unistring_is_equal_case_insensitive(rpl_unistring_t a,
 					rpl_unistring_t b);
 
+/*!
+ Compare two strings for case-insensitive equality, using full Unicode
+ case-folding rules, where one is a C-style UTF-8 string.
+ */
+bool
+rpl_unistring_is_equal_case_insensitive_utf8(rpl_unistring_t a,
+					     const char *b_utf8);
+
 /*! Get the end-of-line string. */
 RPL_EXPORT
 rpl_unistring_t
