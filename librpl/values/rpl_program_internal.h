@@ -85,6 +85,54 @@ RPL_EXPORT
 rpl_program_type_t
 rpl_program_get_type(rpl_value_t program);
 
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_generic_copy_string(rpl_value_t program,
+				rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_intermediate_copy_string(rpl_value_t program,
+				     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_DO_copy_string(rpl_value_t program,
+			   rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_IF_copy_string(rpl_value_t program,
+			   rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_FOR_copy_string(rpl_value_t program,
+			    rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_CASE_copy_string(rpl_value_t program,
+			     rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_START_copy_string(rpl_value_t program,
+			      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
+RPL_EXPORT
+rpl_unistring_t RPL_NULLABLE
+rpl_program_WHILE_copy_string(rpl_value_t program,
+			      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED;
+
 
 RPL_HEADER_END
 

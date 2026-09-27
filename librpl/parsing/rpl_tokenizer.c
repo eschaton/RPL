@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rpl_keyword.h"
 #include "rpl_token_internal.h"
 
 #include "rpl_identifier.h"
@@ -772,9 +773,8 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
     if (value == NULL) goto back_out;
 
     token = rpl_token_new(rpl_token_type_value, NULL, value);
-    if (token == NULL) goto back_out;
-
     rpl_value_release(value); /* owned by token now */
+    if (token == NULL) goto back_out;
 
     rpl_unistring_release(buf);
 
@@ -1219,26 +1219,25 @@ rpl_token_is_control_flow_start(rpl_token_t token,
 
     /* Search the set of control-flow identifiers for a match. */
     struct cflow_start {
-	const char *utf8;
-	size_t len;
+	rpl_unistring_t str;
 	rpl_program_type_t type;
     } starts[] = {
-	{ "DO", 2, rpl_program_type_DO },
-	{ "IF", 2, rpl_program_type_IF },
-	{ "FOR", 3, rpl_program_type_FOR },
-	{ "CASE", 4, rpl_program_type_CASE },
-	{ "START", 5, rpl_program_type_START },
-	{ "WHILE", 5, rpl_program_type_WHILE },
-	{ NULL, 0, rpl_program_type_generic },
+	{ rpl_keyword_DO(),    rpl_program_type_DO },
+	{ rpl_keyword_IF(),    rpl_program_type_IF },
+	{ rpl_keyword_FOR(),   rpl_program_type_FOR },
+	{ rpl_keyword_CASE(),  rpl_program_type_CASE },
+	{ rpl_keyword_START(), rpl_program_type_START },
+	{ rpl_keyword_WHILE(), rpl_program_type_WHILE },
+	{ NULL,                rpl_program_type_generic },
     };
 
     bool found = false;
     for (struct cflow_start *start = &starts[0];
-	 (start->utf8 != NULL) && !found;
+	 (start->str != NULL) && !found;
 	 start++)
     {
-	if (rpl_unistring_is_equal_case_insensitive_utf8(identifier,
-							 start->utf8))
+	if (rpl_unistring_is_equal_case_insensitive(identifier,
+						    start->str))
 	{
 	    *type = start->type;
 	    found = true;
@@ -1334,12 +1333,16 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 		} else {
 		    if (value) {
 			appended = rpl_program_append(test_subp, value);
-		    } else {
+		    } else if (ident) {
 			rpl_value_t iv = rpl_identifier_new(ident);
 			if (iv == NULL) goto back_out;
 
 			appended = rpl_program_append(test_subp, iv);
 			rpl_value_release(iv);
+		    } else {
+			/* Should never happen. */
+			assert((ident != NULL) || (value != NULL));
+			appended = true;
 		    }
 		    if (appended == false) goto back_out;
 		}
@@ -1363,12 +1366,16 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 		} else {
 		    if (value) {
 			appended = rpl_program_append(then_subp, value);
-		    } else {
+		    } else if (ident) {
 			rpl_value_t iv = rpl_identifier_new(ident);
 			if (iv == NULL) goto back_out;
 
 			appended = rpl_program_append(then_subp, iv);
 			rpl_value_release(iv);
+		    } else {
+			/* Should never happen. */
+			assert((ident != NULL) || (value != NULL));
+			appended = true;
 		    }
 		    if (appended == false) goto back_out;
 		}
@@ -1385,12 +1392,16 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 		} else {
 		    if (value) {
 			appended = rpl_program_append(else_subp, value);
-		    } else {
+		    } else if (ident) {
 			rpl_value_t iv = rpl_identifier_new(ident);
 			if (iv == NULL) goto back_out;
 
 			appended = rpl_program_append(else_subp, iv);
 			rpl_value_release(iv);
+		    } else {
+			/* Should never happen. */
+			assert((ident != NULL) || (value != NULL));
+			appended = true;
 		    }
 		    if (appended == false) goto back_out;
 		}
@@ -1438,6 +1449,8 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 	rpl_value_release(IFT);
 	if (appended == false) goto back_out;
     }
+
+    return program;
 
 back_out:
     if (program) rpl_value_release(program);

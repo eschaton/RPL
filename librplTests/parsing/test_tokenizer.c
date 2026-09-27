@@ -361,6 +361,40 @@ START_TEST(test_program)
 }
 END_TEST
 
+START_TEST(test_program_IF_THEN_ELSE_END)
+{
+    const char *text = "IF 0 1 < THEN 1 ELSE 0 END\n";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
+    ck_assert(appended);
+    rpl_unistring_release(buf);
+
+    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
+    ck_assert_ptr_nonnull(token);
+    ck_assert_int_eq(rpl_token_type_value,
+		     rpl_token_get_type(token));
+
+    rpl_value_t program = rpl_token_get_value(token);
+    ck_assert_ptr_nonnull(program);
+    ck_assert_int_eq(rpl_type_program, rpl_value_get_type(program));
+
+    ck_assert_int_eq(4, rpl_program_get_count(program));
+
+    rpl_unistring_t program_text = rpl_value_copy_string(program, NULL);
+    ck_assert_ptr_nonnull(program_text);
+
+    const char *program_utf8 = rpl_unistring_copy_utf8(program_text);
+    rpl_unistring_release(program_text);
+    ck_assert_ptr_nonnull(program_utf8);
+
+    ck_assert(strncmp(text, program_utf8, text_len - 1) == 0);
+    free((void *)program_utf8);
+
+    rpl_token_free(token);
+}
+
 
 /* MARK: - Test Infrastructure */
 
@@ -379,6 +413,7 @@ test_tokenizer_suite(void)
     tcase_add_test(tc_tokenizer, test_string);
     tcase_add_test(tc_tokenizer, test_identifier);
     tcase_add_test(tc_tokenizer, test_program);
+    tcase_add_test(tc_tokenizer, test_program_IF_THEN_ELSE_END);
 
     suite_add_tcase(s, tc_tokenizer);
 
