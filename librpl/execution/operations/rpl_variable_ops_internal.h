@@ -1,6 +1,6 @@
 //
 //  rpl_variable_ops_internal.h
-//  RPL
+//  librpl
 //
 //  Created by Chris Hanson on 9/17/26.
 //  Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
