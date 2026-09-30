@@ -1259,7 +1259,23 @@ rpl_tokenizer_is_keyword(rpl_unistring_t ident, const char *keyword)
     return rpl_unistring_is_equal_case_insensitive_utf8(ident, keyword);
 }
 
-/*! Parse a `DO ... UNTIL ... END` construct into a program. */
+/*!
+ Parse a `DO ... UNTIL ... END` construct into a program.
+
+ At this point, the tokenizer has already consumed the `DO` identifier,
+ and has saved a mark, so it's sufficient to return `NULL` to back out.
+
+ The construct is transformed from
+
+     DO loop-clause UNTIL test-clause END
+
+ to
+
+     « « loop-clause » « test-clause » %DO »
+
+ so it can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `%DO` operation itself.
+ */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_DO(rpl_tokenizer_t tokenizer)
 {
@@ -1290,7 +1306,8 @@ rpl_tokenizer_parse_DO(rpl_tokenizer_t tokenizer)
      « « test » « then-clause » « else-clause » IFTE »
 
  so they can be handled by the standard evaluation process, with any
- special evaluation rules implementable by `IFT` and `IFTE` themselves.
+ special evaluation rules implementable by the `IFT` and `IFTE`
+ operations themselves.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
@@ -1477,7 +1494,32 @@ back_out:
     return NULL;
 }
 
-/*! Parse a `FOR ... NEXT|STEP` construct into a program. */
+/*!
+ Parse a `FOR ... NEXT|STEP` construct into a program.
+
+ At this point, the tokenizer has already consumed the `FOR` identifier,
+ and has saved a mark, so it's sufficient to return `NULL` to back out.
+
+ The construct is transformed from
+
+     start finish FOR counter loop-clause NEXT
+
+ to
+
+     « start finish « → counter « loop-clause » » %FORNEXT »
+
+ and from
+
+     start finish FOR counter loop-clause increment STEP
+
+ to
+
+     « start finish « → counter « loop-clause » » increment %FORSTEP »
+
+ so they can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `%FORNEXT` and `%FORSTEP`
+ operations themselves.
+*/
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_FOR(rpl_tokenizer_t tokenizer)
 {
@@ -1487,6 +1529,38 @@ rpl_tokenizer_parse_FOR(rpl_tokenizer_t tokenizer)
 
 /*!
  Parse a `CASE ... {THEN ... END} ... END` construct into a program.
+
+ At this point, the tokenizer has already consumed the `CASE`
+ identifier, and has saved a mark, so it's sufficient to return `NULL`
+ to back out.
+
+ The construct is transformed from
+
+     CASE
+       test-clause-1 THEN true-clause-1 END
+       test-clause-2 THEN true-clause-2 END
+       …
+       test-clause-n
+       [default-clause]
+     END
+
+ to
+
+     «
+       « test-clause-1 » « true-clause-1 »
+       « test-clause-2 » « true-clause-2 »
+       …
+       « test-clause-n » « true-clause-n »
+       n « default-clause » %CASE
+     »
+
+ so it can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `%CASE` operation itself.
+
+ Note that the _default-clause_ is optional in the control-flow
+ construct but not to the `%CASE` operation; if one isn't supplied in
+ the control-flow construct, an empty program is passed in its place to
+ `%CASE`.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
@@ -1495,7 +1569,33 @@ rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-/*! Parse a `START ... NEXT|STEP` construct into a program. */
+/*!
+ Parse a `START ... NEXT|STEP` construct into a program.
+
+ At this point, the tokenizer has already consumed the `START`
+ identifier, and has saved a mark, so it's sufficient to return `NULL`
+ to back out.
+
+ The construct is transformed from
+
+     start finish START loop-clause NEXT
+
+ to
+
+     « start finish « loop-clause » %STARTNEXT »
+
+ and from
+
+     start finish START loop-clause increment STEP
+
+ to
+
+     « start finish « loop-clause » increment %STARTSTEP »
+
+ so they can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `%STARTNEXT` and
+ `%STARTSTEP` operations themselves.
+*/
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_START(rpl_tokenizer_t tokenizer)
 {
@@ -1503,7 +1603,25 @@ rpl_tokenizer_parse_START(rpl_tokenizer_t tokenizer)
     return NULL;
 }
 
-/*! Parse a `WHILE ... REPEAT ... END` construct into a program. */
+/*!
+ Parse a `WHILE ... REPEAT ... END` construct into a program.
+
+ At this point, the tokenizer has already consumed the `WHILE`
+ identifier, and has saved a mark, so it's sufficient to return `NULL`
+ to back out.
+
+ The construct is transformed from
+
+     WHILE test-clause REPEAT loop-clause END
+
+ to
+
+     « « test-clause » « loop-clause » %WHILE »
+
+ so it can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `%WHILE` operation
+ itself.
+ */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
 {
