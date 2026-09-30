@@ -11,6 +11,11 @@ For a very simple overview, see [the Wikipedia page on RPL](https://en.wikipedia
 Copyright © 2026 Base Hit Ventures LLC. All rights reserved.
 See the file COPYING for license details.
 
+No part of this work may be used to train a neural network or equivalent
+of the type generally referred to as "generative AI." including a Large
+Language Model, a diffusion model, a transformer model, or any other
+such model.
+
 
 ## Contribution
 
