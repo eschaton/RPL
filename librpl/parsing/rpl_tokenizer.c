@@ -1272,6 +1272,25 @@ rpl_tokenizer_parse_DO(rpl_tokenizer_t tokenizer)
 
  At this point, the tokenizer has already consumed the `IF` identifier,
  and has saved a mark, so it's sufficient to return `NULL` to back out.
+
+ The construct is transformed from
+
+     IF test THEN then-clause END
+
+ into
+
+     « « test » « then-clause » IFT »
+
+ and from
+
+     IF test THEN then-clause ELSE else-clause END
+
+ into
+
+     « « test » « then-clause » « else-clause » IFTE »
+
+ so they can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by `IFT` and `IFTE` themselves.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
