@@ -11,7 +11,6 @@
 #include <assert.h>
 
 #include "rpl_name.h"
-#include "rpl_operations_internal.h"
 
 
 RPL_SOURCE_BEGIN

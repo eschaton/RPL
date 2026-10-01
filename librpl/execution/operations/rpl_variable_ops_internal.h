@@ -11,17 +11,14 @@
 
 #include "rpl_variable_ops.h"
 
+#include "rpl_operations_internal.h"
+
 
 RPL_HEADER_BEGIN
 
 
-bool
-rpl_variable_op_RCL(rpl_operation_t operation,
-		    rpl_context_t context);
-
-bool
-rpl_variable_op_STO(rpl_operation_t operation,
-		    rpl_context_t context);
+RPL_OPERATION_DECLARE(variable, RCL);
+RPL_OPERATION_DECLARE(variable, STO);
 
 
 RPL_HEADER_END

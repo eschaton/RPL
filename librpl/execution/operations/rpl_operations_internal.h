@@ -32,6 +32,12 @@ rpl_operations_register_defs(rpl_operation_table_t table,
 			     rpl_op_definition_t *defs);
 
 
+/* Macro for declaring an operation. */
+#define RPL_OPERATION_DECLARE(kind,name) \
+    bool rpl_ ## kind ## _op_ ## name (rpl_operation_t operation, \
+				       rpl_context_t context)
+
+
 RPL_HEADER_END
 
 

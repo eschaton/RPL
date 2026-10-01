@@ -11,21 +11,15 @@
 
 #include "rpl_stack_ops.h"
 
+#include "rpl_operations_internal.h"
+
 
 RPL_HEADER_BEGIN
 
 
-bool
-rpl_stack_op_DUP(rpl_operation_t operation,
-		 rpl_context_t context);
-
-bool
-rpl_stack_op_DROP(rpl_operation_t operation,
-		  rpl_context_t context);
-
-bool
-rpl_stack_op_SWAP(rpl_operation_t operation,
-		  rpl_context_t context);
+RPL_OPERATION_DECLARE(stack, DUP);
+RPL_OPERATION_DECLARE(stack, DROP);
+RPL_OPERATION_DECLARE(stack, SWAP);
 
 
 RPL_HEADER_END

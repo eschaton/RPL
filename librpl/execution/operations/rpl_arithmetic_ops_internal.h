@@ -11,13 +11,10 @@
 
 #include "rpl_arithmetic_ops.h"
 
+#include "rpl_operations_internal.h"
+
 
 RPL_HEADER_BEGIN
-
-
-#define RPL_OPERATION_DECLARE(kind,name) \
-    bool rpl_ ## kind ## _op_ ## name (rpl_operation_t operation, \
-				       rpl_context_t context)
 
 
 /*
