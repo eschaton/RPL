@@ -80,7 +80,7 @@ START_TEST(test_trivial_execution)
 }
 END_TEST
 
-START_TEST(test_STO_and_RCL)
+START_TEST(test_STO)
 {
     const char * text_c = "123 'A' STO\n";
     const size_t text_c_len = strlen(text_c);
@@ -131,7 +131,7 @@ test_interpreter_suite(void)
 			      test_interpreter_teardown);
     tcase_add_test(tc_interpreter, test_creation);
     tcase_add_test(tc_interpreter, test_trivial_execution);
-    tcase_add_test(tc_interpreter, test_STO_and_RCL);
+    tcase_add_test(tc_interpreter, test_STO);
 
     suite_add_tcase(s, tc_interpreter);
 
