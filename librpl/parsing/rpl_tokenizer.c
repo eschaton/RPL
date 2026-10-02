@@ -1528,7 +1528,7 @@ rpl_tokenizer_parse_FOR(rpl_tokenizer_t tokenizer)
 }
 
 /*!
- Parse a `CASE ... {THEN ... END} ... END` construct into a program.
+ Parse a `CASE {... THEN ... END} ... END` construct into a program.
 
  At this point, the tokenizer has already consumed the `CASE`
  identifier, and has saved a mark, so it's sufficient to return `NULL`
@@ -1643,7 +1643,7 @@ rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
      DO ... UNTIL ... END
      IF ... THEN ... [ELSE ...] END
      FOR ... NEXT|STEP
-     CASE ... {THEN ... END} [...] END
+     CASE {... THEN ... END} [...] END
      START ... NEXT|STEP
      WHILE ... REPEAT ... END
 

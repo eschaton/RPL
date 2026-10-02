@@ -42,7 +42,7 @@ typedef enum rpl_program_type {
     /*! A program representing a `FOR ... NEXT|STEP`. */
     rpl_program_type_FOR,
 
-    /*! A program representing a `CASE ... {THEN ... END} [...] END`. */
+    /*! A program representing a `CASE {... THEN ... END} [...] END`. */
     rpl_program_type_CASE,
 
     /*! A program representing a `START ... NEXT|STEP`. */
