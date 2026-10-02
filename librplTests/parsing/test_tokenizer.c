@@ -385,11 +385,15 @@ START_TEST(test_program_IF_THEN_ELSE_END)
     rpl_unistring_t program_text = rpl_value_copy_string(program, NULL);
     ck_assert_ptr_nonnull(program_text);
 
+    /* Copied string isn't assumed to be a line, make it one. */
+    bool appended_nl = rpl_unistring_append_char(program_text, '\n');
+    ck_assert(appended_nl);
+
     const char *program_utf8 = rpl_unistring_copy_utf8(program_text);
     rpl_unistring_release(program_text);
     ck_assert_ptr_nonnull(program_utf8);
 
-    ck_assert(strncmp(text, program_utf8, text_len - 1) == 0);
+    ck_assert_str_eq(text, program_utf8);
     free((void *)program_utf8);
 
     rpl_token_free(token);
