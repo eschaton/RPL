@@ -36,59 +36,6 @@ rpl_configure_arithmetic_ops(rpl_operation_table_t table)
 }
 
 
-/* MARK: - Type-Based Dispatch */
-
-typedef rpl_value_t RPL_NULLABLE
-	(*rpl_function_f)(rpl_value_t v1, rpl_value_t v2);
-
-typedef struct rpl_typedispatch_entry {
-    rpl_type_t type1;
-    rpl_type_t type2;
-    rpl_function_f RPL_NULLABLE function;
-} rpl_typedispatch_entry_t;
-
-/*! A wildcard that means "any type of object." */
-#define RPL_TYPE_OBJ ((rpl_type_t)-1)
-
-/*! Find an `rpl_function_f` in a table. */
-rpl_function_f RPL_NULLABLE
-rpl_function_find(rpl_typedispatch_entry_t *table, rpl_type_t t1,
-		  rpl_type_t t2)
-{
-    rpl_function_f func = NULL;
-
-    for (rpl_typedispatch_entry_t *entry = &table[0];
-	 (entry->function != NULL) && (func == NULL);
-	 entry++)
-    {
-	/* RPL_TYPE_OBJ is a wildcard */
-
-	if (((entry->type1 == t1) && (entry->type2 == t2))
-	    || ((entry->type1 == RPL_TYPE_OBJ) && (entry->type2 == t2))
-	    || ((entry->type1 == t1) && (entry->type2 == RPL_TYPE_OBJ)))
-	{
-	    func = entry->function;
-	}
-    }
-
-    return func;
-}
-
-/*!
- Call an `rpl_function_f`.
-
- We need a transparent placeholder to call an `rpl_function_f` because
- the type definition itself can't have the `RPL_RETURNS_RETAINED`
- annotation.
- */
-rpl_value_t RPL_NULLABLE
-rpl_function_call(rpl_function_f func, rpl_value_t v1, rpl_value_t v2)
-RPL_RETURNS_RETAINED
-{
-    return (*func)(v1, v2);
-}
-
-
 /* MARK: - Arithmetic Operations */
 
 bool

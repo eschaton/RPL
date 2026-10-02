@@ -38,6 +38,43 @@ rpl_operations_register_defs(rpl_operation_table_t table,
 				       rpl_context_t context)
 
 
+/* MARK: - Type-Based Dispatch */
+
+/*! A two-valued function that either returns a new value or `NULL`. */
+typedef rpl_value_t RPL_NULLABLE
+	(*rpl_function_f)(rpl_value_t v1, rpl_value_t v2);
+
+/*! One entry in a type-dispatch function table. */
+typedef struct rpl_typedispatch_entry {
+    rpl_type_t type1;
+    rpl_type_t type2;
+    rpl_function_f RPL_NULLABLE function;
+} rpl_typedispatch_entry_t;
+
+/*! A wildcard that means "any type of object." */
+#define RPL_TYPE_OBJ ((rpl_type_t)-1)
+
+/*! Find an `rpl_function_f` in a type-dispatch table. */
+rpl_function_f RPL_NULLABLE
+rpl_function_find(rpl_typedispatch_entry_t *table, rpl_type_t t1,
+		  rpl_type_t t2);
+
+/*!
+ Call an `rpl_function_f`.
+
+ We need a transparent placeholder to call an `rpl_function_f` because
+ the type definition itself can't have the `RPL_RETURNS_RETAINED`
+ annotation.
+ */
+static inline __attribute__((always_inline))
+rpl_value_t RPL_NULLABLE
+rpl_function_call(rpl_function_f func, rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED
+{
+    return (*func)(v1, v2);
+}
+
+
 RPL_HEADER_END
 
 

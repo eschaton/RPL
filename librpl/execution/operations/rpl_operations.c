@@ -77,4 +77,30 @@ error:
 }
 
 
+/* MARK: - Type-Based Dispatch */
+
+rpl_function_f RPL_NULLABLE
+rpl_function_find(rpl_typedispatch_entry_t *table, rpl_type_t t1,
+		  rpl_type_t t2)
+{
+    rpl_function_f func = NULL;
+
+    for (rpl_typedispatch_entry_t *entry = &table[0];
+	 (entry->function != NULL) && (func == NULL);
+	 entry++)
+    {
+	/* RPL_TYPE_OBJ is a wildcard */
+
+	if (((entry->type1 == t1) && (entry->type2 == t2))
+	    || ((entry->type1 == RPL_TYPE_OBJ) && (entry->type2 == t2))
+	    || ((entry->type1 == t1) && (entry->type2 == RPL_TYPE_OBJ)))
+	{
+	    func = entry->function;
+	}
+    }
+
+    return func;
+}
+
+
 RPL_SOURCE_END
