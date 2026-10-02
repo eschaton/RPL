@@ -45,11 +45,35 @@ RPL_RETURNS_RETAINED;
 /* MARK: - Arithmetic */
 
 rpl_value_t RPL_NULLABLE
-rpl_real_add_real(rpl_value_t v1, rpl_value_t v2)
+rpl_real_plus_real(rpl_value_t v1, rpl_value_t v2)
 RPL_RETURNS_RETAINED;
 
 rpl_value_t RPL_NULLABLE
-rpl_real_add_integer(rpl_value_t v1, rpl_value_t v2)
+rpl_real_plus_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_minus_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_minus_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_times_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_times_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_divide_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_divide_integer(rpl_value_t v1, rpl_value_t v2)
 RPL_RETURNS_RETAINED;
 
 
