@@ -37,6 +37,17 @@ rpl_integer_rep_copy_string(rpl_integer_t integer_rep,
 RPL_RETURNS_RETAINED;
 
 
+/* MARK: - Arithmetic Operations */
+
+rpl_value_t RPL_NULLABLE
+rpl_integer_add_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_integer_add_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+
 RPL_HEADER_END
 
 

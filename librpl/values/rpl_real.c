@@ -221,4 +221,41 @@ rpl_real_rep_g2r(rpl_real_t theta_grad)
 }
 
 
+/* MARK: - Arithmetic Operations */
+
+rpl_value_t RPL_NULLABLE
+rpl_real_add_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED
+{
+    assert(v1 != NULL);
+    assert(v2 != NULL);
+    assert(rpl_value_get_type(v1) == rpl_type_real);
+    assert(rpl_value_get_type(v2) == rpl_type_real);
+
+    rpl_real_t r1 = rpl_real_get_rep(v1);
+    rpl_real_t r2 = rpl_real_get_rep(v2);
+
+    rpl_real_t result = r1 + r2;
+
+    return rpl_real_new(result);
+}
+
+rpl_value_t RPL_NULLABLE
+rpl_real_add_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED
+{
+    assert(v1 != NULL);
+    assert(v2 != NULL);
+    assert(rpl_value_get_type(v1) == rpl_type_real);
+    assert(rpl_value_get_type(v2) == rpl_type_integer);
+
+    rpl_real_t r1 = rpl_real_get_rep(v1);
+    rpl_integer_t i2 = rpl_integer_get_rep(v2);
+
+    rpl_integer_t result = r1 + i2;
+
+    return rpl_integer_new(result);
+}
+
+
 RPL_SOURCE_END

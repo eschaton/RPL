@@ -42,6 +42,17 @@ rpl_real_rep_copy_angle_string(rpl_real_t real_rep,
 RPL_RETURNS_RETAINED;
 
 
+/* MARK: - Arithmetic */
+
+rpl_value_t RPL_NULLABLE
+rpl_real_add_real(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+rpl_value_t RPL_NULLABLE
+rpl_real_add_integer(rpl_value_t v1, rpl_value_t v2)
+RPL_RETURNS_RETAINED;
+
+
 RPL_HEADER_END
 
 
