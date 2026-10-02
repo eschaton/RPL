@@ -1271,10 +1271,10 @@ rpl_tokenizer_is_keyword(rpl_unistring_t ident, const char *keyword)
 
  to
 
-     « « loop-clause » « test-clause » $DO »
+     « « loop-clause » « test-clause » _DO »
 
  so it can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `$DO` operation itself.
+ special evaluation rules implementable by the `_DO` operation itself.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_DO(rpl_tokenizer_t tokenizer)
@@ -1506,7 +1506,7 @@ back_out:
 
  to
 
-     « start finish « → counter « loop-clause » » $FORNEXT »
+     « start finish « → counter « loop-clause » » _FORNEXT »
 
  and from
 
@@ -1514,10 +1514,10 @@ back_out:
 
  to
 
-     « start finish « → counter « loop-clause » » increment $FORSTEP »
+     « start finish « → counter « loop-clause » » increment _FORSTEP »
 
  so they can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `$FORNEXT` and `$FORSTEP`
+ special evaluation rules implementable by the `_FORNEXT` and `_FORSTEP`
  operations themselves.
 */
 rpl_value_t RPL_NULLABLE
@@ -1551,16 +1551,16 @@ rpl_tokenizer_parse_FOR(rpl_tokenizer_t tokenizer)
        « test-clause-2 » « true-clause-2 »
        …
        « test-clause-n » « true-clause-n »
-       n « default-clause » $CASE
+       n « default-clause » _CASE
      »
 
  so it can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `$CASE` operation itself.
+ special evaluation rules implementable by the `_CASE` operation itself.
 
  Note that the _default-clause_ is optional in the control-flow
- construct but not to the `$CASE` operation; if one isn't supplied in
+ construct but not to the `_CASE` operation; if one isn't supplied in
  the control-flow construct, an empty program is passed in its place to
- `$CASE`.
+ `_CASE`.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
@@ -1582,7 +1582,7 @@ rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
 
  to
 
-     « start finish « loop-clause » $STARTNEXT »
+     « start finish « loop-clause » _STARTNEXT »
 
  and from
 
@@ -1590,11 +1590,11 @@ rpl_tokenizer_parse_CASE(rpl_tokenizer_t tokenizer)
 
  to
 
-     « start finish « loop-clause » increment $STARTSTEP »
+     « start finish « loop-clause » increment _STARTSTEP »
 
  so they can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `$STARTNEXT` and
- `$STARTSTEP` operations themselves.
+ special evaluation rules implementable by the `_STARTNEXT` and
+ `_STARTSTEP` operations themselves.
 */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_START(rpl_tokenizer_t tokenizer)
@@ -1616,10 +1616,10 @@ rpl_tokenizer_parse_START(rpl_tokenizer_t tokenizer)
 
  to
 
-     « « test-clause » « loop-clause » $WHILE »
+     « « test-clause » « loop-clause » _WHILE »
 
  so it can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `$WHILE` operation
+ special evaluation rules implementable by the `_WHILE` operation
  itself.
  */
 rpl_value_t RPL_NULLABLE

@@ -18,14 +18,14 @@ RPL_HEADER_BEGIN
 
 
 /*
- The leading `$` below indicates the name of an internal function, since
+ The leading `_` below indicates the name of an internal function, since
  the actual symbols for these functions cannot be used in C identifiers.
  */
 
-RPL_OPERATION_DECLARE(arithmetic, $PLUS);
-RPL_OPERATION_DECLARE(arithmetic, $MINUS);
-RPL_OPERATION_DECLARE(arithmetic, $TIMES);
-RPL_OPERATION_DECLARE(arithmetic, $DIVIDE);
+RPL_OPERATION_DECLARE(arithmetic, _PLUS);
+RPL_OPERATION_DECLARE(arithmetic, _MINUS);
+RPL_OPERATION_DECLARE(arithmetic, _TIMES);
+RPL_OPERATION_DECLARE(arithmetic, _DIVIDE);
 
 
 RPL_HEADER_END

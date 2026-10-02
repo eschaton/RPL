@@ -19,10 +19,10 @@ RPL_SOURCE_BEGIN
 
 
 rpl_op_definition_t rpl_arithmetic_op_defs[] = {
-    { "+", rpl_operation_type_function, rpl_arithmetic_op_$PLUS },
-    { "-", rpl_operation_type_function, rpl_arithmetic_op_$MINUS },
-    { "*", rpl_operation_type_function, rpl_arithmetic_op_$TIMES },
-    { "/", rpl_operation_type_function, rpl_arithmetic_op_$DIVIDE },
+    { "+", rpl_operation_type_function, rpl_arithmetic_op__PLUS },
+    { "-", rpl_operation_type_function, rpl_arithmetic_op__MINUS },
+    { "*", rpl_operation_type_function, rpl_arithmetic_op__TIMES },
+    { "/", rpl_operation_type_function, rpl_arithmetic_op__DIVIDE },
     { NULL, 0, NULL },
 };
 
@@ -82,7 +82,7 @@ error:
 }
 
 bool
-rpl_arithmetic_op_$PLUS(rpl_operation_t operation,
+rpl_arithmetic_op__PLUS(rpl_operation_t operation,
 			rpl_context_t context)
 {
     assert(operation != NULL);
@@ -117,7 +117,7 @@ rpl_arithmetic_op_$PLUS(rpl_operation_t operation,
 
 
 bool
-rpl_arithmetic_op_$MINUS(rpl_operation_t operation,
+rpl_arithmetic_op__MINUS(rpl_operation_t operation,
 			 rpl_context_t context)
 {
     assert(operation != NULL);
@@ -146,7 +146,7 @@ rpl_arithmetic_op_$MINUS(rpl_operation_t operation,
 
 
 bool
-rpl_arithmetic_op_$TIMES(rpl_operation_t operation,
+rpl_arithmetic_op__TIMES(rpl_operation_t operation,
 			 rpl_context_t context)
 {
     assert(operation != NULL);
@@ -177,7 +177,7 @@ rpl_arithmetic_op_$TIMES(rpl_operation_t operation,
 
 
 bool
-rpl_arithmetic_op_$DIVIDE(rpl_operation_t operation,
+rpl_arithmetic_op__DIVIDE(rpl_operation_t operation,
 			  rpl_context_t context)
 {
     assert(operation != NULL);

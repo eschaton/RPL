@@ -20,13 +20,13 @@ RPL_SOURCE_BEGIN
 rpl_op_definition_t rpl_cflow_op_defs[] = {
     {"IFT",        rpl_operation_type_command,rpl_cflow_op_IFT},
     {"IFTE",       rpl_operation_type_command,rpl_cflow_op_IFTE},
-    {"$DO",        rpl_operation_type_command,rpl_cflow_op_$DO},
-    {"$FORNEXT",   rpl_operation_type_command,rpl_cflow_op_$FORNEXT},
-    {"$FORSTEP",   rpl_operation_type_command,rpl_cflow_op_$FORSTEP},
-    {"$CASE",      rpl_operation_type_command,rpl_cflow_op_$CASE},
-    {"$STARTNEXT", rpl_operation_type_command,rpl_cflow_op_$STARTNEXT},
-    {"$STARTSTEP", rpl_operation_type_command,rpl_cflow_op_$STARTSTEP},
-    {"$WHILE",     rpl_operation_type_command,rpl_cflow_op_$WHILE},
+    {"_DO",        rpl_operation_type_command,rpl_cflow_op__DO},
+    {"_FORNEXT",   rpl_operation_type_command,rpl_cflow_op__FORNEXT},
+    {"_FORSTEP",   rpl_operation_type_command,rpl_cflow_op__FORSTEP},
+    {"_CASE",      rpl_operation_type_command,rpl_cflow_op__CASE},
+    {"_STARTNEXT", rpl_operation_type_command,rpl_cflow_op__STARTNEXT},
+    {"_STARTSTEP", rpl_operation_type_command,rpl_cflow_op__STARTSTEP},
+    {"_WHILE",     rpl_operation_type_command,rpl_cflow_op__WHILE},
     {NULL, 0, NULL },
 };
 
@@ -59,58 +59,58 @@ rpl_cflow_op_IFTE(rpl_operation_t operation,
 }
 
 bool
-rpl_cflow_op_$DO(rpl_operation_t operation,
+rpl_cflow_op__DO(rpl_operation_t operation,
 		 rpl_context_t context)
 {
-    // TODO: Implement $DO
+    // TODO: Implement iDO
     return false;
 }
 
 bool
-rpl_cflow_op_$FORNEXT(rpl_operation_t operation,
+rpl_cflow_op__FORNEXT(rpl_operation_t operation,
 		      rpl_context_t context)
 {
-    // TODO: Implement $FORNEXT
+    // TODO: Implement iFORNEXT
     return false;
 }
 
 bool
-rpl_cflow_op_$FORSTEP(rpl_operation_t operation,
+rpl_cflow_op__FORSTEP(rpl_operation_t operation,
 		      rpl_context_t context)
 {
-    // TODO: Implement $FORSTEP
+    // TODO: Implement iFORSTEP
     return false;
 }
 
 bool
-rpl_cflow_op_$CASE(rpl_operation_t operation,
+rpl_cflow_op__CASE(rpl_operation_t operation,
 		   rpl_context_t context)
 {
-    // TODO: Implement $CASE
+    // TODO: Implement iCASE
     return false;
 }
 
 bool
-rpl_cflow_op_$STARTNEXT(rpl_operation_t operation,
+rpl_cflow_op__STARTNEXT(rpl_operation_t operation,
 			rpl_context_t context)
 {
-    // TODO: Implement $STARTNEXT
+    // TODO: Implement iSTARTNEXT
     return false;
 }
 
 bool
-rpl_cflow_op_$STARTSTEP(rpl_operation_t operation,
+rpl_cflow_op__STARTSTEP(rpl_operation_t operation,
 			rpl_context_t context)
 {
-    // TODO: Implement $STARTSTEP
+    // TODO: Implement iSTARTSTEP
     return false;
 }
 
 bool
-rpl_cflow_op_$WHILE(rpl_operation_t operation,
+rpl_cflow_op__WHILE(rpl_operation_t operation,
 		    rpl_context_t context)
 {
-    // TODO: Implement $WHILE
+    // TODO: Implement iWHILE
     return false;
 }
 
