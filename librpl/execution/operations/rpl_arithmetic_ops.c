@@ -48,15 +48,18 @@ rpl_arithmetic_op_using_table(rpl_context_t context,
     rpl_stack_t stack = rpl_context_get_stack(context);
     assert(stack != NULL);
 
+    rpl_value_t v1 = NULL;
+    rpl_value_t v2 = NULL;
+
     if (rpl_stack_get_level(stack) < 2) {
 	// TODO: Signal 'insufficient arguments' condition
 	goto error;
     }
 
-    rpl_value_t v2 = rpl_stack_pop(stack);
+    v2 = rpl_stack_pop(stack);
     assert(v2);
 
-    rpl_value_t v1 = rpl_stack_pop(stack);
+    v1 = rpl_stack_pop(stack);
     assert(v1);
 
     rpl_type_t t1 = rpl_value_get_type(v1);
@@ -75,9 +78,14 @@ rpl_arithmetic_op_using_table(rpl_context_t context,
 	goto error;
     }
 
+    rpl_value_release(v1);
+    rpl_value_release(v2);
+
     return true;
 
 error:
+    if (v1) rpl_value_release(v1);
+    if (v2) rpl_value_release(v2);
     return false;
 }
 
