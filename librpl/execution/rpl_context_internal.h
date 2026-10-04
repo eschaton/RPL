@@ -16,6 +16,7 @@ RPL_HEADER_BEGIN
 
 
 struct rpl_context {
+    rpl_interpreter_t _interpreter;
     rpl_environment_t _environment;
     rpl_stack_t _stack;
     rpl_scope_t _constant;

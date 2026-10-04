@@ -11,11 +11,13 @@
 #include <stdlib.h>
 
 #include "rpl_identifier.h"
+#include "rpl_interpreter_internal.h"
 
 
 RPL_SOURCE_BEGIN
 
 
+rpl_interpreter_t interp = NULL;
 rpl_context_t context = NULL;
 rpl_tokenizer_t tokenizer = NULL;
 
@@ -25,10 +27,13 @@ test_tokenizer_setup(void)
 {
     tests_shared_setup();
 
-    context = rpl_context_new();
+    interp = rpl_interpreter_new(NULL, NULL);
+    ck_assert_ptr_nonnull(interp);
+
+    context = rpl_interpreter_get_context(interp);
     ck_assert_ptr_nonnull(context);
 
-    tokenizer = rpl_tokenizer_new(context);
+    tokenizer = rpl_interpreter_get_tokenizer(interp);
     ck_assert_ptr_nonnull(tokenizer);
 }
 

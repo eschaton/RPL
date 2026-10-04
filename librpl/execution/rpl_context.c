@@ -16,10 +16,14 @@ RPL_SOURCE_BEGIN
 
 
 rpl_context_t RPL_NULLABLE
-rpl_context_new(void)
+rpl_context_new(rpl_interpreter_t interpreter)
 {
+    assert(interpreter != NULL);
+
     rpl_context_t context = calloc(1, sizeof(struct rpl_context));
     if (context) {
+	context->_interpreter = interpreter;
+
 	context->_environment = rpl_environment_new();
 	if (context->_environment == NULL) goto error;
 
@@ -47,6 +51,8 @@ rpl_context_free(rpl_context_t context)
 {
     assert(context != NULL);
 
+    /* Don't free context->_interpreter, it owns the context. */
+
     if (context->_environment) {
 	rpl_environment_free(context->_environment);
     }
@@ -58,6 +64,14 @@ rpl_context_free(rpl_context_t context)
     if (context->_local) rpl_scope_free(context->_local);
 
     free(context);
+}
+
+rpl_interpreter_t
+rpl_context_get_interpreter(rpl_context_t context)
+{
+    assert(context != NULL);
+
+    return context->_interpreter;
 }
 
 rpl_environment_t

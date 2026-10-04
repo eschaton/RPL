@@ -27,7 +27,7 @@ rpl_interpreter_new(rpl_configure_interpreter_f RPL_NULLABLE config,
     rpl_interpreter_t interp
 	= calloc(1, sizeof(struct rpl_interpreter));
     if (interp) {
-	interp->_context = rpl_context_new();
+	interp->_context = rpl_context_new(interp);
 	if (interp->_context == NULL) goto error;
 
 	interp->_tokenizer = rpl_tokenizer_new(interp->_context);
@@ -80,6 +80,14 @@ rpl_interpreter_get_context(rpl_interpreter_t interp)
     assert(interp != NULL);
 
     return interp->_context;
+}
+
+rpl_tokenizer_t
+rpl_interpreter_get_tokenizer(rpl_interpreter_t interp)
+{
+    assert(interp != NULL);
+
+    return interp->_tokenizer;
 }
 
 rpl_operation_table_t

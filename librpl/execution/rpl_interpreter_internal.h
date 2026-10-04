@@ -29,6 +29,10 @@ struct rpl_interpreter {
 };
 
 
+rpl_tokenizer_t
+rpl_interpreter_get_tokenizer(rpl_interpreter_t interp);
+
+
 bool
 rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token);
 

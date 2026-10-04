@@ -23,13 +23,22 @@ RPL_HEADER_BEGIN
 typedef struct rpl_context *rpl_context_t;
 
 
+/* Forward declaration. */
+typedef struct rpl_interpreter *rpl_interpreter_t;
+
+
+/*! Create an execution context owned by the given interpreter. */
 RPL_EXPORT
 rpl_context_t RPL_NULLABLE
-rpl_context_new(void);
+rpl_context_new(rpl_interpreter_t interpreter);
 
 RPL_EXPORT
 void
 rpl_context_free(rpl_context_t context);
+
+RPL_EXPORT
+rpl_interpreter_t
+rpl_context_get_interpreter(rpl_context_t context);
 
 RPL_EXPORT
 rpl_environment_t
