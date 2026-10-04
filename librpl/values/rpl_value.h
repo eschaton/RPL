@@ -127,6 +127,13 @@ rpl_value_copy_string(rpl_value_t val,
 		      rpl_environment_t RPL_NULLABLE env)
 RPL_RETURNS_RETAINED;
 
+/*!
+ Indicate whether a value is "truthy" according to RPL's rules.
+ */
+RPL_EXPORT
+bool
+rpl_value_is_true(rpl_value_t val);
+
 
 RPL_HEADER_END
 

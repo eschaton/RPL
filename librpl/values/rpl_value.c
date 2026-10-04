@@ -210,5 +210,26 @@ rpl_value_release_adjbuffer(rpl_adjbuffer_t *vals)
 			       NULL);
 }
 
+bool
+rpl_value_is_true(rpl_value_t val)
+{
+    assert(val != NULL);
+
+    switch (rpl_value_get_type(val)) {
+	case rpl_type_integer: {
+	    rpl_integer_t iv = rpl_integer_get_rep(val);
+	    return (iv != 0);
+	} break;
+
+	case rpl_type_real: {
+	    rpl_real_t rv = rpl_real_get_rep(val);
+	    return (rv != 0);
+	} break;
+
+	default:
+	    return true;
+    }
+}
+
 
 RPL_SOURCE_END
