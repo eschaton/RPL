@@ -36,6 +36,10 @@ rpl_interpreter_get_tokenizer(rpl_interpreter_t interp);
 bool
 rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token);
 
+bool
+rpl_interpreter_eval_program(rpl_interpreter_t interp,
+			     rpl_value_t program);
+
 
 RPL_HEADER_END
 
