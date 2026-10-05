@@ -14,7 +14,6 @@
 #include <string.h>
 
 #include "rpl_keyword.h"
-#include "rpl_token_internal.h"
 
 #include "rpl_identifier.h"
 #include "rpl_integer.h"
@@ -22,6 +21,7 @@
 #include "rpl_program_internal.h"
 #include "rpl_string.h"
 #include "rpl_unit.h"
+#include "rpl_value.h"
 
 
 RPL_SOURCE_BEGIN
@@ -644,12 +644,12 @@ back_out:
  the digits, and the allowed digits depend on either the current
  environment's integer base or the optional suffix.
  */
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
+    rpl_value_t value = NULL;
     rpl_unistring_t buf = NULL;
     bool appended = false;
 
@@ -769,37 +769,31 @@ rpl_tokenizer_tokenize_integer(rpl_tokenizer_t tokenizer)
     rpl_integer_t rep = strtoull(buf_utf8, NULL, base);
     free(buf_utf8);
 
-    rpl_value_t value = rpl_integer_new(rep);
+    value = rpl_integer_new(rep);
     if (value == NULL) goto back_out;
-
-    token = rpl_token_new(rpl_token_type_value, NULL, value);
-    rpl_value_release(value); /* owned by token now */
-    if (token == NULL) goto back_out;
 
     rpl_unistring_release(buf);
 
-    return token;
+    return value;
 
 back_out:
     if (buf) rpl_unistring_release(buf);
-    if (token) rpl_token_free(token);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
+    rpl_value_t value = NULL;
 
     const ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
 
     rpl_value_t real_part = NULL;
     rpl_unistring_t unit_text = NULL;
     rpl_value_t unit_part = NULL;
-    rpl_value_t value = NULL;
 
     real_part = rpl_tokenizer_copy_real_value(tokenizer);
     if (real_part == NULL) goto back_out;
@@ -819,22 +813,15 @@ rpl_tokenizer_tokenize_real_or_unit(rpl_tokenizer_t tokenizer)
 	} else {
 	    rpl_tokenizer_unget_char(tokenizer, ch);
 
-	    value = real_part;
-	    real_part = NULL;
+	    value = rpl_value_copy(real_part);
 	}
-    }
-
-    if (value) {
-	token = rpl_token_new(rpl_token_type_value, NULL, value);
-	if (token == NULL) goto back_out;
-	rpl_value_release(value);
     }
 
     if (real_part) rpl_value_release(real_part);
     if (unit_text) rpl_unistring_release(unit_text);
     if (unit_part) rpl_value_release(unit_part);
 
-    return token;
+    return value;
 
 back_out:
     if (real_part) rpl_value_release(real_part);
@@ -845,14 +832,14 @@ back_out:
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_complex(rpl_tokenizer_t tokenizer)
 {
     // TODO: Implement rpl_tokenizer_tokenize_complex
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer)
 {
     // TODO: Implement rpl_tokenizer_tokenize_array
@@ -870,14 +857,13 @@ rpl_tokenizer_tokenize_array(rpl_tokenizer_t tokenizer)
  with the constraint that `name_text` does not allow whitespace or
  delimiters.
  */
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
-    rpl_unistring_t buf = NULL;
     rpl_value_t value = NULL;
+    rpl_unistring_t buf = NULL;
 
     ssize_t mark = rpl_tokenizer_get_mark(tokenizer);
 
@@ -901,33 +887,24 @@ rpl_tokenizer_tokenize_name(rpl_tokenizer_t tokenizer)
     value = rpl_name_new(buf);
     if (value == NULL) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, value);
-    if (token == NULL) goto back_out;
-
-    rpl_value_release(value); /* owned by token now */
-
     rpl_unistring_release(buf);
 
-    return token;
+    return value;
 
 back_out:
     if (value) rpl_value_release(value);
-    if (token) rpl_token_free(token);
     if (buf) rpl_unistring_release(buf);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
     rpl_value_t program = NULL;
-    rpl_token_t next = NULL;
-    rpl_value_t value = NULL;
-    rpl_unistring_t identifier = NULL;
+    rpl_value_t next = NULL;
     bool complete = false;
 
     enum parser_state {
@@ -958,7 +935,7 @@ rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 		    /*
 		     Get tokens until a `»` is seen in the input stream.
 		     Since any program in the input stream will show up
-		     as a single token here (as this is a recursive
+		     as a single value here (as this is a recursive
 		     descent parser), nesting is handled automatically.
 		     */
 		    if (ch == rpl_unichar_chevron_close) {
@@ -972,33 +949,11 @@ rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 			next = rpl_tokenizer_copy_next(tokenizer);
 			if (next == NULL) goto back_out;
 
-			switch (rpl_token_get_type(next)) {
-			    case rpl_token_type_value: {
-				value = rpl_token_get_value(next);
-				assert(value != NULL);
+			bool appended = rpl_program_append(program,
+							   next);
+			if (appended == false) goto back_out;
 
-				bool appended
-				    = rpl_program_append(program,
-							 value);
-				if (appended == false) goto back_out;
-			    } break;
-
-			    case rpl_token_type_identifier: {
-				identifier = rpl_token_get_string(next);
-				assert(identifier != NULL);
-
-				value = rpl_identifier_new(identifier);
-				if (value == NULL) goto back_out;
-
-				bool appended
-				    = rpl_program_append(program,
-							 value);
-				if (appended == false) goto back_out;
-			    } break;
-			}
-
-			rpl_token_free(next); next = NULL;
-			value = NULL;
+			rpl_value_release(next); next = NULL;
 		    }
 		} break;
 
@@ -1018,27 +973,20 @@ rpl_tokenizer_tokenize_program(rpl_tokenizer_t tokenizer)
 
     if (complete == false) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, program);
-    if (token == NULL) goto back_out;
-
-    rpl_value_release(program); /* owned by token now */
-
-    return token;
+    return program;
 
 back_out:
-    if (token) rpl_token_free(token);
     if (program) rpl_value_release(program);
-    if (next) rpl_token_free(next);
+    if (next) rpl_value_release(next);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
     rpl_value_t value = NULL;
     rpl_unistring_t buf = NULL;
     bool appended = false;
@@ -1118,43 +1066,37 @@ rpl_tokenizer_tokenize_string(rpl_tokenizer_t tokenizer)
     value = rpl_string_new(buf);
     if (value == NULL) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, value);
-    if (token == NULL) goto back_out;
-
-    rpl_value_release(value); /* owned by token now */
-
     rpl_unistring_release(buf);
 
-    return token;
+    return value;
 
 back_out:
-    if (token) rpl_token_free(token);
     if (buf) rpl_unistring_release(buf);
     if (value) rpl_value_release(value);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_list(rpl_tokenizer_t tokenizer)
 {
     // TODO: Implement rpl_tokenizer_tokenize_list
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_tagged(rpl_tokenizer_t tokenizer)
 {
     // TODO: Implement rpl_tokenizer_tokenize_tagged
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 {
     assert(tokenizer != NULL);
 
-    rpl_token_t token = NULL;
+    rpl_value_t value = NULL;
     rpl_unistring_t buf = NULL;
     bool appended = false;
 
@@ -1184,33 +1126,33 @@ rpl_tokenizer_tokenize_identifier(rpl_tokenizer_t tokenizer)
 
     if (complete == false) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_identifier, buf, NULL);
-    if (token == NULL) goto back_out;
+    value = rpl_identifier_new(buf);
+    if (value == NULL) goto back_out;
 
     rpl_unistring_release(buf);
 
-    return token;
+    return value;
 
 back_out:
     if (buf) rpl_unistring_release(buf);
-    if (token) rpl_token_free(token);
+    if (value) rpl_value_release(value);
     rpl_tokenizer_set_mark(tokenizer, mark);
     return NULL;
 }
 
 bool
-rpl_token_is_control_flow_start(rpl_token_t token,
+rpl_token_is_control_flow_start(rpl_value_t value,
 				rpl_program_type_t *type)
 {
-    assert(token != NULL);
+    assert(value != NULL);
     assert(type != NULL);
 
-    /* Non-identifier tokens can't start control flow. */
-    if (rpl_token_get_type(token) != rpl_token_type_identifier) {
+    /* Non-identifier values can't start control flow. */
+    if (rpl_value_get_type(value) != rpl_type_identifier) {
 	return false;
     }
 
-    rpl_unistring_t identifier = rpl_token_get_string(token);
+    rpl_unistring_t identifier = rpl_identifier_get_rep(value);
     assert(identifier != NULL);
 
     /* All control-flow identifiers are 2-5 characters in length. */
@@ -1325,7 +1267,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
     rpl_value_t test_subp = NULL;
     rpl_value_t then_subp = NULL;
     rpl_value_t else_subp = NULL;
-    rpl_token_t token = NULL;
+    rpl_value_t value = NULL;
     bool appended;
 
     program = rpl_program_new_with_type(rpl_program_type_IF);
@@ -1344,17 +1286,13 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
     if (else_subp == NULL) goto back_out;
 
     do {
-	token = rpl_tokenizer_copy_next(tokenizer);
-	if (token == NULL) goto back_out;
+	value = rpl_tokenizer_copy_next(tokenizer);
+	if (value == NULL) goto back_out;
 
-	rpl_token_type_t type = rpl_token_get_type(token);
-	rpl_value_t value = NULL;
 	rpl_unistring_t ident = NULL;
 
-	if (type == rpl_token_type_value) {
-	    value = rpl_token_get_value(token);
-	} else {
-	    ident = rpl_token_get_string(token);
+	if (rpl_value_get_type(value) == rpl_type_identifier) {
+	    ident = rpl_identifier_get_rep(value);
 	}
 
 	switch (state) {
@@ -1367,19 +1305,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 		if (ident && rpl_tokenizer_is_keyword(ident, "THEN")) {
 		    state = parser_state_then;
 		} else {
-		    if (value) {
-			appended = rpl_program_append(test_subp, value);
-		    } else if (ident) {
-			rpl_value_t iv = rpl_identifier_new(ident);
-			if (iv == NULL) goto back_out;
-
-			appended = rpl_program_append(test_subp, iv);
-			rpl_value_release(iv);
-		    } else {
-			/* Should never happen. */
-			assert((ident != NULL) || (value != NULL));
-			appended = true;
-		    }
+		    appended = rpl_program_append(test_subp, value);
 		    if (appended == false) goto back_out;
 		}
 	    } break;
@@ -1400,19 +1326,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 
 		    state = parser_state_end;
 		} else {
-		    if (value) {
-			appended = rpl_program_append(then_subp, value);
-		    } else if (ident) {
-			rpl_value_t iv = rpl_identifier_new(ident);
-			if (iv == NULL) goto back_out;
-
-			appended = rpl_program_append(then_subp, iv);
-			rpl_value_release(iv);
-		    } else {
-			/* Should never happen. */
-			assert((ident != NULL) || (value != NULL));
-			appended = true;
-		    }
+		    appended = rpl_program_append(then_subp, value);
 		    if (appended == false) goto back_out;
 		}
 	    } break;
@@ -1426,19 +1340,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 		if (ident && rpl_tokenizer_is_keyword(ident, "END")) {
 		    state = parser_state_end;
 		} else {
-		    if (value) {
-			appended = rpl_program_append(else_subp, value);
-		    } else if (ident) {
-			rpl_value_t iv = rpl_identifier_new(ident);
-			if (iv == NULL) goto back_out;
-
-			appended = rpl_program_append(else_subp, iv);
-			rpl_value_release(iv);
-		    } else {
-			/* Should never happen. */
-			assert((ident != NULL) || (value != NULL));
-			appended = true;
-		    }
+		    appended = rpl_program_append(else_subp, value);
 		    if (appended == false) goto back_out;
 		}
 	    } break;
@@ -1448,7 +1350,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 	    } break;
 	}
 
-	rpl_token_free(token); token = NULL;
+	rpl_value_release(value); value = NULL;
     } while (state != parser_state_end);
 
     appended = rpl_program_append(program, test_subp);
@@ -1473,7 +1375,6 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 	rpl_value_release(IFTE);
 	if (appended == false) goto back_out;
     } else {
-
 	rpl_unistring_t IFT_str = rpl_unistring_new_from_utf8("IFT", 3);
 	if (IFT_str == NULL) goto back_out;
 
@@ -1490,7 +1391,7 @@ rpl_tokenizer_parse_IF(rpl_tokenizer_t tokenizer)
 
 back_out:
     if (program) rpl_value_release(program);
-    if (token) rpl_token_free(token);
+    if (value) rpl_value_release(value);
     return NULL;
 }
 
@@ -1649,15 +1550,14 @@ rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
 
  Each one has its own tokenizer that produces a program.
  */
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_tokenize_control_flow(rpl_tokenizer_t tokenizer,
-				    rpl_token_t start_token,
+				    rpl_value_t start_value,
 				    rpl_program_type_t type)
 {
     assert(tokenizer != NULL);
-    assert(start_token != NULL);
+    assert(start_value != NULL);
 
-    rpl_token_t token = NULL;
     rpl_value_t program = NULL;
 
     switch (type) {
@@ -1693,24 +1593,17 @@ rpl_tokenizer_tokenize_control_flow(rpl_tokenizer_t tokenizer,
 
     if (program == NULL) goto back_out;
 
-    token = rpl_token_new(rpl_token_type_value, NULL, program);
-    // TODO: Signal 'resource exhaustion' condition
-    if (token == NULL) goto back_out;
-
-    rpl_value_release(program); /* owned by token now */
-
-    return token;
+    return program;
 
 back_out:
-    if (token) rpl_token_free(token);
     if (program) rpl_value_release(program);
     return NULL;
 }
 
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer)
 {
-    rpl_token_t token = NULL;
+    rpl_value_t token = NULL;
 
     /* Skip whitespace and comments. */
 

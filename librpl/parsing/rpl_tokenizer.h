@@ -12,7 +12,7 @@
 #include "rpl_defines.h"
 
 #include "rpl_context.h"
-#include "rpl_token.h"
+#include "rpl_value.h"
 
 
 RPL_HEADER_BEGIN
@@ -83,7 +83,7 @@ rpl_tokenizer_append(rpl_tokenizer_t tokenizer, rpl_unistring_t str);
          of any token it returns to the caller.
  */
 RPL_EXPORT
-rpl_token_t RPL_NULLABLE
+rpl_value_t RPL_NULLABLE
 rpl_tokenizer_copy_next(rpl_tokenizer_t tokenizer);
 
 

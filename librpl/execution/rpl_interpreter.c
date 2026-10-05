@@ -137,10 +137,10 @@ rpl_interpreter_step(rpl_interpreter_t interp)
 
     bool success = false;
 
-    rpl_token_t token = rpl_tokenizer_copy_next(interp->_tokenizer);
-    if (token) {
-	success = rpl_interpreter_eval(interp, token);
-	rpl_token_free(token);
+    rpl_value_t value = rpl_tokenizer_copy_next(interp->_tokenizer);
+    if (value) {
+	success = rpl_interpreter_eval(interp, value);
+	rpl_value_release(value);
     }
 
     return success;
@@ -301,38 +301,23 @@ error:
 }
 
 bool
-rpl_interpreter_eval(rpl_interpreter_t interp, rpl_token_t token)
+rpl_interpreter_eval(rpl_interpreter_t interp, rpl_value_t value)
 {
     assert(interp != NULL);
-    assert(token != NULL);
+    assert(value != NULL);
 
     bool success = false;
 
-    rpl_token_type_t token_type = rpl_token_get_type(token);
-    if (token_type == rpl_token_type_value) {
-	rpl_value_t value = rpl_token_get_value(token);
-	assert(value != NULL);
-
-	rpl_type_t type = rpl_value_get_type(value);
-	if (type == rpl_type_identifier) {
-	    rpl_unistring_t identifier = rpl_identifier_get_rep(value);
-	    assert(identifier != NULL);
-
-	    success = rpl_interpreter_eval_identifier(interp,
-						      identifier);
-	} else if (type == rpl_type_program) {
-	    success = rpl_interpreter_eval_program(interp, value);
-	} else {
-	    success = rpl_interpreter_eval_value(interp, value);
-	}
-    } else if (token_type == rpl_token_type_identifier) {
-	rpl_unistring_t identifier = rpl_token_get_string(token);
+    rpl_type_t type = rpl_value_get_type(value);
+    if (type == rpl_type_identifier) {
+	rpl_unistring_t identifier = rpl_identifier_get_rep(value);
+	assert(identifier != NULL);
 
 	success = rpl_interpreter_eval_identifier(interp, identifier);
+    } else if (type == rpl_type_program) {
+	success = rpl_interpreter_eval_program(interp, value);
     } else {
-	/* Should never happen. */
-	assert((token_type == rpl_token_type_value)
-	       || token_type == rpl_token_type_identifier);
+	success = rpl_interpreter_eval_value(interp, value);
     }
 
     return success;

@@ -24,7 +24,6 @@
 #include "rpl_tokenizer.h"
 
 /* Parsing */
-#include "rpl_token.h"
 #include "rpl_tokenizer.h"
 
 /* Utilities */

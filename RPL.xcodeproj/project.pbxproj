@@ -70,7 +70,6 @@
 				execution/rpl_operation.h,
 				execution/rpl_scope.h,
 				execution/rpl_stack.h,
-				parsing/rpl_token.h,
 				parsing/rpl_tokenizer.h,
 				rpl_defines.h,
 				rpl.h,

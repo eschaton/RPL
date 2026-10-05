@@ -60,16 +60,12 @@ START_TEST(test_binary_integer)
     ck_assert(appended);
     rpl_unistring_release(buf);
 
-    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-    ck_assert_ptr_nonnull(token);
-    ck_assert_int_eq(rpl_token_type_value, rpl_token_get_type(token));
-
-    rpl_value_t value = rpl_token_get_value(token);
+    rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_integer, rpl_value_get_type(value));
     ck_assert_int_eq(23, rpl_integer_get_rep(value));
 
-    rpl_token_free(token);
+    rpl_value_release(value);
 }
 END_TEST
 
@@ -85,101 +81,66 @@ START_TEST(test_real)
     rpl_unistring_release(buf);
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(1.0, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(-1.0, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(0.1, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(-0.1, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(0.1, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(100, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_real, rpl_value_get_type(value));
 	ck_assert_double_eq(0.001, rpl_real_get_rep(value));
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 }
 END_TEST
@@ -198,12 +159,7 @@ START_TEST(test_name)
 	ck_assert(appended);
 	rpl_unistring_release(buf);
 
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
 	rpl_unistring_t rep = rpl_name_get_rep(value);
@@ -213,7 +169,7 @@ START_TEST(test_name)
 	ck_assert_str_eq("NAME", rep_utf8);
 	free(rep_utf8);
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     /* Validate tokenization of a name used to represent units. */
@@ -226,12 +182,7 @@ START_TEST(test_name)
 	ck_assert(appended);
 	rpl_unistring_release(buf);
 
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_value,
-			 rpl_token_get_type(token));
-
-	rpl_value_t value = rpl_token_get_value(token);
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
 	ck_assert_ptr_nonnull(value);
 	ck_assert_int_eq(rpl_type_name, rpl_value_get_type(value));
 	rpl_unistring_t rep = rpl_name_get_rep(value);
@@ -241,7 +192,7 @@ START_TEST(test_name)
 	ck_assert_str_eq("m/s^2", rep_utf8);
 	free(rep_utf8);
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 }
 END_TEST
@@ -256,11 +207,7 @@ START_TEST(test_string)
     ck_assert(appended);
     rpl_unistring_release(buf);
 
-    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-    ck_assert_ptr_nonnull(token);
-    ck_assert_int_eq(rpl_token_type_value, rpl_token_get_type(token));
-
-    rpl_value_t value = rpl_token_get_value(token);
+    rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_string, rpl_value_get_type(value));
     rpl_unistring_t rep = rpl_string_get_rep(value);
@@ -271,7 +218,7 @@ START_TEST(test_string)
     ck_assert_str_eq(rep_utf8, "Hello, world!\r\n");
     free(rep_utf8);
 
-    rpl_token_free(token);
+    rpl_value_release(value);
 }
 END_TEST
 
@@ -286,12 +233,12 @@ START_TEST(test_identifier)
     rpl_unistring_release(buf);
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_identifier,
-			 rpl_token_get_type(token));
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(value);
+	ck_assert_int_eq(rpl_type_identifier,
+			 rpl_value_get_type(value));
 
-	rpl_unistring_t string = rpl_token_get_string(token);
+	rpl_unistring_t string = rpl_identifier_get_rep(value);
 	ck_assert_ptr_nonnull(string);
 	char *string_utf8 = rpl_unistring_copy_utf8(string);
 	ck_assert_ptr_nonnull(string_utf8);
@@ -299,16 +246,16 @@ START_TEST(test_identifier)
 	ck_assert_str_eq(string_utf8, "hello");
 	free(string_utf8);
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 
     {
-	rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-	ck_assert_ptr_nonnull(token);
-	ck_assert_int_eq(rpl_token_type_identifier,
-			 rpl_token_get_type(token));
+	rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
+	ck_assert_ptr_nonnull(value);
+	ck_assert_int_eq(rpl_type_identifier,
+			 rpl_value_get_type(value));
 
-	rpl_unistring_t string = rpl_token_get_string(token);
+	rpl_unistring_t string = rpl_identifier_get_rep(value);
 	ck_assert_ptr_nonnull(string);
 	char *string_utf8 = rpl_unistring_copy_utf8(string);
 	ck_assert_ptr_nonnull(string_utf8);
@@ -316,7 +263,7 @@ START_TEST(test_identifier)
 	ck_assert_str_eq(string_utf8, "world");
 	free(string_utf8);
 
-	rpl_token_free(token);
+	rpl_value_release(value);
     }
 }
 END_TEST
@@ -331,12 +278,7 @@ START_TEST(test_program)
     ck_assert(appended);
     rpl_unistring_release(buf);
 
-    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-    ck_assert_ptr_nonnull(token);
-    ck_assert_int_eq(rpl_token_type_value,
-		     rpl_token_get_type(token));
-
-    rpl_value_t value = rpl_token_get_value(token);
+    rpl_value_t value = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_type_program, rpl_value_get_type(value));
 
@@ -362,7 +304,7 @@ START_TEST(test_program)
     ck_assert_str_eq("+", plus_utf8);
     free((void *)plus_utf8);
 
-    rpl_token_free(token);
+    rpl_value_release(value);
 }
 END_TEST
 
@@ -376,12 +318,7 @@ START_TEST(test_program_IF_THEN_ELSE_END)
     ck_assert(appended);
     rpl_unistring_release(buf);
 
-    rpl_token_t token = rpl_tokenizer_copy_next(tokenizer);
-    ck_assert_ptr_nonnull(token);
-    ck_assert_int_eq(rpl_token_type_value,
-		     rpl_token_get_type(token));
-
-    rpl_value_t program = rpl_token_get_value(token);
+    rpl_value_t program = rpl_tokenizer_copy_next(tokenizer);
     ck_assert_ptr_nonnull(program);
     ck_assert_int_eq(rpl_type_program, rpl_value_get_type(program));
 
@@ -401,7 +338,7 @@ START_TEST(test_program_IF_THEN_ELSE_END)
     ck_assert_str_eq(text, program_utf8);
     free((void *)program_utf8);
 
-    rpl_token_free(token);
+    rpl_value_release(program);
 }
 
 
