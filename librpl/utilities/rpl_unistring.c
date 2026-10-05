@@ -48,7 +48,8 @@ rpl_unistring_adjust_storage(rpl_unistring_t str, size_t count)
 	const size_t ocap = str->_capacity;
 	const size_t ncap = rpl_unistring_round_to_next(ocap + count);
 	rpl_unichar_t *ostorage = str->_storage;
-	rpl_unichar_t *nstorage = realloc(ostorage, ncap);
+	rpl_unichar_t *nstorage = realloc(ostorage,
+					  ncap * sizeof(rpl_unichar_t));
 	if (nstorage == NULL) goto error;
 	rpl_unichar_t *nextra = nstorage + ocap;
 	memset(nextra, 0, (ncap - ocap) * sizeof(rpl_unichar_t));
