@@ -14,7 +14,7 @@
 #include "rpl_identifier.h"
 #include "rpl_name.h"
 #include "rpl_operation.h"
-#include "rpl_program.h"
+#include "rpl_program_internal.h"
 
 
 RPL_SOURCE_BEGIN
@@ -315,7 +315,16 @@ rpl_interpreter_eval(rpl_interpreter_t interp, rpl_value_t value)
 
 	success = rpl_interpreter_eval_identifier(interp, identifier);
     } else if (type == rpl_type_program) {
-	success = rpl_interpreter_eval_program(interp, value);
+	/*
+	 Generic programs must be pushed on the stack as values to be
+	 evaluated by an operation like `EVAL` or `IFT`, while other
+	 types of programs must be immediately evaluated.
+	 */
+	if (rpl_program_get_type(value) == rpl_program_type_generic) {
+	    success = rpl_interpreter_eval_value(interp, value);
+	} else {
+	    success = rpl_interpreter_eval_program(interp, value);
+	}
     } else {
 	success = rpl_interpreter_eval_value(interp, value);
     }
