@@ -517,6 +517,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V4FN2V327V;
 				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_LDFLAGS = "-ledit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -527,6 +528,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = V4FN2V327V;
 				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_LDFLAGS = "-ledit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

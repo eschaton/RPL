@@ -41,7 +41,9 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
       viewDebuggingEnabled = "No"
-      queueDebuggingEnableBacktraceRecording = "Yes">
+      queueDebuggingEnableBacktraceRecording = "Yes"
+      consoleMode = "1"
+      structuredConsoleMode = "3">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
