@@ -162,18 +162,18 @@ rpl_interpreter_output_stack(rpl_interpreter_t interp)
     rpl_environment_t env = rpl_context_get_environment(context);
     assert(env != NULL);
 
-    const rpl_integer_t depth = rpl_stack_get_depth(stack);
-    if (depth > 0) {
+    const rpl_integer_t level = rpl_stack_get_level(stack);
+    if (level > 0) {
 	rpl_unistring_t eol = rpl_unistring_get_eol();
 
-	for (rpl_integer_t i = depth; i > 0; --i) {
+	for (rpl_integer_t i = 0; i < level; i++) {
 	    rpl_value_t v = rpl_stack_get_value_at_level(stack, i);
 	    assert(v != NULL);
 
 	    s = rpl_unistring_new(80);
 	    if (s == NULL) goto error;
 
-	    rpl_unistring_t is = rpl_unistring_with_integer(i);
+	    rpl_unistring_t is = rpl_unistring_with_integer(level-i-1);
 	    if (is == NULL) goto error;
 	    appended = rpl_unistring_append(s, is);
 	    rpl_unistring_release(is);
