@@ -289,7 +289,7 @@ rpl_interpreter_eval_program(rpl_interpreter_t interp,
 	rpl_value_t value = rpl_program_get_value(program, i);
 	assert(value != NULL);
 
-	bool success = rpl_interpreter_eval_value(interp, value);
+	bool success = rpl_interpreter_eval(interp, value);
 	// TODO: Signal 'evaluation failed' condition
 	if (success == false) goto error;
     }
