@@ -11,6 +11,7 @@
 #include <histedit.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <sysexits.h>
 
 #include "rpl.h"
@@ -31,7 +32,11 @@ RPL_prompt(EditLine *editor)
     return "RPL> ";
 }
 
-/*! Send output from the interpreter along to stdout. */
+/*!
+ Send any output from an interpreter along to `stdout`.
+
+ - Returns: 0 on success, -`errno` on failure
+ */
 int
 RPL_send_along_output(rpl_interpreter_t interpreter)
 {
@@ -82,9 +87,31 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
 	goto error;
     }
 
-    el_set(RPL_editor, EL_SIGNAL, 1);
-    el_set(RPL_editor, EL_PROMPT, RPL_prompt);
+    el_set(RPL_editor, EL_EDITOR, "emacs");
     el_set(RPL_editor, EL_HIST, history, RPL_history);
+    el_set(RPL_editor, EL_PROMPT, RPL_prompt);
+    el_set(RPL_editor, EL_SIGNAL, 1);
+
+#if __APPLE__
+    /*
+     If running under Xcode's debugger, "TERM=dumb" can be set even when
+     I/O is handled using Terminal.app rather than the debugger UI. In
+     that case, specify the terminal is a VT100, otherwise pull from the
+     environment.
+     */
+    if (getenv("__XCODE_BUILT_PRODUCTS_DIR_PATHS") != NULL) {
+	const char *TERM = getenv("TERM");
+	if (TERM && (strcmp(TERM, "dumb") == 0)) {
+	    el_set(RPL_editor, EL_TERMINAL, "vt100");
+	} else {
+	    el_set(RPL_editor, EL_TERMINAL, NULL);
+	}
+    } else {
+	el_set(RPL_editor, EL_TERMINAL, NULL);
+    }
+#else
+    el_set(RPL_editor, EL_TERMINAL, NULL);
+#endif
 
     RPL_interpreter = rpl_interpreter_new(NULL, NULL);
     if (RPL_interpreter == NULL) {
@@ -139,7 +166,7 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
 	    ran = rpl_interpreter_step(RPL_interpreter);
 
 	    if (ran) {
-		saved_errno = RPL_send_along_output(RPL_interpreter);
+		saved_errno = -RPL_send_along_output(RPL_interpreter);
 		if (saved_errno != 0) goto error;
 	    }
 	} while (ran == true);
@@ -149,14 +176,14 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
 	 run successfully.
 	 */
 
-	saved_errno = RPL_send_along_output(RPL_interpreter);
+	saved_errno = -RPL_send_along_output(RPL_interpreter);
 	if (saved_errno != 0) goto error;
 
 	/* Output the stack, if there's anything on it. */
 
 	bool produced = rpl_interpreter_output_stack(RPL_interpreter);
 	if (produced) {
-	    saved_errno = RPL_send_along_output(RPL_interpreter);
+	    saved_errno = -RPL_send_along_output(RPL_interpreter);
 	    if (saved_errno != 0) goto error;
 	}
     }
