@@ -150,7 +150,7 @@ RPL_RETURNS_RETAINED
     assert(rpl_value_get_type(v2) == rpl_type_real);
 
     rpl_integer_t i1 = rpl_integer_get_rep(v1);
-    rpl_real_t r2 = rpl_integer_get_rep(v2);
+    rpl_real_t r2 = rpl_real_get_rep(v2);
 
     rpl_integer_t result = i1 + r2;
 
@@ -184,7 +184,7 @@ RPL_RETURNS_RETAINED
     assert(rpl_value_get_type(v2) == rpl_type_real);
 
     rpl_integer_t i1 = rpl_integer_get_rep(v1);
-    rpl_real_t r2 = rpl_integer_get_rep(v2);
+    rpl_real_t r2 = rpl_real_get_rep(v2);
 
     rpl_integer_t result = i1 - r2;
 
@@ -218,7 +218,7 @@ RPL_RETURNS_RETAINED
     assert(rpl_value_get_type(v2) == rpl_type_real);
 
     rpl_integer_t i1 = rpl_integer_get_rep(v1);
-    rpl_real_t r2 = rpl_integer_get_rep(v2);
+    rpl_real_t r2 = rpl_real_get_rep(v2);
 
     rpl_integer_t result = i1 * r2;
 
@@ -252,7 +252,7 @@ RPL_RETURNS_RETAINED
     assert(rpl_value_get_type(v2) == rpl_type_real);
 
     rpl_integer_t i1 = rpl_integer_get_rep(v1);
-    rpl_real_t r2 = rpl_integer_get_rep(v2);
+    rpl_real_t r2 = rpl_real_get_rep(v2);
 
     rpl_integer_t result = i1 / r2;
 
