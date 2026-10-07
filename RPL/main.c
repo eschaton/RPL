@@ -20,8 +20,8 @@
 RPL_SOURCE_BEGIN
 
 
-EditLine *RPL_editor = NULL;
-History *RPL_history = NULL;
+EditLine * RPL_NULLABLE RPL_editor = NULL;
+History * RPL_NULLABLE RPL_history = NULL;
 rpl_interpreter_t RPL_interpreter = NULL;
 
 
@@ -30,6 +30,173 @@ char * RPL_NONNULL
 RPL_prompt(EditLine *editor)
 {
     return "RPL> ";
+}
+
+/*!
+ Configure `libedit` for RPL use.
+
+ - Returns: 0 on success, -`errno` on failure
+ */
+int
+RPL_configure_libedit(void)
+{
+    int saved_errno = 0;
+
+    RPL_editor = el_init("RPL", stdin, stdout, stderr);
+    if (RPL_editor == NULL) {
+	saved_errno = errno;
+	goto error;
+    }
+
+    RPL_history = history_init();
+    if (RPL_history == NULL) {
+	saved_errno = errno;
+	goto error;
+    }
+
+    /* Pull in the .editrc */
+
+    int parsed = el_source(RPL_editor, NULL);
+    if (parsed != 0) {
+	saved_errno = errno;
+	if (saved_errno == ENOENT) {
+	    /* No .editrc is success. */
+	} else {
+	    fprintf(stderr, "RPL: error: Couldn't parse .editrc\n");
+	    goto error;
+	}
+    }
+
+
+    /*
+     Determine whether editing is enabled, if it's not then don't do a
+     bunch of registration and stop using libedit, which will set the
+     `RPL_editor` global to `NULL` as a signal.
+     */
+
+    int editmode = 0;
+    el_get(RPL_editor, EL_EDITMODE, &editmode);
+
+    if (editmode) {
+	el_set(RPL_editor, EL_EDITOR, "emacs");
+	el_set(RPL_editor, EL_HIST, history, RPL_history);
+	el_set(RPL_editor, EL_PROMPT, RPL_prompt);
+	el_set(RPL_editor, EL_SIGNAL, 1);
+
+#if __APPLE__
+	/*
+	 If running under Xcode's debugger, "TERM=dumb" can be set even when
+	 I/O is handled using Terminal.app rather than the debugger UI. In
+	 that case, specify the terminal is a VT100, otherwise pull from the
+	 environment.
+	 */
+	if (getenv("__XCODE_BUILT_PRODUCTS_DIR_PATHS") != NULL) {
+	    const char *TERM = getenv("TERM");
+	    if (TERM && (strcmp(TERM, "dumb") == 0)) {
+		el_set(RPL_editor, EL_TERMINAL, "vt100");
+	    } else {
+		el_set(RPL_editor, EL_TERMINAL, NULL);
+	    }
+	} else {
+	    el_set(RPL_editor, EL_TERMINAL, NULL);
+	}
+#else
+	el_set(RPL_editor, EL_TERMINAL, NULL);
+#endif
+    } else {
+	el_end(RPL_editor); RPL_editor = NULL;
+	history_end(RPL_history); RPL_history = NULL;
+    }
+
+    return 0;
+
+error:
+    if (RPL_editor) el_end(RPL_editor);
+    if (RPL_history) history_end(RPL_history);
+    return -saved_errno;
+}
+
+/*!
+ Get a line of input from `stdin` and return it as a Unicode string.
+
+ - Returns: a Unicode string containing a line of input, an empty string
+            on end of file, or `NULL` (with `errno` set) on error
+ */
+rpl_unistring_t RPL_NULLABLE
+RPL_input_copy(void)
+RPL_RETURNS_RETAINED
+{
+    rpl_unistring_t line_str = NULL;
+    bool saw_eof;
+    int saved_errno;
+    char buf[1024];
+    const char *line = NULL;
+    int line_len = 0;
+
+    line_str = rpl_unistring_new(0);
+    if (line_str == NULL) {
+	saved_errno = ENOMEM;
+	goto error;
+    }
+
+    if (RPL_editor) {
+	line = el_gets(RPL_editor, &line_len);
+	if (line == NULL) {
+	    if (line_len < 0) {
+		saved_errno = errno;
+		saw_eof = false;
+	    } else {
+		saved_errno = 0;
+		saw_eof = true;
+	    }
+	} else {
+	    saved_errno = 0;
+	    saw_eof = false;
+	}
+
+	if (saved_errno != 0) goto error;
+    } else {
+	line = fgets(buf, 1024, stdin);
+	if (line == NULL) {
+	    saved_errno = errno;
+	    if (feof(stdin)) {
+		line = "";
+		saw_eof = true;
+	    } else {
+		goto error;
+	    }
+	} else {
+	    saw_eof = false;
+	}
+    }
+
+    if (saw_eof == false) {
+	rpl_unistring_t another = rpl_unistring_new_from_utf8(line,
+							      line_len);
+	if (another) {
+	    bool appended = rpl_unistring_append(line_str, another);
+	    rpl_unistring_release(another);
+	    if (appended == false) {
+		saved_errno = ENOMEM;
+		goto error;
+	    }
+	} else {
+	    saved_errno = ENOMEM;
+	    goto error;
+	}
+    } else {
+	/*
+	 Leave line empty, that's the signal to the caller that EOF was
+	 encountered.
+	 */
+    }
+
+    return line_str;
+
+error:
+    if (line_str) rpl_unistring_release(line_str);
+    errno = saved_errno;
+    return NULL;
 }
 
 /*!
@@ -75,43 +242,11 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
 {
     int saved_errno = 0;
 
-    RPL_editor = el_init("RPL", stdin, stdout, stderr);
-    if (RPL_editor == NULL) {
-	fprintf(stderr, "RPL: error: Couldn't initialize editline\n");
+    saved_errno = -RPL_configure_libedit();
+    if (saved_errno != 0) {
+	fprintf(stderr, "RPL: error: Couldn't configure libedit\n");
 	goto error;
     }
-
-    RPL_history = history_init();
-    if (RPL_history == NULL) {
-	fprintf(stderr, "RPL: error: Couldn't initialize history\n");
-	goto error;
-    }
-
-    el_set(RPL_editor, EL_EDITOR, "emacs");
-    el_set(RPL_editor, EL_HIST, history, RPL_history);
-    el_set(RPL_editor, EL_PROMPT, RPL_prompt);
-    el_set(RPL_editor, EL_SIGNAL, 1);
-
-#if __APPLE__
-    /*
-     If running under Xcode's debugger, "TERM=dumb" can be set even when
-     I/O is handled using Terminal.app rather than the debugger UI. In
-     that case, specify the terminal is a VT100, otherwise pull from the
-     environment.
-     */
-    if (getenv("__XCODE_BUILT_PRODUCTS_DIR_PATHS") != NULL) {
-	const char *TERM = getenv("TERM");
-	if (TERM && (strcmp(TERM, "dumb") == 0)) {
-	    el_set(RPL_editor, EL_TERMINAL, "vt100");
-	} else {
-	    el_set(RPL_editor, EL_TERMINAL, NULL);
-	}
-    } else {
-	el_set(RPL_editor, EL_TERMINAL, NULL);
-    }
-#else
-    el_set(RPL_editor, EL_TERMINAL, NULL);
-#endif
 
     RPL_interpreter = rpl_interpreter_new(NULL, NULL);
     if (RPL_interpreter == NULL) {
@@ -119,42 +254,35 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
 	goto error;
     }
 
+    /* Main loop! */
+
     bool done = false;
     while (!done) {
+	/* Get input from stdin. */
 
-	/* Get input using libedit, for history etc. */
-
-	int line_len = 0;
-	const char *line = el_gets(RPL_editor, &line_len);
-	if (line == NULL) {
-	    if (line_len == -1) {
-		/* Error. */
-		saved_errno = errno;
-		goto error;
-	    } else {
-		/* No data = done. */
-		done = true;
-		continue;
-	    }
-	}
-
-	rpl_unistring_t input = rpl_unistring_new_from_utf8(line,
-							    line_len);
+	rpl_unistring_t input = RPL_input_copy();
 	if (input == NULL) {
 	    saved_errno = ENOMEM;
 	    goto error;
+	} else {
+	    /* EOF is signaled by an empty string. */
+
+	    if (rpl_unistring_get_length(input) == 0) {
+		rpl_unistring_release(input);
+		done = true;
+		continue;
+	    }
 	}
 
 	/* Send the input to the interpreter. */
 
 	bool appended = rpl_interpreter_append_input(RPL_interpreter,
 						     input);
+	rpl_unistring_release(input);
 	if (appended == false) {
 	    saved_errno = ENOMEM;
 	    goto error;
 	}
-
-	rpl_unistring_release(input);
 
 	/*
 	 Step the interpreter and send along any ouptut that it produces
@@ -189,8 +317,8 @@ main(int argc, const char * RPL_NULLABLE argv[RPL_NONNULL])
     }
 
     rpl_interpreter_free(RPL_interpreter);
-    history_end(RPL_history);
-    el_end(RPL_editor);
+    if (RPL_editor) el_end(RPL_editor);
+    if (RPL_history) history_end(RPL_history);
 
     return EX_OK;
 
