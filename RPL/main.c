@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <histedit.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -78,29 +79,40 @@ RPL_configure_libedit(void)
     el_get(RPL_editor, EL_EDITMODE, &editmode);
 
     if (editmode) {
-	el_set(RPL_editor, EL_EDITOR, "emacs");
+	/* Use/keep infinite command line history. */
+
+	HistEvent histev;
+	history(RPL_history, &histev, H_SETSIZE, INT_MAX);
 	el_set(RPL_editor, EL_HIST, history, RPL_history);
+
+	/*
+	 Prefer emacs-style command line editing, set prompt, and enable
+	 default libedit signal handling.
+	 */
+
+	el_set(RPL_editor, EL_EDITOR, "emacs");
 	el_set(RPL_editor, EL_PROMPT, RPL_prompt);
 	el_set(RPL_editor, EL_SIGNAL, 1);
 
 #if __APPLE__
 	/*
-	 If running under Xcode's debugger, "TERM=dumb" can be set even when
-	 I/O is handled using Terminal.app rather than the debugger UI. In
-	 that case, specify the terminal is a VT100, otherwise pull from the
-	 environment.
+	 When running under Xcode's debugger, "TERM=dumb" can be set
+	 even when using Terminal.app rather than the debugger UI for
+	 I/O with RPL. In that case, specify the terminal is actually
+	 "xterm-256color", since Terminal.app supports that; otherwise,
+	 set the terminal from the environment. Filed as FB25118078.
 	 */
-	if (getenv("__XCODE_BUILT_PRODUCTS_DIR_PATHS") != NULL) {
-	    const char *TERM = getenv("TERM");
-	    if (TERM && (strcmp(TERM, "dumb") == 0)) {
-		el_set(RPL_editor, EL_TERMINAL, "vt100");
-	    } else {
-		el_set(RPL_editor, EL_TERMINAL, NULL);
-	    }
+	const char *TERM = getenv("TERM");
+	if ((getenv("__XCODE_BUILT_PRODUCTS_DIR_PATHS") != NULL)
+	    && TERM && (strcmp(TERM, "dumb") == 0))
+	{
+	    el_set(RPL_editor, EL_TERMINAL, "xterm-256color");
 	} else {
 	    el_set(RPL_editor, EL_TERMINAL, NULL);
 	}
 #else
+	/* Set the terminal type to use from the environment. */
+
 	el_set(RPL_editor, EL_TERMINAL, NULL);
 #endif
     } else {
