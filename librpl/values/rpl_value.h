@@ -80,6 +80,12 @@ enum rpl_type {
      passed to `RCL` or `EVAL` to behave as a variable or a command.)
      */
     rpl_type_identifier,
+
+    /*!
+     A *condition* is a situation that needs handling before execution
+     may continue.
+     */
+    rpl_type_condition,
 };
 typedef enum rpl_type rpl_type_t;
 
