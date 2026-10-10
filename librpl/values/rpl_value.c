@@ -46,6 +46,7 @@ rpl_value_free(rpl_value_t val)
 	case rpl_type_tagged:     rpl_tagged_free(val);     break;
 	case rpl_type_unit:       rpl_unit_free(val);       break;
 	case rpl_type_identifier: rpl_identifier_free(val); break;
+	case rpl_type_condition:  rpl_condition_free(val);  break;
     }
 
     free(val);
@@ -143,6 +144,7 @@ RPL_RETURNS_RETAINED
 	case rpl_type_tagged:
 	case rpl_type_unit:
 	case rpl_type_identifier:
+	case rpl_type_condition:
 	    result = rpl_value_retain(val);
 	    break;
 
@@ -183,6 +185,8 @@ RPL_RETURNS_RETAINED
 	case rpl_type_unit:    return rpl_unit_copy_string(val, env);
 	case rpl_type_identifier:
 	    return rpl_identifier_copy_string(val, env);
+	case rpl_type_condition:
+	    return rpl_condition_copy_string(val, env);
     }
 
     return NULL;

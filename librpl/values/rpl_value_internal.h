@@ -22,6 +22,7 @@
 #include "rpl_tagged_internal.h"
 #include "rpl_unit_internal.h"
 #include "rpl_identifier_internal.h"
+#include "rpl_condition_internal.h"
 
 
 RPL_HEADER_BEGIN
@@ -56,6 +57,7 @@ struct rpl_value {
 	rpl_tagged_t _tagged;
 	rpl_unit_t _unit;
 	rpl_identifier_t _identifier;
+	rpl_condition_t _condition;
     } _reps;
 };
 

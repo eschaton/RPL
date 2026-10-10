@@ -39,6 +39,7 @@ rpl_array_is_supported_type(rpl_type_t type)
 	case rpl_type_tagged:
 	case rpl_type_unit:
 	case rpl_type_identifier:
+	case rpl_type_condition:
 	    return false;
     }
 }
@@ -59,6 +60,7 @@ rpl_array_type_size(rpl_type_t type)
 	case rpl_type_tagged:
 	case rpl_type_unit:
 	case rpl_type_identifier:
+	case rpl_type_condition:
 	    return 0;
     }
 }
