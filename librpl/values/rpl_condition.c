@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_unistring_internal.h"
 #include "rpl_value_internal.h"
 
 
@@ -118,6 +119,71 @@ rpl_condition_copy_string(rpl_value_t condition, rpl_environment_t env)
 
     return rpl_unistring_copy(rep->_name);
 }
+
+
+/* MARK: - Standard Conditions */
+
+rpl_unistring_t rpl_condition_memory_full_name = NULL;
+rpl_value_t rpl_condition_memory_full_value = NULL;
+
+rpl_value_t
+rpl_condition_memory_full(void)
+{
+    return rpl_condition_memory_full_value;
+}
+
+rpl_unistring_t rpl_condition_insufficient_arguments_name = NULL;
+
+rpl_value_t RPL_NULLABLE
+rpl_condition_insufficient_arguments(rpl_value_t identifier,
+				     rpl_integer_t expected,
+				     rpl_integer_t actual);
+
+rpl_unistring_t rpl_condition_invalid_type_name = NULL;
+
+rpl_value_t RPL_NULLABLE
+rpl_condition_invalid_type(rpl_value_t identifier,
+			   rpl_type_t expected,
+			   rpl_type_t actual);
+
+bool
+rpl_condition_initialize(void)
+{
+    /* Set up and immortalize all the well-known names. */
+
+    rpl_condition_memory_full_name
+	= rpl_unistring_new_from_utf8("MEMORY_FULL", 11);
+    if (rpl_condition_memory_full_name == NULL) goto error;
+    rpl_unistring_immortalize(rpl_condition_memory_full_name);
+
+    rpl_condition_insufficient_arguments_name
+	= rpl_unistring_new_from_utf8("INSUFFICIENT_ARGUMENTS", 22);
+    if (rpl_condition_insufficient_arguments_name == NULL) goto error;
+    rpl_unistring_immortalize(rpl_condition_insufficient_arguments_name);
+
+    rpl_condition_invalid_type_name
+	= rpl_unistring_new_from_utf8("INVALID_TYPE", 12);
+    if (rpl_condition_invalid_type_name == NULL) goto error;
+    rpl_unistring_immortalize(rpl_condition_invalid_type_name);
+
+    /* Set up and immortalize all the well-known payload keys. */
+
+    // TODO: Finish rpl_condition_initialize
+
+    /* Set up the static conditions. */
+
+    rpl_condition_memory_full_value
+	= rpl_condition_new(rpl_condition_memory_full_name, NULL);
+    if (rpl_condition_memory_full_value == NULL) goto error;
+
+    // TODO: Finish rpl_condition_initialize
+
+    return true;
+
+error:
+    return false;
+}
+
 
 
 RPL_SOURCE_END

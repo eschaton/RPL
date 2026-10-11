@@ -17,6 +17,7 @@
 
 #include "rpl_integer.h"
 #include "rpl_real.h"
+#include "rpl_condition_internal.h"
 
 #include "rpl_unicode.h"
 
@@ -26,6 +27,9 @@ RPL_SOURCE_BEGIN
 
 bool
 rpl_constants_configure(rpl_scope_t scope);
+
+bool
+rpl_conditions_configure(rpl_scope_t scope);
 
 
 bool
@@ -50,8 +54,10 @@ rpl_configure_defaults(rpl_interpreter_t interp,
     assert(constant_scope != NULL);
 
     success = success && rpl_unicode_initialize();
+    success = success && rpl_condition_initialize();
     success = success && rpl_operations_configure(table);
     success = success && rpl_constants_configure(constant_scope);
+    success = success && rpl_conditions_configure(constant_scope);
 
     return success;
 }
@@ -114,6 +120,24 @@ rpl_constants_configure(rpl_scope_t scope)
 error:
     if (name) rpl_unistring_release(name);
     if (value) rpl_value_release(value);
+    return false;
+}
+
+
+/*!
+ Configure the standrad conditions by creating a constant for each
+ standard condition.
+ */
+bool
+rpl_conditions_configure(rpl_scope_t scope)
+{
+    assert(scope != NULL);
+
+    // TODO: Create a constant for each known condition
+
+    return true;
+
+error:
     return false;
 }
 
