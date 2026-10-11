@@ -175,6 +175,7 @@ rpl_condition_initialize(void)
     rpl_condition_memory_full_value
 	= rpl_condition_new(rpl_condition_memory_full_name, NULL);
     if (rpl_condition_memory_full_value == NULL) goto error;
+    rpl_value_immortalize(rpl_condition_memory_full_value);
 
     // TODO: Finish rpl_condition_initialize
 

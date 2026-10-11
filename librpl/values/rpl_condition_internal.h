@@ -10,6 +10,7 @@
 
 #include "rpl_scope.h"
 
+
 #ifndef __RPL__rpl_condition_internal__h__
 #define __RPL__rpl_condition_internal__h__
 
@@ -35,6 +36,10 @@ rpl_condition_copy_string(rpl_value_t condition, rpl_environment_t env);
 RPL_EXPORT
 bool
 rpl_condition_initialize(void);
+
+
+/*! Name of the "out of memory" condition. */
+RPL_EXPORT rpl_unistring_t rpl_condition_memory_full_name;
 
 
 RPL_HEADER_END

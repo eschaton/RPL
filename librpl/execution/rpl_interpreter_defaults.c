@@ -133,12 +133,13 @@ rpl_conditions_configure(rpl_scope_t scope)
 {
     assert(scope != NULL);
 
-    // TODO: Create a constant for each known condition
+    bool success = true;
 
-    return true;
+    success = success && rpl_scope_set_variable(scope,
+			     rpl_condition_memory_full_name,
+			     rpl_condition_memory_full());
 
-error:
-    return false;
+    return success;
 }
 
 
