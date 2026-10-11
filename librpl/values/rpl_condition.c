@@ -17,13 +17,35 @@
 RPL_SOURCE_BEGIN
 
 
+/*! Accumulate (key,value) pairs into a condition's payload. */
 bool
 rpl_condition_populate_payload(rpl_condition_t *rep, va_list args)
 {
-    // TODO: Implement rpl_condition_populate_payload
-    return true;
-}
+    rpl_value_t key = NULL;
+    rpl_value_t value = NULL;
 
+    do {
+	key = va_arg(args, rpl_value_t);
+	if (key) {
+	    assert(rpl_value_get_type(key) == rpl_type_name);
+
+	    value = va_arg(args, rpl_value_t);
+	    if (value) {
+		rpl_unistring_t name = rpl_name_get_rep(key);
+		assert(name != NULL);
+
+		bool did_set = rpl_scope_set_variable(rep->_payload,
+						      name, value);
+		if (did_set == false) goto error;
+	    }
+	}
+    } while ((key != NULL) && (value != NULL));
+
+    return true;
+
+error:
+    return false;
+}
 
 rpl_value_t RPL_NULLABLE
 rpl_condition_new(rpl_unistring_t name, ...)
