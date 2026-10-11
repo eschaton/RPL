@@ -31,6 +31,11 @@ RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE
 rpl_condition_copy_string(rpl_value_t condition, rpl_environment_t env);
 
+/*! Initialize the condition system and standard conditions. */
+RPL_EXPORT
+bool
+rpl_condition_initialize(void);
+
 
 RPL_HEADER_END
 
