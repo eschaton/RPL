@@ -17,9 +17,12 @@
 RPL_HEADER_BEGIN
 
 /*
- RPL has a minimal set of true keywords that are only used to represent
- control flow. They exist as immortal strings for ease and speed of
- comparison.
+ RPL has a minimal set of "true" keywords that are used to represent
+ control flow, but it also has a number of other strings that are used
+ in a similar manner to keywords.
+
+ These all exist as immortal strings called keywords for ease and speed
+ of comparison.
  */
 
 #define RPL_DECLARE_KEYWORD(name) \
@@ -41,6 +44,15 @@ RPL_DECLARE_KEYWORD(START);
 RPL_DECLARE_KEYWORD(WHILE);
 RPL_DECLARE_KEYWORD(REPEAT);
 RPL_DECLARE_KEYWORD(END);
+
+RPL_DECLARE_KEYWORD(CONDITION);
+RPL_DECLARE_KEYWORD(NAME);
+RPL_DECLARE_KEYWORD(OPERATION);
+RPL_DECLARE_KEYWORD(EXPECTED);
+RPL_DECLARE_KEYWORD(ACTUAL);
+RPL_DECLARE_KEYWORD(MEMORY_FULL);
+RPL_DECLARE_KEYWORD(INSUFFICIENT_ARGUMENTS);
+RPL_DECLARE_KEYWORD(INVALID_TYPE);
 
 
 RPL_HEADER_END

@@ -23,7 +23,7 @@ RPL_HEADER_BEGIN
 /*! The types of values RPL supports. */
 enum rpl_type {
     /*! A binary integer is an unsigned 64-bit value. */
-    rpl_type_integer,
+    rpl_type_integer = 0,
 
     /*!
      A real number is represented as a 64-bit IEEE-754 double-precision
@@ -139,6 +139,11 @@ RPL_RETURNS_RETAINED;
 RPL_EXPORT
 bool
 rpl_value_is_true(rpl_value_t val);
+
+/*! Get a _name_ value representing the given type. */
+RPL_EXPORT
+rpl_value_t
+rpl_value_get_type_name(rpl_type_t t);
 
 
 RPL_HEADER_END
