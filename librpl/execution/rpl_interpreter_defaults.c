@@ -133,13 +133,15 @@ rpl_conditions_configure(rpl_scope_t scope)
 {
     assert(scope != NULL);
 
-    bool success = true;
+    bool result = true;
 
-    success = success && rpl_scope_set_variable(scope,
-			     rpl_condition_memory_full_name,
-			     rpl_condition_memory_full());
+    rpl_value_t c = rpl_condition_memory_full();
+    result = result && rpl_scope_set_variable(scope,
+					      rpl_condition_get_name(c),
+					      c);
+    rpl_value_release(c); c = NULL;
 
-    return success;
+    return result;
 }
 
 

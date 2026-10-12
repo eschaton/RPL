@@ -235,5 +235,51 @@ rpl_value_is_true(rpl_value_t val)
     }
 }
 
+rpl_value_t
+rpl_value_get_type_name(rpl_type_t t)
+{
+    assert(t >= rpl_type_integer);
+    assert(t <= rpl_type_condition);
+
+    static rpl_value_t RPL_NULLABLE names[12] = { 0 };
+
+    rpl_value_t name = names[t];
+    if (name == NULL) {
+	struct name_ent {
+	    char *name;
+	    size_t name_len;
+	} name_ents[12] = {
+	    { "INTEGER", 7 },
+	    { "REAL", 4 },
+	    { "COMPLEX", 7 },
+	    { "ARRAY", 5 },
+	    { "NAME", 4 },
+	    { "PROGRAM", 7 },
+	    { "STRING", 6 },
+	    { "LIST", 4 },
+	    { "TAGGED", 6 },
+	    { "UNIT", 4 },
+	    { "IDENTIFIER", 10 },
+	    { "CONDITION", 9 },
+	};
+
+	rpl_unistring_t name_text
+	    = rpl_unistring_new_from_utf8(name_ents[t].name,
+					  name_ents[t].name_len);
+	assert(name_text != NULL);
+
+	name = rpl_name_new(name_text);
+	assert(name != NULL);
+	rpl_value_immortalize(name);
+
+	rpl_unistring_release(name_text);
+
+	names[t] = name;
+	rpl_value_not_leaked(name);
+    }
+
+    return name;
+}
+
 
 RPL_SOURCE_END

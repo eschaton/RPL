@@ -193,5 +193,30 @@ rpl_scope_make_immutable(rpl_scope_t scope)
     scope->_is_mutable = false;
 }
 
+rpl_integer_t
+rpl_scope_get_count(rpl_scope_t scope)
+{
+    assert(scope != NULL);
+
+    return scope->_names._count;
+}
+
+void
+rpl_scope_get_pair_at_index(rpl_scope_t scope, rpl_integer_t idx,
+			rpl_unistring_t RPL_NONNULL * RPL_NONNULL namep,
+			rpl_value_t RPL_NONNULL * RPL_NONNULL valp)
+{
+    assert(scope != NULL);
+    assert(idx < scope->_names._count);
+    assert(namep != NULL);
+    assert(valp != NULL);
+
+    rpl_unistring_t *namee = rpl_adjbuffer_get(&scope->_names, idx);
+    rpl_value_t *vale = rpl_adjbuffer_get(&scope->_values, idx);
+
+    *namep = *namee;
+    *valp = *vale;
+}
+
 
 RPL_SOURCE_END

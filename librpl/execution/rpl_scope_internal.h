@@ -10,7 +10,9 @@
 #define __RPL__rpl_scope_internal__h__
 
 #include "rpl_scope.h"
+
 #include "rpl_adjbuffer.h"
+#include "rpl_integer.h"
 
 
 RPL_HEADER_BEGIN
@@ -22,6 +24,18 @@ struct rpl_scope {
     rpl_adjbuffer_t _values;
     bool _is_mutable;
 };
+
+
+RPL_EXPORT
+rpl_integer_t
+rpl_scope_get_count(rpl_scope_t scope);
+
+RPL_EXPORT
+void
+rpl_scope_get_pair_at_index(rpl_scope_t scope, rpl_integer_t idx,
+			rpl_unistring_t RPL_NONNULL * RPL_NONNULL namep,
+			rpl_value_t RPL_NONNULL * RPL_NONNULL valp);
+
 
 
 RPL_HEADER_END

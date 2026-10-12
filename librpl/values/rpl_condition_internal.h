@@ -38,10 +38,6 @@ bool
 rpl_condition_initialize(void);
 
 
-/*! Name of the "out of memory" condition. */
-RPL_EXPORT rpl_unistring_t rpl_condition_memory_full_name;
-
-
 RPL_HEADER_END
 
 
