@@ -333,6 +333,24 @@ RPL_RETURNS_RETAINED
 }
 
 rpl_unistring_t RPL_NULLABLE
+rpl_program_CONDITION_copy_string(rpl_value_t program,
+				  rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
+{
+    // TODO: Copy string for CONDITION
+    return NULL;
+}
+
+rpl_unistring_t RPL_NULLABLE
+rpl_program_PROTECT_copy_string(rpl_value_t program,
+			      rpl_environment_t RPL_NULLABLE env)
+RPL_RETURNS_RETAINED
+{
+    // TODO: Copy string for PROTECT
+    return NULL;
+}
+
+rpl_unistring_t RPL_NULLABLE
 rpl_program_copy_string(rpl_value_t program,
 			rpl_environment_t RPL_NULLABLE env)
 RPL_RETURNS_RETAINED
@@ -365,6 +383,12 @@ RPL_RETURNS_RETAINED
 
 	case rpl_program_type_WHILE:
 	    return rpl_program_WHILE_copy_string(program, env);
+
+	case rpl_program_type_CONDITION:
+	    return rpl_program_CONDITION_copy_string(program, env);
+
+	case rpl_program_type_PROTECT:
+	    return rpl_program_PROTECT_copy_string(program, env);
     }
 }
 

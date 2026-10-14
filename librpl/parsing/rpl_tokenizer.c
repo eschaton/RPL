@@ -1164,13 +1164,15 @@ rpl_token_is_control_flow_start(rpl_value_t value,
 	rpl_unistring_t str;
 	rpl_program_type_t type;
     } starts[] = {
-	{ rpl_keyword_DO(),    rpl_program_type_DO },
-	{ rpl_keyword_IF(),    rpl_program_type_IF },
-	{ rpl_keyword_FOR(),   rpl_program_type_FOR },
-	{ rpl_keyword_CASE(),  rpl_program_type_CASE },
-	{ rpl_keyword_START(), rpl_program_type_START },
-	{ rpl_keyword_WHILE(), rpl_program_type_WHILE },
-	{ NULL,                rpl_program_type_generic },
+	{ rpl_keyword_DO(),        rpl_program_type_DO },
+	{ rpl_keyword_IF(),        rpl_program_type_IF },
+	{ rpl_keyword_FOR(),       rpl_program_type_FOR },
+	{ rpl_keyword_CASE(),      rpl_program_type_CASE },
+	{ rpl_keyword_START(),     rpl_program_type_START },
+	{ rpl_keyword_WHILE(),     rpl_program_type_WHILE },
+	{ rpl_keyword_CONDITION(), rpl_program_type_CONDITION },
+	{ rpl_keyword_PROTECT(),   rpl_program_type_PROTECT },
+	{ NULL,                    rpl_program_type_generic },
     };
 
     bool found = false;
@@ -1531,6 +1533,68 @@ rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
 }
 
 /*!
+ Parse a `CONDITION name { key value } END` construct into a program.
+
+ At this point, the tokenizer has already consumed the `CONDITION`
+ identifier, and has saved a mark, so it's sufficient to return `NULL`
+ to back out.
+
+ The construct is transformed from
+
+     CONDITION name { key value } END
+
+ to
+
+     « name { key value } key-value-count _CONDITION »
+
+ so it can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `_CONDITION` operation
+ itself.
+ */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_CONDITION(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse CONDITION
+    return NULL;
+}
+
+/*!
+ Parse a `PROTECT` construct into a condition.
+
+ At this point, the tokenizer has already consumed the `PROTECT`
+ identifier, and has saved a mark, so it's sufficient to return `NULL`
+ to back out.
+
+ The construct is transformed from
+
+     PROTECT
+       body
+       { HANDLE cond BY handler END }
+       [ generic-handler ]
+     END
+
+ to
+
+     «
+       « body »
+       { « handler » }
+       handler-count
+       « generic-handler »
+       _UNWIND_PROTECT
+     »
+
+ so it can be handled by the standard evaluation process, with any
+ special evaluation rules implementable by the `_UNWIND_PROTECT`
+ operation itself.
+ */
+rpl_value_t RPL_NULLABLE
+rpl_tokenizer_parse_PROTECT(rpl_tokenizer_t tokenizer)
+{
+    // TODO: parse PROTECT
+    return NULL;
+}
+
+/*!
  Tokenize one of the several control-flow constructs.
 
  Several control-flow constructs in RPL have special syntax that doesn't
@@ -1547,6 +1611,13 @@ rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
      CASE {... THEN ... END} [...] END
      START ... NEXT|STEP
      WHILE ... REPEAT ... END
+
+ Additionally, there are two constructs used by the condition system
+ that are implemented in the same way as flow control, but technically
+ not flow-control themselves. (Though `PROTECT` could be argued to be.)
+
+     CONDITION name { key value } END
+     PROTECT body { HANDLE cond BY handler END } [ generic-handler ] END
 
  Each one has its own tokenizer that produces a program.
  */
@@ -1588,6 +1659,14 @@ rpl_tokenizer_tokenize_control_flow(rpl_tokenizer_t tokenizer,
 
 	case rpl_program_type_WHILE:
 	    program = rpl_tokenizer_parse_WHILE(tokenizer);
+	    break;
+
+	case rpl_program_type_CONDITION:
+	    program = rpl_tokenizer_parse_CONDITION(tokenizer);
+	    break;
+
+	case rpl_program_type_PROTECT:
+	    program = rpl_tokenizer_parse_PROTECT(tokenizer);
 	    break;
     }
 
