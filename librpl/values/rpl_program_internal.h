@@ -50,6 +50,21 @@ typedef enum rpl_program_type {
 
     /*! A program representing a `WHILE ... REPEAT ... END`. */
     rpl_program_type_WHILE,
+
+    /*! A program representing a `CONDITION name { key value } END`. */
+    rpl_program_type_CONDITION,
+
+    /*!
+     A program representing a `PROTECT` construct.
+
+     The construct looks like:
+
+         PROTECT body
+           { HANDLE cond BY handler END }
+           [ generic-handler ]
+         END
+     */
+    rpl_program_type_PROTECT,
 } rpl_program_type_t;
 
 
