@@ -40,6 +40,20 @@ rpl_value_t RPL_NULLABLE
 rpl_condition_get_payload_value(rpl_value_t condition, rpl_value_t key);
 
 
+/* MARK: - Signaling & Handling Conditions */
+
+/*! Signal the given condition. */
+RPL_EXPORT
+void
+rpl_condition_signal(rpl_value_t condition);
+
+/*! Obtain the most recently signaled condition. */
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_condition_latest_signaled(void)
+RPL_RETURNS_RETAINED;
+
+
 /* MARK: - Standard Conditions */
 
 /*! "Out of memory" condition (static). */
