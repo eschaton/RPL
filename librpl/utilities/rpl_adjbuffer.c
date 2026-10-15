@@ -146,6 +146,20 @@ rpl_adjbuffer_set(rpl_adjbuffer_t *buffer, size_t idx, void *element)
     memcpy(location, element, buffer->_element_size);
 }
 
+void * RPL_NULLABLE
+rpl_adjbuffer_last_element(rpl_adjbuffer_t *buffer)
+{
+    assert(buffer != NULL);
+
+    void *location = NULL;
+    if (buffer->_count > 0) {
+	location = (buffer->_storage + (buffer->_element_size
+					* (buffer->_count - 1)));
+    }
+
+    return location;
+}
+
 bool
 rpl_adjbuffer_insert_element(rpl_adjbuffer_t *buffer, size_t idx,
 			     void *element)
