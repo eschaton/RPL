@@ -310,7 +310,14 @@ END_TEST
 
 START_TEST(test_program_IF_THEN_ELSE_END)
 {
-    const char *text = "IF 0 1 < THEN 1 ELSE 0 END\n";
+    const char *text =
+	"IF"	  "\n"
+	"  0 1 <" "\n"
+	"THEN"	  "\n"
+	"  1"	  "\n"
+	"ELSE"	  "\n"
+	"  0"	  "\n"
+	"END"	  "\n";
     const size_t text_len = strlen(text);
     rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
     ck_assert_ptr_nonnull(buf);
@@ -326,10 +333,6 @@ START_TEST(test_program_IF_THEN_ELSE_END)
 
     rpl_unistring_t program_text = rpl_value_copy_string(program, NULL);
     ck_assert_ptr_nonnull(program_text);
-
-    /* Copied string isn't assumed to be a line, make it one. */
-    bool appended_nl = rpl_unistring_append_char(program_text, '\n');
-    ck_assert(appended_nl);
 
     const char *program_utf8 = rpl_unistring_copy_utf8(program_text);
     rpl_unistring_release(program_text);

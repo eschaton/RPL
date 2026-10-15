@@ -204,6 +204,12 @@ RPL_RETURNS_RETAINED
  the second the `THEN ...` clause, the third the `ELSE ...` clause if
  one is present, and the final value will be the identifier `IFT` if
  there is no `ELSE ...` clause or `IFTE` if there is one.
+
+ Note that this also attempts to format the program "nicely," at least
+ insofar as the `IF` construct is concerned: The `IF`, `THEN`, `ELSE`,
+ and `END` are all on separate lines and start at column 0, the other
+ clauses are on their own lines and start at column 2, and all end with
+ a linefeed.
  */
 rpl_unistring_t RPL_NULLABLE
 rpl_program_IF_copy_string(rpl_value_t program,
@@ -226,11 +232,17 @@ RPL_RETURNS_RETAINED
     appended = rpl_unistring_append(buffer, rpl_keyword_IF());
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_linefeed);
     if (appended == false) goto error;
 
     rpl_value_t cond_prog = rpl_program_get_value(program, 0);
     assert(cond_prog != NULL);
+
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+    if (appended == false) goto error;
 
     cond_str = rpl_program_intermediate_copy_string(cond_prog, env);
     if (cond_str == NULL) goto error;
@@ -238,10 +250,16 @@ RPL_RETURNS_RETAINED
     appended = rpl_unistring_append(buffer, cond_str);
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_linefeed);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append(buffer, rpl_keyword_THEN());
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
     if (appended == false) goto error;
 
     appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
@@ -256,11 +274,18 @@ RPL_RETURNS_RETAINED
     appended = rpl_unistring_append(buffer, then_str);
     if (appended == false) goto error;
 
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
     if (has_else) {
-	appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+	appended = rpl_unistring_append(buffer, rpl_keyword_ELSE());
 	if (appended == false) goto error;
 
-	appended = rpl_unistring_append(buffer, rpl_keyword_ELSE());
+	appended = rpl_unistring_append_char(buffer,
+					     rpl_unichar_linefeed);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
 	if (appended == false) goto error;
 
 	appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
@@ -274,12 +299,16 @@ RPL_RETURNS_RETAINED
 
 	appended = rpl_unistring_append(buffer, else_str);
 	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(buffer,
+					     rpl_unichar_linefeed);
+	if (appended == false) goto error;
     }
 
-    appended = rpl_unistring_append_char(buffer, rpl_unichar_space);
+    appended = rpl_unistring_append(buffer, rpl_keyword_END());
     if (appended == false) goto error;
 
-    appended = rpl_unistring_append(buffer, rpl_keyword_END());
+    appended = rpl_unistring_append_char(buffer, rpl_unichar_linefeed);
     if (appended == false) goto error;
 
     rpl_unistring_release(cond_str);
