@@ -106,6 +106,12 @@ START_TEST(test_insertion)
     tep = rpl_adjbuffer_get(ab, 2);
     ck_assert_ptr_nonnull(tep);
     ck_assert(test_element_is_equal(tep, &te3));
+
+    test_element_t *tepl = NULL;
+    tepl = rpl_adjbuffer_last_element(ab);
+    ck_assert_ptr_nonnull(tepl);
+    ck_assert(test_element_is_equal(tepl, &te3));
+    ck_assert_ptr_eq(tep, tepl);
 }
 END_TEST
 

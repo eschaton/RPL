@@ -61,6 +61,10 @@ rpl_adjbuffer_set(rpl_adjbuffer_t *buffer, size_t idx, void *element);
 void *
 rpl_adjbuffer_get(rpl_adjbuffer_t *buffer, size_t idx);
 
+/*! Get a pointer to the last element of @a buffer, or `NULL`. */
+void * RPL_NULLABLE
+rpl_adjbuffer_last_element(rpl_adjbuffer_t *buffer);
+
 /*! Insert @a element into @a buffer at index @a idx. */
 bool
 rpl_adjbuffer_insert_element(rpl_adjbuffer_t *buffer, size_t idx,
