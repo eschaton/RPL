@@ -8,6 +8,8 @@
 
 #include "rpl_condition.h"
 
+#include <unistd.h>
+
 #include "rpl_scope.h"
 
 
@@ -36,6 +38,42 @@ rpl_condition_copy_string(rpl_value_t condition, rpl_environment_t env);
 RPL_EXPORT
 bool
 rpl_condition_initialize(void);
+
+
+/* MARK: - Signaling & Handling Conditions */
+
+/*!
+ A handler for when a condition is raised.
+
+ The handler is passed the condition itself as well as its index within
+ the condition stack and the context passed when it was registered.
+
+ This is primarily for the interpreter's use.
+ */
+typedef void (*rpl_condition_handler_f)(rpl_value_t condition,
+					size_t idx,
+					void * RPL_NULLABLE context);
+
+/*! Install a condition handler. */
+RPL_EXPORT
+void
+rpl_condition_handler_install(rpl_condition_handler_f handler,
+			      void * RPL_NULLABLE context);
+
+/*! Get the number of conditions on the condition stack. */
+RPL_EXPORT
+size_t
+rpl_condition_stack_get_count(void);
+
+/*! Get the condition at the given level of the condition stack. */
+RPL_EXPORT
+rpl_value_t
+rpl_condition_stack_get(size_t level);
+
+/*! Reset the condition stack after all handling is complete. */
+RPL_EXPORT
+bool
+rpl_condition_stack_reset(void);
 
 
 RPL_HEADER_END

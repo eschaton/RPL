@@ -211,6 +211,113 @@ error:
 }
 
 
+/* MARK: - Signaling Conditions */
+
+/*!
+ The stack of signaled conditions.
+
+ Newly-signaled conditions are appended.
+ */
+static rpl_adjbuffer_t rpl_condition_stack;
+
+/*! Establish the condition stack. */
+bool
+rpl_condition_stack_create(void)
+{
+    return rpl_adjbuffer_init(&rpl_condition_stack, 8,
+			      sizeof(rpl_value_t));
+}
+
+/*! Clear the condition stack. */
+void
+rpl_condition_stack_clear(void)
+{
+    (void) rpl_value_release_adjbuffer(&rpl_condition_stack);
+
+    rpl_adjbuffer_remove_all_elements(&rpl_condition_stack);
+}
+
+/*! Push a condition on the stack. */
+bool
+rpl_condition_stack_append(rpl_value_t condition)
+{
+    rpl_value_retain(condition);
+
+    bool appended = rpl_adjbuffer_append_element(&rpl_condition_stack,
+						 &condition);
+
+    rpl_value_not_leaked(condition);
+
+    return appended;
+}
+
+static rpl_condition_handler_f rpl_condition_handler = NULL;
+static void * RPL_NULLABLE rpl_condition_handler_context = NULL;
+
+void
+rpl_condition_handler_install(rpl_condition_handler_f handler,
+			      void * RPL_NULLABLE context)
+{
+    assert(handler != NULL);
+
+    rpl_condition_handler = handler;
+    rpl_condition_handler_context = context;
+}
+
+/*! Signal a condition. */
+void
+rpl_condition_signal(rpl_value_t condition)
+{
+    bool appended = rpl_condition_stack_append(condition);
+    assert(appended);
+
+    if (rpl_condition_handler) {
+	size_t idx = rpl_adjbuffer_get_count(&rpl_condition_stack) - 1;
+
+	(*rpl_condition_handler)(condition, idx,
+				 rpl_condition_handler_context);
+    }
+}
+
+rpl_value_t RPL_NULLABLE
+rpl_condition_latest_signaled(void)
+RPL_RETURNS_RETAINED
+{
+    rpl_value_t result = NULL;
+    rpl_value_t *cp = rpl_adjbuffer_last_element(&rpl_condition_stack);
+    if (cp != NULL) {
+	result = *cp;
+    }
+    return result;
+}
+
+size_t
+rpl_condition_stack_get_count(void)
+{
+    return rpl_adjbuffer_get_count(&rpl_condition_stack);
+}
+
+/*! Get the condition at the given level of the condition stack. */
+rpl_value_t
+rpl_condition_stack_get(size_t level)
+{
+    assert(level < rpl_condition_stack_get_count());
+
+    rpl_value_t *cp = rpl_adjbuffer_get(&rpl_condition_stack, level);
+    assert(cp != NULL);
+
+    return *cp;
+}
+
+bool
+rpl_condition_stack_reset(void)
+{
+    rpl_condition_stack_clear();
+
+    return true;
+}
+
+
 /* MARK: - Standard Conditions */
 
 rpl_value_t RPL_NULLABLE rpl_condition_memory_full_value = NULL;
@@ -301,6 +408,10 @@ error:
 bool
 rpl_condition_initialize(void)
 {
+    /* Set up the condition stack. */
+    bool stack_initialized = rpl_condition_stack_create();
+    if (stack_initialized == false) goto error;
+
     /* Set up the static conditions. */
 
     rpl_condition_memory_full_value
