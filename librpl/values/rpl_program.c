@@ -332,12 +332,119 @@ RPL_RETURNS_RETAINED
     return NULL;
 }
 
+/*!
+ Copy a string representing a `CONDITION` program.
+
+ The construct that looks like
+
+     CONDITION name
+       { key value }
+     END
+
+ is represented by a program of the form
+
+     « name { key value } key-value-count _CONDITION »
+
+ so that information needs to be extracted and put back into a string.
+ The condition name is always at index `0` and the number of key/value
+ pairs is always at index `count - 2`.
+ */
 rpl_unistring_t RPL_NULLABLE
 rpl_program_CONDITION_copy_string(rpl_value_t program,
 				  rpl_environment_t RPL_NULLABLE env)
 RPL_RETURNS_RETAINED
 {
-    // TODO: Copy string for CONDITION
+    assert(program != NULL);
+    assert(program->_type == rpl_type_program);
+    rpl_program_t *rep = &program->_reps._program;
+    assert(rep->_type == rpl_program_type_CONDITION);
+
+    rpl_unistring_t string = NULL;
+    rpl_unistring_t vs = NULL;
+    bool appended = false;
+
+    const rpl_integer_t count = rpl_program_get_count(program);
+    assert(count >= 3);
+
+    rpl_value_t namev = rpl_program_get_value(program, 0);
+    assert(namev != NULL);
+    assert(rpl_value_get_type(namev) == rpl_type_identifier);
+
+    const rpl_value_t kvcv = rpl_program_get_value(program, count - 2);
+    assert(kvcv != NULL);
+    assert(rpl_value_get_type(kvcv) == rpl_type_integer);
+    const rpl_integer_t kvc = rpl_integer_get_rep(kvcv);
+
+    assert(count == (1 + (kvc * 2) + 2));
+
+    string = rpl_unistring_new(80);
+    if (string == NULL) goto error;
+
+    appended = rpl_unistring_append(string, rpl_keyword_CONDITION());
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    rpl_unistring_t names = rpl_identifier_get_rep(namev);
+    assert(names != NULL);
+
+    appended = rpl_unistring_append(string, names);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    for (rpl_integer_t i = 0; i < kvc; i++) {
+	const rpl_integer_t kidx = 1 + (2 * i);
+	const rpl_integer_t vidx = 2 + (2 * i);
+
+	rpl_value_t k = rpl_program_get_value(program, kidx);
+	assert(k != NULL);
+	assert(rpl_value_get_type(k) == rpl_type_identifier);
+
+	rpl_value_t v = rpl_program_get_value(program, vidx);
+	assert(v != NULL);
+
+	rpl_unistring_t ks = rpl_identifier_get_rep(k);
+	assert(ks != NULL);
+
+	vs = rpl_value_copy_string(v, env);
+	if (vs == NULL) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append(string, ks);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append(string, vs);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string,
+					     rpl_unichar_linefeed);
+	if (appended == false) goto error;
+
+	rpl_unistring_release(vs); vs = NULL;
+    }
+
+    appended = rpl_unistring_append(string, rpl_keyword_END());
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    return string;
+
+error:
+    if (string) rpl_unistring_release(string);
+    if (vs) rpl_unistring_release(vs);
     return NULL;
 }
 
