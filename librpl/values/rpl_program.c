@@ -477,12 +477,172 @@ error:
     return NULL;
 }
 
+/*!
+ Copy a string representing a `PROTECT` program.
+
+ The construct that looks like
+
+     PROTECT
+       body
+       { HANDLE cond BY handler END }
+       [ generic-handler ]
+     END
+
+ is represented by a program of the form
+
+     «
+       « body »
+       { condition « handler » }
+       condition-handler-pair-count
+       « generic-handler »
+       _PROTECT
+     »
+
+ so that information needs to be extracted and put back into a string.
+ The body is always at index `0`, the number of condition/handler pairs
+ is always at index `count - 3`, and the generic handler is always at
+ index `count - 2`.
+ */
 rpl_unistring_t RPL_NULLABLE
 rpl_program_PROTECT_copy_string(rpl_value_t program,
 			      rpl_environment_t RPL_NULLABLE env)
 RPL_RETURNS_RETAINED
 {
-    // TODO: Copy string for PROTECT
+    assert(program != NULL);
+    assert(program->_type == rpl_type_program);
+    rpl_program_t *rep = &program->_reps._program;
+    assert(rep->_type == rpl_program_type_PROTECT);
+
+    rpl_unistring_t string = NULL;
+    bool appended = false;
+
+    const rpl_integer_t count = rpl_program_get_count(program);
+    assert(count >= 4);
+
+    string = rpl_unistring_new(80);
+    if (string == NULL) goto error;
+
+    appended = rpl_unistring_append(string, rpl_keyword_PROTECT());
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    rpl_value_t b = rpl_program_get_value(program, 0);
+    assert(b != NULL);
+    assert(rpl_value_get_type(b) == rpl_type_program);
+
+    rpl_unistring_t bs = rpl_program_intermediate_copy_string(b, env);
+    if (bs == NULL) goto error;
+
+    appended = rpl_unistring_append(string, bs);
+    rpl_unistring_release(bs);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    const rpl_value_t chcv = rpl_program_get_value(program, count - 3);
+    assert(chcv != NULL);
+    assert(rpl_value_get_type(chcv) == rpl_type_integer);
+    const rpl_integer_t chc = rpl_integer_get_rep(chcv);
+
+    for (rpl_integer_t i = 0; i < chc; i++) {
+	const rpl_integer_t cidx = 1 + (2 * i);
+	const rpl_integer_t hidx = 2 + (2 * i);
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append(string, rpl_keyword_HANDLE());
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	rpl_value_t cv = rpl_program_get_value(program, cidx);
+	assert(cv != NULL);
+	assert(rpl_value_get_type(cv) == rpl_type_identifier);
+
+	rpl_unistring_t cs = rpl_identifier_get_rep(cv);
+	assert(cs != NULL);
+
+	appended = rpl_unistring_append(string, cs);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append(string, rpl_keyword_BY());
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	rpl_value_t hv = rpl_program_get_value(program, hidx);
+	assert(hv != NULL);
+	assert(rpl_value_get_type(hv) == rpl_type_program);
+
+	rpl_unistring_t hs = rpl_program_intermediate_copy_string(hv,
+								  env);
+	assert(hs != NULL);
+
+	appended = rpl_unistring_append(string, hs);
+	rpl_unistring_release(hs);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string, rpl_unichar_space);
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append(string, rpl_keyword_END());
+	if (appended == false) goto error;
+
+	appended = rpl_unistring_append_char(string,
+					     rpl_unichar_linefeed);
+	if (appended == false) goto error;
+    }
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string, rpl_unichar_space);
+    if (appended == false) goto error;
+
+    rpl_value_t gh = rpl_program_get_value(program, count - 2);
+    assert(gh != NULL);
+    assert(rpl_value_get_type(gh) == rpl_type_program);
+
+    rpl_unistring_t ghs = rpl_program_intermediate_copy_string(gh, env);
+    if (ghs == NULL) goto error;
+
+    appended = rpl_unistring_append(string, ghs);
+    rpl_unistring_release(ghs);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string,
+					 rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append(string, rpl_keyword_END());
+    if (appended == false) goto error;
+
+    appended = rpl_unistring_append_char(string,
+					 rpl_unichar_linefeed);
+    if (appended == false) goto error;
+
+    return string;
+
+error:
+    if (string) rpl_unistring_release(string);
     return NULL;
 }
 

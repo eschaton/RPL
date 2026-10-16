@@ -1694,20 +1694,332 @@ back_out:
 
      «
        « body »
-       { « handler » }
-       handler-count
+       { condition « handler » }
+       condition-handler-pair-count
        « generic-handler »
-       _UNWIND_PROTECT
+       _PROTECT
      »
 
  so it can be handled by the standard evaluation process, with any
- special evaluation rules implementable by the `_UNWIND_PROTECT`
- operation itself.
+ special evaluation rules implementable by the `_PROTECT` operation
+ itself.
  */
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_PROTECT(rpl_tokenizer_t tokenizer)
 {
-    // TODO: parse PROTECT
+    assert(tokenizer != NULL);
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_body,
+	parser_state_handle,
+	parser_state_condition,
+	parser_state_by,
+	parser_state_handler,
+	parser_state_generic_handler,
+	parser_state_end,
+    } state = parser_state_start;
+
+    rpl_value_t program = NULL;
+    rpl_value_t value = NULL;
+    rpl_value_t body = NULL;
+    rpl_value_t handler = NULL;
+    rpl_value_t generic_handler = NULL;
+    rpl_integer_t count = 0;
+    bool appended = false;
+
+    program = rpl_program_new_with_type(rpl_program_type_PROTECT);
+    // TODO: Signal 'Insufficient memory' condition
+    if (program == NULL) goto back_out;
+
+    body = rpl_program_new_with_type(rpl_program_type_intermediate);
+    // TODO: Signal 'Insufficient memory' condition
+    if (body == NULL) goto back_out;
+
+    generic_handler
+	= rpl_program_new_with_type(rpl_program_type_intermediate);
+    // TODO: Signal 'Insufficient memory' condition
+    if (generic_handler == NULL) goto back_out;
+
+    do {
+	value = rpl_tokenizer_copy_next(tokenizer);
+	if (value == NULL) goto back_out;
+
+	rpl_type_t vt = rpl_value_get_type(value);
+	rpl_unistring_t ident = ((vt == rpl_type_identifier)
+				 ? rpl_identifier_get_rep(value)
+				 : NULL);
+
+	switch (state) {
+	    case parser_state_start: {
+		if (ident
+		    && rpl_tokenizer_is_keyword(ident, "END"))
+		{
+		    /* Put the body in the program. */
+
+		    appended = rpl_program_append(program, body);
+		    // TODO: Signal 'Insufficient memory' condition
+		    rpl_value_release(body); body = NULL;
+		    if (appended == false) goto back_out;
+
+		    /*
+		     It's OK to just have PROTECT END.
+
+		     Note that this still means putting 0 and «» in the
+		     program so that "_PROTECT" has all of its necessary
+		     arguments.
+		     */
+
+		    rpl_value_t zerov = rpl_integer_new(0);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (zerov == NULL) goto back_out;
+
+		    appended = rpl_program_append(program, zerov);
+		    rpl_value_release(zerov);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    appended = rpl_program_append(program,
+						  generic_handler);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    rpl_value_release(generic_handler);
+		    generic_handler = NULL;
+
+		    state = parser_state_end;
+		} else {
+		    /*
+		     Append the body program's first item, then expect
+		     more.
+		     */
+		    appended = rpl_program_append(body, value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    state = parser_state_body;
+		}
+	    } break;
+
+	    case parser_state_body: {
+		if (ident
+		    && rpl_tokenizer_is_keyword(ident, "HANDLE"))
+		{
+		    /* Put the body in the program. */
+
+		    appended = rpl_program_append(program, body);
+		    // TODO: Signal 'Insufficient memory' condition
+		    rpl_value_release(body); body = NULL;
+		    if (appended == false) goto back_out;
+
+		    /* Parse the condition to handle next. */
+
+		    state = parser_state_condition;
+		} else if (ident
+			   && rpl_tokenizer_is_keyword(ident, "END"))
+		{
+		    /* Put the body in the program. */
+
+		    appended = rpl_program_append(program, body);
+		    // TODO: Signal 'Insufficient memory' condition
+		    rpl_value_release(body); body = NULL;
+		    if (appended == false) goto back_out;
+
+		    /*
+		     End parsing without any more handlers.
+
+		     Note that this still means putting 0 and «» in the
+		     program so that "_PROTECT" has all of its necessary
+		     arguments.
+		     */
+
+		    rpl_value_t zerov = rpl_integer_new(0);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (zerov == NULL) goto back_out;
+
+		    appended = rpl_program_append(program, zerov);
+		    rpl_value_release(zerov);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    appended = rpl_program_append(program,
+						  generic_handler);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    rpl_value_release(generic_handler);
+		    generic_handler = NULL;
+
+		    state = parser_state_end;
+		} else {
+		    /* Append to the body program. */
+
+		    appended = rpl_program_append(body, value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_handle: {
+		/*
+		 Expect the "HANDLE" keyword. If there isn't one, there
+		 may be either an "END" keyword or the start of the
+		 generic handler.
+		 */
+
+		if (ident && rpl_tokenizer_is_keyword(ident,"HANDLE")) {
+		    state = parser_state_condition;
+		} else if (ident
+			   && rpl_tokenizer_is_keyword(ident, "END"))
+		{
+		    state = parser_state_end;
+		} else {
+		    appended = rpl_program_append(generic_handler,
+						  value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    state = parser_state_generic_handler;
+		}
+	    } break;
+
+	    case parser_state_condition: {
+		/*
+		 Expect an identifier representing a condition. The only
+		 technically disallowed identifier for a condition is
+		 "BY" though obviously plenty of other keywords should
+		 be avoided.
+		 */
+
+		if ((ident && rpl_tokenizer_is_keyword(ident, "BY"))
+		    || (ident == NULL))
+		{
+		    // TODO: Signal 'Invalid syntax' condition
+		    goto back_out;
+		} else {
+		    /* Put the condition in the program. */
+
+		    appended = rpl_program_append(program, value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    /* Expect to parse "BY" next. */
+
+		    state = parser_state_by;
+		}
+	    } break;
+
+	    case parser_state_by: {
+		/* Expect the "BY" keyword. */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "BY")) {
+		    handler = rpl_program_new_with_type(
+					rpl_program_type_intermediate);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (handler == NULL) goto back_out;
+
+		    state = parser_state_handler;
+		} else {
+		    // TODO: Signal 'Invalid syntax' condition
+		    goto back_out;
+		}
+	    } break;
+
+	    case parser_state_handler: {
+		/* Expect values for the handler program, until END. */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "END")) {
+		    /*
+		     Put the handler in the program and increment the
+		     count of condition/handler pairs.
+		     */
+
+		    appended = rpl_program_append(program, handler);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    count += 1;
+
+		    rpl_value_release(handler); handler = NULL;
+
+		    /* Expect to parse another condition. */
+
+		    state = parser_state_handle;
+		} else {
+		    /* Accumulate to the handler program. */
+
+		    appended = rpl_program_append(handler, value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_generic_handler: {
+		/*
+		 Expect values for the generic handler program, until an
+		 "END" keyword.
+		 */
+
+		if (ident && rpl_tokenizer_is_keyword(ident, "END")) {
+		    /*
+		     Append both the count of condition/handler pairs
+		     and the generic handler.
+		     */
+
+		    rpl_value_t countv = rpl_integer_new(count);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (countv == NULL) goto back_out;
+
+		    appended = rpl_program_append(program, countv);
+		    rpl_value_release(countv);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    appended = rpl_program_append(program,
+						  generic_handler);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    rpl_value_release(generic_handler);
+		    generic_handler = NULL;
+
+		    state = parser_state_end;
+		} else {
+		    /* Accumulate to the generic handler program. */
+
+		    appended = rpl_program_append(generic_handler,
+						  value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+		}
+	    } break;
+
+	    case parser_state_end: {
+		/* Shouldn't actually get here, the loop should exit. */
+	    } break;
+	}
+
+	rpl_value_release(value); value = NULL;
+    } while (state != parser_state_end);
+
+    rpl_value_t kw = rpl_identifier_new(rpl_keyword__PROTECT());
+    // TODO: Signal 'Insufficient memory' condition
+    if (kw == NULL) goto back_out;
+
+    appended = rpl_program_append(program, kw);
+    // TODO: Signal 'Insufficient memory' condition
+    if (appended == false) goto back_out;
+
+    /* Return the program for evaluation. */
+
+    return program;
+
+back_out:
+    if (program) rpl_value_release(program);
+    if (value) rpl_value_release(value);
+    if (body) rpl_value_release(body);
+    if (handler) rpl_value_release(handler);
+    if (generic_handler) rpl_value_release(generic_handler);
     return NULL;
 }
 
