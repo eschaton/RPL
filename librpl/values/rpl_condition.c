@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "rpl_identifier.h"
 #include "rpl_keyword.h"
 #include "rpl_scope_internal.h"
 #include "rpl_unistring_internal.h"
@@ -30,11 +31,11 @@ rpl_condition_populate_payload(rpl_condition_t *rep, va_list args)
     do {
 	key = va_arg(args, rpl_value_t);
 	if (key) {
-	    assert(rpl_value_get_type(key) == rpl_type_name);
+	    assert(rpl_value_get_type(key) == rpl_type_identifier);
 
 	    value = va_arg(args, rpl_value_t);
 	    if (value) {
-		rpl_unistring_t name = rpl_name_get_rep(key);
+		rpl_unistring_t name = rpl_identifier_get_rep(key);
 		assert(name != NULL);
 
 		bool did_set = rpl_scope_set_variable(rep->_payload,
@@ -102,10 +103,10 @@ rpl_condition_get_payload_value(rpl_value_t condition, rpl_value_t key)
 {
     assert(condition != NULL);
     assert(key != NULL);
-    assert(rpl_value_get_type(key) == rpl_type_name);
+    assert(rpl_value_get_type(key) == rpl_type_identifier);
     rpl_condition_t *rep = &condition->_reps._condition;
 
-    rpl_unistring_t name = rpl_name_get_rep(key);
+    rpl_unistring_t name = rpl_identifier_get_rep(key);
     assert(name != NULL);
 
     return rpl_scope_get_variable(rep->_payload, name, false);
