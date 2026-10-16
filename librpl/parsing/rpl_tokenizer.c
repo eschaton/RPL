@@ -1155,9 +1155,9 @@ rpl_token_is_control_flow_start(rpl_value_t value,
     rpl_unistring_t identifier = rpl_identifier_get_rep(value);
     assert(identifier != NULL);
 
-    /* All control-flow identifiers are 2-5 characters in length. */
+    /* All control-flow identifiers are 2-9 characters in length. */
     const size_t ident_len = rpl_unistring_get_length(identifier);
-    if ((ident_len < 2) || (ident_len > 5)) return false;
+    if ((ident_len < 2) || (ident_len > 9)) return false;
 
     /* Search the set of control-flow identifiers for a match. */
     struct cflow_start {
@@ -1170,8 +1170,8 @@ rpl_token_is_control_flow_start(rpl_value_t value,
 	{ rpl_keyword_CASE(),      rpl_program_type_CASE },
 	{ rpl_keyword_START(),     rpl_program_type_START },
 	{ rpl_keyword_WHILE(),     rpl_program_type_WHILE },
-	{ rpl_keyword_CONDITION(), rpl_program_type_CONDITION },
 	{ rpl_keyword_PROTECT(),   rpl_program_type_PROTECT },
+	{ rpl_keyword_CONDITION(), rpl_program_type_CONDITION },
 	{ NULL,                    rpl_program_type_generic },
     };
 
@@ -1554,7 +1554,124 @@ rpl_tokenizer_parse_WHILE(rpl_tokenizer_t tokenizer)
 rpl_value_t RPL_NULLABLE
 rpl_tokenizer_parse_CONDITION(rpl_tokenizer_t tokenizer)
 {
-    // TODO: parse CONDITION
+    assert(tokenizer != NULL);
+
+    enum parser_state {
+	parser_state_start = 0,
+	parser_state_key,
+	parser_state_value,
+	parser_state_end,
+    } state = parser_state_start;
+
+    rpl_value_t program = NULL;
+    rpl_value_t value = NULL;
+    rpl_integer_t count = 0;
+    bool appended = false;
+
+    program = rpl_program_new_with_type(rpl_program_type_CONDITION);
+    if (program == NULL) goto back_out;
+
+    do {
+	value = rpl_tokenizer_copy_next(tokenizer);
+	if (value == NULL) goto back_out;
+
+	switch (state) {
+	    case parser_state_start: {
+		/* Expecting an identifier to use as a name. */
+
+		if (rpl_value_get_type(value) != rpl_type_identifier) {
+		    // TODO: Signal 'Invalid type' condition
+		    goto back_out;
+		}
+
+		appended = rpl_program_append(program, value);
+		// TODO: Signal 'Insufficient memory' condition
+		if (appended == false) goto back_out;
+
+		state = parser_state_key;
+	    } break;
+
+	    case parser_state_key: {
+		/* Expecting an identifier to use as a key. */
+
+		if (rpl_value_get_type(value) != rpl_type_identifier) {
+		    // TODO: Signal 'Invalid type' condition
+		    goto back_out;
+		}
+
+		rpl_unistring_t ident = rpl_identifier_get_rep(value);
+		if (rpl_tokenizer_is_keyword(ident, "END")) {
+		    /* If the identifier is END, no more keys. */
+		    state = parser_state_end;
+		} else {
+		    appended = rpl_program_append(program, value);
+		    // TODO: Signal 'Insufficient memory' condition
+		    if (appended == false) goto back_out;
+
+		    state = parser_state_value;
+		}
+	    } break;
+
+	    case parser_state_value: {
+		/* Check for a misplaced END and back out if so. */
+
+		if (rpl_value_get_type(value) == rpl_type_identifier) {
+		    rpl_unistring_t kw = rpl_identifier_get_rep(value);
+		    if (rpl_tokenizer_is_keyword(kw, "END")) {
+			// TODO: Signal 'Invalid syntax' condition
+			goto back_out;
+		    }
+		}
+
+		/*
+		 Append the value, increment the count, and go back to
+		 expecting a key or END.
+		 */
+
+		appended = rpl_program_append(program, value);
+		// TODO: Signal 'Insufficient memory' condition
+		if (appended == false) goto back_out;
+
+		count += 1;
+		state = parser_state_key;
+	    } break;
+
+	    case parser_state_end: {
+		/* Shouldn't actually get here, the loop should exit. */
+	    } break;
+	}
+
+	rpl_value_release(value); value = NULL;
+    } while (state != parser_state_end);
+
+    /* Append key/value count. */
+
+    value = rpl_integer_new(count);
+    // TODO: Signal 'Insufficient memory' condition
+    if (value == NULL) goto back_out;
+
+    appended = rpl_program_append(program, value);
+    rpl_value_release(value); value = NULL;
+    // TODO: Signal 'Insufficient memory' condition
+    if (appended == false) goto back_out;
+
+    /* Append `_CONDITION` keyword. */
+
+    value = rpl_identifier_new(rpl_keyword_CONDITION());
+    // TODO: Signal 'Insufficient memory' condition
+    if (value == NULL) goto back_out;
+    appended = rpl_program_append(program, value);
+    rpl_value_release(value); value = NULL;
+    // TODO: Signal 'Insufficient memory' condition
+    if (appended == false) goto back_out;
+
+    /* Return the program for evaluation. */
+
+    return program;
+
+back_out:
+    if (program) rpl_value_release(program);
+    if (value) rpl_value_release(value);
     return NULL;
 }
 

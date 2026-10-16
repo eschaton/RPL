@@ -343,6 +343,40 @@ START_TEST(test_program_IF_THEN_ELSE_END)
 
     rpl_value_release(program);
 }
+END_TEST
+
+START_TEST(test_program_CONDITION)
+{
+    const char *text =
+	"CONDITION INVALID_SYNTAX"	"\n"
+	"  TEXT \"END\""		"\n"
+	"END"				"\n";
+    const size_t text_len = strlen(text);
+    rpl_unistring_t buf = rpl_unistring_new_from_utf8(text, text_len);
+    ck_assert_ptr_nonnull(buf);
+    bool appended = rpl_tokenizer_append(tokenizer, buf);
+    ck_assert(appended);
+    rpl_unistring_release(buf);
+
+    rpl_value_t program = rpl_tokenizer_copy_next(tokenizer);
+    ck_assert_ptr_nonnull(program);
+    ck_assert_int_eq(rpl_type_program, rpl_value_get_type(program));
+
+    ck_assert_int_eq(5, rpl_program_get_count(program));
+
+    rpl_unistring_t program_text = rpl_value_copy_string(program, NULL);
+    ck_assert_ptr_nonnull(program_text);
+
+    const char *program_utf8 = rpl_unistring_copy_utf8(program_text);
+    rpl_unistring_release(program_text);
+    ck_assert_ptr_nonnull(program_utf8);
+
+    ck_assert_str_eq(text, program_utf8);
+    free((void *)program_utf8);
+
+    rpl_value_release(program);
+}
+END_TEST
 
 
 /* MARK: - Test Infrastructure */
@@ -363,6 +397,7 @@ test_tokenizer_suite(void)
     tcase_add_test(tc_tokenizer, test_identifier);
     tcase_add_test(tc_tokenizer, test_program);
     tcase_add_test(tc_tokenizer, test_program_IF_THEN_ELSE_END);
+    tcase_add_test(tc_tokenizer, test_program_CONDITION);
 
     suite_add_tcase(s, tc_tokenizer);
 
