@@ -13,6 +13,7 @@
 
 #include "rpl_arithmetic_ops.h"
 #include "rpl_cflow_ops.h"
+#include "rpl_meta_ops.h"
 #include "rpl_stack_ops.h"
 #include "rpl_variable_ops.h"
 
@@ -33,6 +34,7 @@ rpl_operations_configure(rpl_operation_table_t table)
     success = success && rpl_configure_stack_ops(table);
     /* success = success && rpl_configure_trig_ops(table); */
     success = success && rpl_configure_variable_ops(table);
+    success = success && rpl_configure_meta_ops(table);
 
     return success;
 }
