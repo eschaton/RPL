@@ -23,7 +23,7 @@ RPL_SOURCE_BEGIN
 rpl_op_definition_t rpl_condition_op_defs[] = {
 {"_CONDITION", rpl_operation_type_command,rpl_condition_op__CONDITION},
 {"_PROTECT",   rpl_operation_type_command,rpl_condition_op__PROTECT},
-{"CONRCL",     rpl_operation_type_command,rpl_condition_op_CONRCL},
+{"CONRCL",     rpl_operation_type_function,rpl_condition_op_CONRCL},
 {"RESUME",     rpl_operation_type_command,rpl_condition_op_RESUME},
 {"RETRY",      rpl_operation_type_command,rpl_condition_op_RETRY},
 {"ABORT",      rpl_operation_type_command,rpl_condition_op_ABORT},
@@ -43,11 +43,11 @@ rpl_configure_condition_ops(rpl_operation_table_t table)
 /* MARK: - Condition System Operations */
 
 /*!
- Implement the `_CONDITION` operation, which creates a condition value
- and pushes it on the stack. It takes as its arguments the number of
- key/value pairs to put in the condition's payload, the key/value pairs
- themselves, and the name of the condition to add them as payload to,
- and returns the condition itself.
+ Implementation of the `_CONDITION` operation, which creates a condition
+ value and pushes it on the stack. It takes as its arguments the number
+ of key/value pairs to put in the condition's payload, the key/value
+ pairs themselves, and the name of the condition to add them as payload
+ to, and returns the condition itself.
  */
 bool
 rpl_condition_op__CONDITION(rpl_operation_t operation,
@@ -206,11 +206,62 @@ rpl_condition_op_CONRCL(rpl_operation_t operation,
     rpl_interpreter_t interp = rpl_context_get_interpreter(context);
     assert(interp != NULL);
 
-    // TODO: Implement CONRCL
+    rpl_value_t condition = NULL;
+    rpl_value_t key = NULL;
+    rpl_value_t value = NULL;
+
+    /* Validate number of arguments. */
+
+    const rpl_integer_t level = rpl_stack_get_level(stack);
+    if (level < 2) {
+	// TODO: Signal 'insufficient arguments' condition
+	goto error;
+    }
+
+    /* Pop the name to recall off the stack. */
+
+    key = rpl_stack_pop(stack);
+    assert(key != NULL);
+
+    if ((rpl_value_get_type(key) != rpl_type_name)
+	|| (rpl_value_get_type(key) == rpl_type_identifier))
+    {
+	// TODO: Signal 'invalid type' error
+	goto error;
+    }
+
+    /* Pop the condition to recall from off the stack. */
+
+    condition = rpl_stack_pop(stack);
+    assert(condition != NULL);
+
+    if (rpl_value_get_type(condition) != rpl_type_condition) {
+	// TODO: Signal 'invalid type' error
+	goto error;
+    }
+
+    /* Get the value from the condition and push it on the stack. */
+
+    value = rpl_condition_get_payload_value(condition, key);
+    if (value == NULL) {
+	// TODO: Signal 'invalid key' error
+	goto error;
+    }
+
+    rpl_stack_push(stack, value);
+
+    /* Clean up and return. */
+
+    rpl_value_release(condition);
+    rpl_value_release(key);
+    rpl_value_release(value);
 
     return true;
 
 error:
+    if (condition) rpl_value_release(condition);
+    if (key) rpl_value_release(key);
+    if (value) rpl_value_release(value);
     return false;
 }
 
