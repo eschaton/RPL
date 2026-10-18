@@ -26,9 +26,26 @@ typedef struct rpl_condition {
 } rpl_condition_t;
 
 
+/*! Low-level allocator, for use by `_CONDITION`. */
+RPL_EXPORT
+rpl_value_t RPL_NULLABLE
+rpl_condition_new(void);
+
 RPL_EXPORT
 void
 rpl_condition_free(rpl_value_t condition);
+
+/*! Sets name, for use by `_CONDITION`. */
+RPL_EXPORT
+bool
+rpl_condition_set_name(rpl_value_t condition, rpl_unistring_t name);
+
+/*! Sets one payload key's value, for use by `_CONDITION`. */
+RPL_EXPORT
+bool
+rpl_condition_set_payload_value(rpl_value_t condition,
+				rpl_value_t key,
+				rpl_value_t value);
 
 RPL_EXPORT
 rpl_unistring_t RPL_NULLABLE

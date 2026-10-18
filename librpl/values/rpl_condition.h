@@ -20,14 +20,14 @@ RPL_HEADER_BEGIN
 
 
 /*!
- Returns a newly-allocated condition.
+ Returns a newly-allocated condition with a given @a name.
 
  Additional payload can be supplied in the form of key-value pairs,
  terminated with `NULL`.
  */
 RPL_EXPORT
 rpl_value_t RPL_NULLABLE
-rpl_condition_new(rpl_unistring_t name, ...);
+rpl_condition_new_with_name(rpl_unistring_t name, ...);
 
 /*! Gets the name of a condition. */
 RPL_EXPORT

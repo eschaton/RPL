@@ -21,6 +21,58 @@
 RPL_SOURCE_BEGIN
 
 
+rpl_value_t RPL_NULLABLE
+rpl_condition_new(void)
+{
+    rpl_value_t value = rpl_value_new(rpl_type_condition);
+    if (value) {
+	rpl_condition_t *rep = &value->_reps._condition;
+
+	rep->_payload = rpl_scope_new(NULL);
+	if (rep->_payload == NULL) goto error;
+    }
+
+    return value;
+
+error:
+    rpl_value_release(value);
+    return NULL;
+}
+
+/*!
+ Indicate whether the key is of the correct type.
+
+ For convenience, a condition payload key may be either a name value or
+ an identifier value. (The underlying implementation uses a unistring.)
+ */
+bool
+rpl_condition_key_is_valid_type(rpl_value_t key)
+{
+    const rpl_type_t keyt = rpl_value_get_type(key);
+    return ((keyt == rpl_type_name)
+	    || (keyt == rpl_type_identifier));
+}
+
+/*!
+ Get the name string for a condition key, which for convenience may be
+ represented by either a name value or an identifier value.
+ */
+rpl_unistring_t RPL_NULLABLE
+rpl_condition_key_name(rpl_value_t key)
+{
+    rpl_unistring_t name;
+    const rpl_type_t keyt = rpl_value_get_type(key);
+    if (keyt == rpl_type_name) {
+	name = rpl_name_get_rep(key);
+    } else if (keyt == rpl_type_identifier) {
+	name = rpl_identifier_get_rep(key);
+    } else {
+	name = NULL;
+    }
+
+    return name;
+}
+
 /*! Accumulate (key,value) pairs into a condition's payload. */
 bool
 rpl_condition_populate_payload(rpl_condition_t *rep, va_list args)
@@ -31,11 +83,11 @@ rpl_condition_populate_payload(rpl_condition_t *rep, va_list args)
     do {
 	key = va_arg(args, rpl_value_t);
 	if (key) {
-	    assert(rpl_value_get_type(key) == rpl_type_identifier);
+	    assert(rpl_condition_key_is_valid_type(key));
 
 	    value = va_arg(args, rpl_value_t);
 	    if (value) {
-		rpl_unistring_t name = rpl_identifier_get_rep(key);
+		rpl_unistring_t name = rpl_condition_key_name(key);
 		assert(name != NULL);
 
 		bool did_set = rpl_scope_set_variable(rep->_payload,
@@ -52,17 +104,14 @@ error:
 }
 
 rpl_value_t RPL_NULLABLE
-rpl_condition_new(rpl_unistring_t name, ...)
+rpl_condition_new_with_name(rpl_unistring_t name, ...)
 {
-    rpl_value_t value = rpl_value_new(rpl_type_condition);
+    rpl_value_t value = rpl_condition_new();
     if (value) {
 	rpl_condition_t *rep = &value->_reps._condition;
 
-	rep->_name = rpl_unistring_copy(name);
-	if (rep->_name == NULL) goto error;
-
-	rep->_payload = rpl_scope_new(NULL);
-	if (rep->_payload == NULL) goto error;
+	bool did_set = rpl_condition_set_name(value, name);
+	if (did_set == false) goto error;
 
 	va_list ap;
 	va_start(ap, name);
@@ -89,6 +138,23 @@ rpl_condition_free(rpl_value_t condition)
     if (rep->_payload) rpl_scope_free(rep->_payload);
 }
 
+bool
+rpl_condition_set_name(rpl_value_t condition, rpl_unistring_t name)
+{
+    assert(condition != NULL);
+    assert(name != NULL);
+    rpl_condition_t *rep = &condition->_reps._condition;
+
+    rpl_unistring_t temp = rpl_unistring_copy(name);
+    if (temp) {
+	if (rep->_name) rpl_unistring_release(rep->_name);
+	rep->_name = temp;
+	return true;
+    } else {
+	return false;
+    }
+}
+
 rpl_unistring_t
 rpl_condition_get_name(rpl_value_t condition)
 {
@@ -98,15 +164,32 @@ rpl_condition_get_name(rpl_value_t condition)
     return rep->_name;
 }
 
+bool
+rpl_condition_set_payload_value(rpl_value_t condition,
+				rpl_value_t key,
+				rpl_value_t value)
+{
+    assert(condition != NULL);
+    assert(key != NULL);
+    assert(rpl_condition_key_is_valid_type(key));
+    assert(value != NULL);
+    rpl_condition_t *rep = &condition->_reps._condition;
+
+    rpl_unistring_t name = rpl_condition_key_name(key);
+    assert(name != NULL);
+
+    return rpl_scope_set_variable(rep->_payload, name, value);
+}
+
 rpl_value_t
 rpl_condition_get_payload_value(rpl_value_t condition, rpl_value_t key)
 {
     assert(condition != NULL);
     assert(key != NULL);
-    assert(rpl_value_get_type(key) == rpl_type_identifier);
+    assert(rpl_condition_key_is_valid_type(key));
     rpl_condition_t *rep = &condition->_reps._condition;
 
-    rpl_unistring_t name = rpl_identifier_get_rep(key);
+    rpl_unistring_t name = rpl_condition_key_name(key);
     assert(name != NULL);
 
     return rpl_scope_get_variable(rep->_payload, name, false);
@@ -178,17 +261,12 @@ rpl_condition_copy_string(rpl_value_t condition, rpl_environment_t env)
     rpl_condition_t *rep = &condition->_reps._condition;
 
     rpl_unistring_t string = NULL;
-    bool appended = false;
+    bool appended = true;
+
+    string = rpl_unistring_new(128);
 
     appended = appended
 	&& rpl_unistring_append(string, rpl_keyword_CONDITION());
-    appended = appended
-	&& rpl_unistring_append_char(string, rpl_unichar_linefeed);
-
-    appended = appended
-	&& rpl_unistring_append_char(string, rpl_unichar_space);
-    appended = appended
-	&& rpl_unistring_append(string, rpl_keyword_NAME());
     appended = appended
 	&& rpl_unistring_append_char(string, rpl_unichar_space);
     appended = appended
@@ -349,7 +427,7 @@ RPL_RETURNS_RETAINED
     actualv = rpl_integer_new(actual);
     if (actualv == NULL) goto error;
 
-    condition = rpl_condition_new(
+    condition = rpl_condition_new_with_name(
 		    rpl_keyword_INSUFFICIENT_ARGUMENTS(),
 		    rpl_keyword_OPERATION(), identifier,
 		    rpl_keyword_EXPECTED(), expectedv,
@@ -387,7 +465,7 @@ RPL_RETURNS_RETAINED
     actualv = rpl_value_get_type_name(actual);
     if (actualv == NULL) goto error;
 
-    condition = rpl_condition_new(
+    condition = rpl_condition_new_with_name(
 		    rpl_keyword_INVALID_TYPE(),
 		    rpl_keyword_OPERATION(), identifier,
 		    rpl_keyword_EXPECTED(), expectedv,
@@ -416,7 +494,7 @@ rpl_condition_initialize(void)
     /* Set up the static conditions. */
 
     rpl_condition_memory_full_value
-	= rpl_condition_new(rpl_keyword_MEMORY_FULL(), NULL);
+	= rpl_condition_new_with_name(rpl_keyword_MEMORY_FULL(), NULL);
     if (rpl_condition_memory_full_value == NULL) goto error;
     rpl_value_immortalize(rpl_condition_memory_full_value);
 

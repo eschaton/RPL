@@ -17,9 +17,9 @@
 RPL_SOURCE_BEGIN
 
 
-rpl_interpreter_t interp = NULL;
-rpl_context_t context = NULL;
-rpl_tokenizer_t tokenizer = NULL;
+static rpl_interpreter_t RPL_NULLABLE interp = NULL;
+static rpl_context_t RPL_NULLABLE context = NULL;
+static rpl_tokenizer_t RPL_NULLABLE tokenizer = NULL;
 
 
 void
@@ -41,8 +41,10 @@ test_tokenizer_setup(void)
 void
 test_tokenizer_teardown(void)
 {
-    rpl_tokenizer_free(tokenizer);
-    rpl_context_free(context);
+    rpl_interpreter_free(interp);
+    interp = NULL;
+    context = NULL;
+    tokenizer = NULL;
 
     tests_shared_teardown();
 }

@@ -8,13 +8,17 @@
 
 #include "test_interpreter.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "rpl_interpreter.h"
 
 
 RPL_SOURCE_BEGIN
 
 
-rpl_interpreter_t interpreter = NULL;
+static rpl_interpreter_t RPL_NULLABLE interpreter = NULL;
+static rpl_context_t RPL_NULLABLE context = NULL;
 
 void
 test_interpreter_setup(void)
@@ -22,6 +26,7 @@ test_interpreter_setup(void)
     tests_shared_setup();
 
     interpreter = rpl_interpreter_new(NULL, NULL);
+    context = rpl_interpreter_get_context(interpreter);
 }
 
 
@@ -29,6 +34,8 @@ void
 test_interpreter_teardown(void)
 {
     rpl_interpreter_free(interpreter);
+    interpreter = NULL;
+    context = NULL;
 
     tests_shared_teardown();
 }
@@ -117,6 +124,34 @@ START_TEST(test_STO)
 }
 END_TEST
 
+START_TEST(test_CONDITION)
+{
+    const char *text_c =
+	"CONDITION INVALID_SYNTAX"	"\n"
+	"  TEXT \"END\""		"\n"
+	"END"				"\n";
+    const size_t text_c_len = strlen(text_c);
+    rpl_unistring_t text = rpl_unistring_new_from_utf8(text_c,
+						       text_c_len);
+    ck_assert_ptr_nonnull(text);
+
+    bool appended = rpl_interpreter_append_input(interpreter, text);
+    rpl_unistring_release(text); text = NULL;
+    ck_assert(appended);
+
+    bool stepped = rpl_interpreter_step(interpreter);
+    ck_assert(stepped);
+
+    rpl_stack_t stack = rpl_context_get_stack(context);
+    rpl_integer_t level = rpl_stack_get_level(stack);
+    ck_assert_int_eq(1, level);
+
+    rpl_value_t condition = rpl_stack_pop(stack);
+    ck_assert_ptr_nonnull(condition);
+    ck_assert_int_eq(rpl_value_get_type(condition), rpl_type_condition);
+}
+END_TEST
+
 
 /* MARK: - Test Infrastructure */
 
@@ -132,6 +167,7 @@ test_interpreter_suite(void)
     tcase_add_test(tc_interpreter, test_creation);
     tcase_add_test(tc_interpreter, test_trivial_execution);
     tcase_add_test(tc_interpreter, test_STO);
+    tcase_add_test(tc_interpreter, test_CONDITION);
 
     suite_add_tcase(s, tc_interpreter);
 

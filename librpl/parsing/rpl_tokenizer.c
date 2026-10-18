@@ -1657,7 +1657,7 @@ rpl_tokenizer_parse_CONDITION(rpl_tokenizer_t tokenizer)
 
     /* Append `_CONDITION` keyword. */
 
-    value = rpl_identifier_new(rpl_keyword_CONDITION());
+    value = rpl_identifier_new(rpl_keyword__CONDITION());
     // TODO: Signal 'Insufficient memory' condition
     if (value == NULL) goto back_out;
     appended = rpl_program_append(program, value);
