@@ -23,6 +23,7 @@ RPL_SOURCE_BEGIN
 rpl_op_definition_t rpl_condition_op_defs[] = {
 {"_CONDITION", rpl_operation_type_command,rpl_condition_op__CONDITION},
 {"_PROTECT",   rpl_operation_type_command,rpl_condition_op__PROTECT},
+{"SIGNAL",     rpl_operation_type_command,rpl_condition_op_SIGNAL},
 {"CONRCL",     rpl_operation_type_function,rpl_condition_op_CONRCL},
 {"RESUME",     rpl_operation_type_command,rpl_condition_op_RESUME},
 {"RETRY",      rpl_operation_type_command,rpl_condition_op_RETRY},
@@ -186,6 +187,27 @@ rpl_condition_op__PROTECT(rpl_operation_t operation,
     assert(interp != NULL);
 
     // TODO: Implement _PROTECT
+
+    return true;
+
+error:
+    return false;
+}
+
+bool
+rpl_condition_op_SIGNAL(rpl_operation_t operation,
+			rpl_context_t context)
+{
+    assert(operation != NULL);
+    assert(context != NULL);
+
+    rpl_stack_t stack = rpl_context_get_stack(context);
+    assert(stack != NULL);
+
+    rpl_interpreter_t interp = rpl_context_get_interpreter(context);
+    assert(interp != NULL);
+
+    // TODO: Implement SIGNAL
 
     return true;
 
