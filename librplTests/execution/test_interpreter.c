@@ -190,6 +190,15 @@ START_TEST(test_CONRCL)
     rpl_value_t value = rpl_stack_pop(stack);
     ck_assert_ptr_nonnull(value);
     ck_assert_int_eq(rpl_value_get_type(value), rpl_type_string);
+
+    rpl_unistring_t vs = rpl_string_get_rep(value);
+    ck_assert_ptr_nonnull(vs);
+    char *vs_utf8 = rpl_unistring_copy_utf8(vs);
+    ck_assert_ptr_nonnull(vs_utf8);
+    ck_assert_str_eq("END", vs_utf8);
+
+    free(vs_utf8); vs_utf8 = NULL;
+    rpl_value_release(value); value = NULL;
 }
 END_TEST
 
