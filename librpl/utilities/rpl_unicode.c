@@ -10,8 +10,11 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <iconv.h>
 #include <stdlib.h>
+
+#include <iconv.h>
+
+#include <unicode/stringoptions.h>
 #include <unicode/ustring.h>
 
 
