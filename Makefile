@@ -67,10 +67,11 @@ RPL_INCLUDES = \
 	-I librpl/values \
 	-I RPL
 
+CFLAGS += ${OTHER_CFLAGS} ${RPL_INCLUDES}
 
-CFLAGS += ${RPL_INCLUDES}
+ICU_LDFLAGS ?= -licucore
 
-LDFLAGS += -ledit -liconv -licucore
+LDFLAGS += ${OTHER_LDFLAGS} -ledit -liconv ${ICU_LDFLAGS}
 
 all: rpltool
 
@@ -78,7 +79,8 @@ clean:
 	rm -f ${OBJECTS_librpl} ${OBJECTS_rpltool} rpltool
 
 librpl.a: ${OBJECTS_librpl}
-	libtool -static ${OBJECTS_librpl} -o $@
+	${AR} rcs librpl.a ${OBJECTS_librpl}
 
 rpltool: librpl.a ${OBJECTS_rpltool}
-	${CC} ${LDFLAGS} librpl.a ${OBJECTS_rpltool} -o rpltool
+	${CC} ${LDFLAGS} ${OBJECTS_librpl} ${OBJECTS_rpltool} -o rpltool
+
